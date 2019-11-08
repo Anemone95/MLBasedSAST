@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 import static top.anemone.mlBasedSAST.slice.JoanaSlicer.computeSlice;
+import static top.anemone.mlBasedSAST.slice.JoanaSlicer.generateConfig;
 
 public class JoanaSlicerTest {
 
@@ -30,7 +31,7 @@ public class JoanaSlicerTest {
         JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line("top/anemone/joana/target/Main.java", 17);
         String pdgFile=null;
 
-        String result=computeSlice(jarFiles, libJars, exclusionsFile, entryClass, entryMethod, entryRef, sink, pdgFile);
+        String result=computeSlice(generateConfig(jarFiles, libJars, exclusionsFile), entryClass, entryMethod, entryRef, sink, pdgFile);
         String expectedOutput="1 :: ENTR :: entry :: null :: top.anemone.joana.target.Main.main(java.lang.String[])::CD,8:CD,12" +
                 "8 :: CALL :: call :: Ljava/lang/String :: v6 = replace(v4)::CL,203" +
                 "12 :: CALL :: call :: V :: sink(v6)::CL,225" +

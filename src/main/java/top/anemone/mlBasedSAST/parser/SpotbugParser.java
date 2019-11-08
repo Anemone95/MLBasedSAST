@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Data
 public class SpotbugParser implements Parser {
     private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.9.0.jar";
-    private List<String> analysisTargets;
     // 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi
     public static List<String> caredVulns = Arrays.asList(
             "COMMAND_INJECTION",
@@ -39,8 +38,8 @@ public class SpotbugParser implements Parser {
 
     public static void main(String[] args) throws NotFoundException, IOException, BCELParserException {
         SpotbugParser spotbugParser = new SpotbugParser();
-        List<Trace> traces=spotbugParser.parse(new File("bugreports/spotbugs.xml"),null);
-        System.out.println(traces);
+        TaintProject taintProject=spotbugParser.parse(new File("bugreports/spotbugs.xml"),null);
+        System.out.println(taintProject);
     }
 
     /**
@@ -80,7 +79,7 @@ public class SpotbugParser implements Parser {
     }
 
     @Override
-    public List<Trace> parse(File xml, List<File> appJars) throws NotFoundException, IOException, BCELParserException {
+    public TaintProject parse(File xml, List<File> appJars) throws NotFoundException, IOException, BCELParserException {
         SortedBugCollection sortedBugCollection;
         try {
             sortedBugCollection = this.loadBugs(xml);
@@ -88,6 +87,7 @@ public class SpotbugParser implements Parser {
             throw new NotFoundException(xml + " not found");
         }
         // 获取报告中的jar包地址，但是如果分析过程与报告产生过程不在一起，地址会很找不到，这时只能从appJars中获取
+        List<String> analysisTargets;
         analysisTargets=sortedBugCollection.getProject().getFileList();
         List<File> appJarsinReport=analysisTargets.stream().map(File::new).filter(e->e.exists()).collect(Collectors.toList());
         appJarsinReport.addAll(appJars);
@@ -96,7 +96,8 @@ public class SpotbugParser implements Parser {
         for (BugInstance bugInstance : bugInstances) {
             traces.addAll(BugInstance2Trace(bugInstance, appJarsinReport));
         }
-        return traces;
+        TaintProject taintProject=new TaintProject(sortedBugCollection.getProject().getProjectName(), traces);
+        return taintProject;
     }
 
     public static List<Trace> BugInstance2Trace(BugInstance bugInstance, List<File> appJars) throws NotFoundException, BCELParserException, IOException {
