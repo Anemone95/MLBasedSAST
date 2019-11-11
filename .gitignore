@@ -1,4 +1,4 @@
-target/*
-bugreports/*
-.idea
-kb
+**/target/*
+**/bugreports/*
+**/.idea/*
+**/kb
