@@ -29,6 +29,7 @@ import edu.kit.joana.wala.core.Main;
 import edu.kit.joana.wala.core.SDGBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.anemone.mlBasedSAST.exception.NotFoundException;
 
 import java.io.*;
 import java.net.URL;
@@ -38,7 +39,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class JoanaSlicer {
-    private static final Logger LOG = LoggerFactory.getLogger(JoanaSlicer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
 
     public static SDGBuilder.SDGBuilderConfig generateConfig(List<File> appJars, List<URL> libJars, String exclusionsFile) throws ClassHierarchyException, IOException {
         SDGBuilder.SDGBuilderConfig config = getSDGBuilderConfig(appJars, libJars, exclusionsFile);
@@ -49,40 +50,40 @@ public class JoanaSlicer {
     public static String computeSlice(SDGBuilder.SDGBuilderConfig config,
                                       String entryClass, String entryMethod, String entryRef,
                                       JoanaLineSlicer.Line sink, String pdgFile)
-            throws ClassHierarchyException, IOException, GraphIntegrity.UnsoundGraphException, CancelException {
+            throws ClassHierarchyException, IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
         SDG localSdg = null;
 
-        LOG.info("Building SDG... ");
+        LOGGER.info("Building SDG... ");
         // 根据class, method, ref在classloader中找入口函数
         config.entry = findMethod(config, entryClass, entryMethod, entryRef);
         // 构造SDG
         localSdg = SDGBuilder.build(config);
-        LOG.info("SDG build done! Optimizing...");
+        LOGGER.info("SDG build done! Optimizing...");
         // 剪枝
         CSDGPreprocessor.preprocessSDG(localSdg);
         // 保存SDG
         if (pdgFile != null) {
-            LOG.info("Done! Saving to: " + pdgFile);
+            LOGGER.info("Done! Saving to: " + pdgFile);
             SDGSerializer.toPDGFormat(localSdg, new PrintWriter(pdgFile));
         } else {
-            LOG.info("Done!");
+            LOGGER.info("Done!");
         }
 
-        LOG.info("Computing Slice...");
+        LOGGER.info("Computing Slice...");
         // 利用SDG切片
         JoanaLineSlicer jSlicer = new JoanaLineSlicer(localSdg);
-        LOG.info("Done...\n");
+        LOGGER.info("Done...");
         // 根据sink点查找sinknodes
         HashSet<SDGNode> sinkNodes = jSlicer.getNodesAtLine(sink);
         Collection<SDGNode> slice = jSlicer.slice(sinkNodes);
         // 这里relatedNodesStr没搞懂是啥
-        String relatedNodesStr = "[";
-        for (SDGNode sdgNode : sinkNodes) {
-            if (!jSlicer.toAbstract.contains(sdgNode) && !JoanaLineSlicer.isRemoveNode(sdgNode)) {
-                relatedNodesStr += sdgNode.getId() + ", ";
-            }
-        }
-        relatedNodesStr = relatedNodesStr.substring(0, relatedNodesStr.lastIndexOf(",")) + "]\n";
+//        String relatedNodesStr = "[";
+//        for (SDGNode sdgNode : sinkNodes) {
+//            if (!jSlicer.toAbstract.contains(sdgNode) && !JoanaLineSlicer.isRemoveNode(sdgNode)) {
+//                relatedNodesStr += sdgNode.getId() + ", ";
+//            }
+//        }
+//        relatedNodesStr = relatedNodesStr.substring(0, relatedNodesStr.lastIndexOf(",")) + "]\n";
         String result = Formater.prepareSliceForEncoding(localSdg, slice, jSlicer.toAbstract);
         return result;
     }

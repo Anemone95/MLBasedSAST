@@ -2,3 +2,4 @@
 **/bugreports/*
 **/.idea/*
 **/kb
+__pycache__ 

@@ -4,6 +4,7 @@ import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.graph.GraphIntegrity;
 import org.junit.Test;
+import top.anemone.mlBasedSAST.exception.NotFoundException;
 
 import javax.print.DocFlavor;
 import java.io.File;
@@ -21,8 +22,8 @@ import static top.anemone.mlBasedSAST.slice.JoanaSlicer.generateConfig;
 public class JoanaSlicerTest {
 
     @Test
-    public void computeSliceTest() throws GraphIntegrity.UnsoundGraphException, CancelException, ClassHierarchyException, IOException {
-        List<File> jarFiles= Arrays.asList(new File("joana-target/target/joana-target-1.0-SNAPSHOT.jar"));
+    public void computeSliceTest() throws GraphIntegrity.UnsoundGraphException, CancelException, ClassHierarchyException, IOException, NotFoundException {
+        List<File> jarFiles= Arrays.asList(new File("src/test/resources/joana-target-1.0-SNAPSHOT.jar"));
         List<URL> libJars = new LinkedList<>();
         String exclusionsFile=null;
         String entryClass="Ltop/anemone/joana/target/Main";

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 public class SpotbugParser implements Parser {
     private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.9.0.jar";
-    // 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi
+    // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi
     public static List<String> caredVulns = Arrays.asList(
             "COMMAND_INJECTION",
             "XSS_JSP_PRINT",

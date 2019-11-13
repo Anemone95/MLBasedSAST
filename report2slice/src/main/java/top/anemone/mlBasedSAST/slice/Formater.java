@@ -39,7 +39,7 @@ public class Formater {
         StringBuilder result = new StringBuilder("");
         for (SDGNode node : slice) {
             if (prune.contains(node)) continue;
-            result.append("\n" + node+" :: "+node.getKind() + " :: " + node.getOperation() + " :: " + node.getType() + " :: "
+            result.append(node+" :: "+node.getKind() + " :: " + node.getOperation() + " :: " + node.getType() + " :: "
                     + node.getLabel() + "::");
             HashSet<SDGNode> visited = new HashSet<>();
             String edgesStr = "";

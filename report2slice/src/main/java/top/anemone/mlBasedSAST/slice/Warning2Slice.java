@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 public class Warning2Slice {
     private static final Logger LOG = LoggerFactory.getLogger(JoanaSlicer.class);
     public static void main(String[] args) throws NotFoundException, BCELParserException, IOException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, ClassNotFoundException, InterruptedException {
-        File report = new File("src/test/resources/spotbugs.xml");
-        List<File> appJars = Collections.singletonList(new File("src/test/resources/java-sec-code-1.0.0.jar"));
+        File report = new File("bugreports/benchmark.xml");
+        List<File> appJars = Collections.singletonList(new File("bugreports/benchmark.war"));
 
         toSlice(appJars, report, "kb");
     }
@@ -75,12 +75,14 @@ public class Warning2Slice {
         Set<String> entryPackages = getEntryPackages(traces);
         Path tempDirectory = Files.createTempDirectory("mlBasedSAST");
         // prepare
+        LOG.info("Extracting jar to "+tempDirectory);
         List<File> transformedAppJars=new LinkedList<>();
 //        transformedAppJars.add(new File("C:/Users/x5651/AppData/Local/Temp/mlBasedSAST6930275908120100044/java-sec-code-1.0.0.jar/counter.jar"));
 //        transformedAppJars.add(new File("src/test/resources/classpath.zip"));
         List<URL> libJars=new LinkedList<>();
         String exclusionsFile=null;
         for (File appJar : appJars) {
+            LOG.info("Transforming jar: "+appJar);
             TransformedJar jar = transformJar(appJar, tempDirectory, entryPackages);
             transformedAppJars.add(jar.getAppJarPath());
             for(File f: Objects.requireNonNull(jar.getLibPath().toFile().listFiles())){
@@ -102,12 +104,20 @@ public class Warning2Slice {
             String joanaFilename = String.join("/", tmp);
             JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line(joanaFilename, lastPassThrough.getCalledStartLine());
             String pdgFile = null;
-            String slice = JoanaSlicer.computeSlice(config, entryClass, entryMethod, entryRef, sink, pdgFile);
+            String slice;
+            try {
+                slice = JoanaSlicer.computeSlice(config, entryClass, entryMethod, entryRef, sink, pdgFile);
+            } catch (NotFoundException e){
+                System.err.println("Err when processing this trace: "+ trace);
+                e.printStackTrace();
+                continue;
+            }
             SliceOutput output=new SliceOutput(trace, slice);
             JsonUtil.dumpToFile(output,outputPath+String.format("/slice-%d.json",Math.abs(trace.hashCode())));
             outputs.add(output);
         }
 
+        LOG.warn("Please delete temp dir: "+tempDirectory);
         return outputs;
     }
 }

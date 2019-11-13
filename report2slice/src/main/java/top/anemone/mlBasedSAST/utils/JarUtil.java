@@ -105,6 +105,8 @@ public class JarUtil {
      */
     public static void unJar(File srcFile, Path classesDir, Path libDir, Set<String> appEntryPackage) {
         // 开始解压
+
+        LOGGER.info("Transforming jar: "+srcFile);
         ZipFile zipFile = null;
         try {
             zipFile = new ZipFile(srcFile);

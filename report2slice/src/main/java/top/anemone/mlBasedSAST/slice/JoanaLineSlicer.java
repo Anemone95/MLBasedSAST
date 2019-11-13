@@ -11,6 +11,9 @@ import edu.kit.joana.ifc.sdg.graph.SDGNode.Kind;
 import edu.kit.joana.ifc.sdg.graph.slicer.Slicer;
 import edu.kit.joana.ifc.sdg.graph.slicer.SummarySlicerBackward;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import top.anemone.mlBasedSAST.exception.NotFoundException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,6 +24,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class JoanaLineSlicer {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
 	private SDG sdg;
 	private Slicer slicer;
 
@@ -43,19 +48,38 @@ public class JoanaLineSlicer {
 		return Collections.unmodifiableSortedSet(lines);
 	}
 
-	public HashSet<SDGNode> getNodesAtLine(Line line) {
+	public HashSet<SDGNode> getNodesAtLine(Line line) throws NotFoundException {
 		HashSet<SDGNode> nodes = new HashSet<SDGNode>();
+		HashSet<SDGNode> successorNodes=new HashSet<>();
+		int dist = 987654321;
 		final BreadthFirstIterator<SDGNode, SDGEdge> it = new BreadthFirstIterator<SDGNode, SDGEdge>(sdg);
 		while (it.hasNext()) {
 			final SDGNode node = it.next();
+			// TODO node func name==sink func
+//			if (node.getSource().equals(line.filename) && node.getKind().equals(Kind.CALL)) {
 			if (node.getSource().equals(line.filename)) {
 				//System.out.println(node.getId() + ":" + node.getSource() + ":" + node.getSr() + ":" + node.getLabel());
 				if (node.getSr() == line.line) {//  && !isAbstractNode(node) && !isAbstractNode(node)) {
 					nodes.add(node);
 				}
+				int currDist=Math.abs(node.getSr()-line.line);
+				if (currDist<dist){
+					successorNodes.clear();
+					successorNodes.add(node);
+					dist=currDist;
+				} else if (currDist==dist){
+					successorNodes.add(node);
+				}
 			}
 		}
-		if (nodes.isEmpty()) { throw new IllegalArgumentException("No node"); }
+		if (nodes.isEmpty()) {
+		    LOGGER.warn("No code at line: "+line.line+", alter to successor nodes");
+			if (successorNodes.isEmpty()){
+			    nodes=successorNodes;
+			} else {
+				throw new NotFoundException("No node " + line);
+			}
+		}
 		return nodes;
 	}
 
