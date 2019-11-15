@@ -4,11 +4,9 @@ import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.graph.GraphIntegrity;
 import edu.kit.joana.wala.core.SDGBuilder;
-import lombok.Data;
-import org.apache.bcel.classfile.ClassParser;
+import org.apache.tools.ant.taskdefs.condition.Not;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.loader.LaunchedURLClassLoader;
 import top.anemone.mlBasedSAST.data.*;
 import top.anemone.mlBasedSAST.exception.BCELParserException;
 import top.anemone.mlBasedSAST.exception.NotFoundException;
@@ -18,17 +16,14 @@ import top.anemone.mlBasedSAST.utils.JsonUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Warning2Slice {
-    private static final Logger LOG = LoggerFactory.getLogger(JoanaSlicer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
     public static void main(String[] args) throws NotFoundException, BCELParserException, IOException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, ClassNotFoundException, InterruptedException {
         File report = new File("bugreports/benchmark.xml");
         List<File> appJars = Collections.singletonList(new File("bugreports/benchmark.war"));
@@ -75,14 +70,14 @@ public class Warning2Slice {
         Set<String> entryPackages = getEntryPackages(traces);
         Path tempDirectory = Files.createTempDirectory("mlBasedSAST");
         // prepare
-        LOG.info("Extracting jar to "+tempDirectory);
+        LOGGER.info("Extracting jar to "+tempDirectory);
         List<File> transformedAppJars=new LinkedList<>();
 //        transformedAppJars.add(new File("C:/Users/x5651/AppData/Local/Temp/mlBasedSAST6930275908120100044/java-sec-code-1.0.0.jar/counter.jar"));
 //        transformedAppJars.add(new File("src/test/resources/classpath.zip"));
         List<URL> libJars=new LinkedList<>();
         String exclusionsFile=null;
         for (File appJar : appJars) {
-            LOG.info("Transforming jar: "+appJar);
+            LOGGER.info("Transforming jar: "+appJar);
             TransformedJar jar = transformJar(appJar, tempDirectory, entryPackages);
             transformedAppJars.add(jar.getAppJarPath());
             for(File f: Objects.requireNonNull(jar.getLibPath().toFile().listFiles())){
@@ -94,7 +89,7 @@ public class Warning2Slice {
 
         List<SliceOutput> outputs=new LinkedList<>();
         for (Trace trace : traces) {
-            LOG.info("Slice: "+trace);
+            LOGGER.info("Slice: "+trace);
             String entryClass = "L" + trace.getSource().getClazz().replace('.', '/');
             String entryMethod = trace.getSource().getMethod();
             String entryRef = trace.getSource().getSig();
@@ -117,7 +112,7 @@ public class Warning2Slice {
             outputs.add(output);
         }
 
-        LOG.warn("Please delete temp dir: "+tempDirectory);
+        LOGGER.warn("Please delete temp dir: "+tempDirectory);
         return outputs;
     }
 }

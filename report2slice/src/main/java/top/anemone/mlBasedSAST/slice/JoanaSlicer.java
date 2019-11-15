@@ -152,17 +152,17 @@ public class JoanaSlicer {
         return scfg;
     }
 
-    static IMethod findMethod(SDGBuilder.SDGBuilderConfig scfg, final String entryClazz, final String entryMethod, String methodRef) {
+    static IMethod findMethod(SDGBuilder.SDGBuilderConfig scfg, final String entryClazz, final String entryMethod, String methodRef) throws  NotFoundException {
         // debugPrint(scfg.cha);
         final IClass cl = scfg.cha.lookupClass(TypeReference.findOrCreate(ClassLoaderReference.Application, entryClazz));
         if (cl == null) {
-            throw new RuntimeException("Class not found: " + entryClazz);
+            throw new NotFoundException("Class not found: " + entryClazz);
         }
         // final IMethod m = cl.getMethod(Selector.make(entryMethod));
         final IMethod m = cl.getMethod(new Selector(Atom.findOrCreateUnicodeAtom(entryMethod),
                 Descriptor.findOrCreateUTF8(Language.JAVA, methodRef)));
         if (m == null) {
-            throw new RuntimeException("Func not found:" + cl + "." + entryMethod);
+            throw new NotFoundException("Func not found:" + cl + "." + entryMethod);
         }
         return m;
     }

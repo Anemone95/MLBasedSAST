@@ -8,14 +8,15 @@
 """
 
 import unittest
-import tf_lstm
+from tf import tf_lstm
 
 
 class TestLSTMMethods(unittest.TestCase):
 
     def test_load_json(self):
         label_dict = tf_lstm.load_label('../data/label')
-        print(tf_lstm.load_json(tf_lstm.simple_text_processing, '../data/slice/benchmark/slice-5888683.json', label_dict))
+        print(
+            tf_lstm.load_json(tf_lstm.simple_text_processing, '../data/slice/benchmark/slice-5888683.json', label_dict))
 
 
 if __name__ == '__main__':

@@ -101,7 +101,7 @@ public class JarUtil {
      * @param srcFile
      * @param classesDir
      * @param libDir
-     * @param appEntryPackage
+     * @param appEntryPackage 通过该类定位到内层中的jar，如BOOT/classes/top/anemone/xxx.class, entryPackage=top
      */
     public static void unJar(File srcFile, Path classesDir, Path libDir, Set<String> appEntryPackage) {
         // 开始解压

@@ -25,7 +25,7 @@ import java.util.*;
 
 public class JoanaLineSlicer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JoanaLineSlicer.class);
 	private SDG sdg;
 	private Slicer slicer;
 
@@ -62,8 +62,8 @@ public class JoanaLineSlicer {
 				if (node.getSr() == line.line) {//  && !isAbstractNode(node) && !isAbstractNode(node)) {
 					nodes.add(node);
 				}
-				int currDist=Math.abs(node.getSr()-line.line);
-				if (currDist<dist){
+				int currDist=node.getSr()-line.line; // 碰到string append可能会错位，但是应该只能错一位
+				if (currDist>=0 && currDist<dist){
 					successorNodes.clear();
 					successorNodes.add(node);
 					dist=currDist;
@@ -74,7 +74,7 @@ public class JoanaLineSlicer {
 		}
 		if (nodes.isEmpty()) {
 		    LOGGER.warn("No code at line: "+line.line+", alter to successor nodes");
-			if (successorNodes.isEmpty()){
+			if (!successorNodes.isEmpty()){
 			    nodes=successorNodes;
 			} else {
 				throw new NotFoundException("No node " + line);

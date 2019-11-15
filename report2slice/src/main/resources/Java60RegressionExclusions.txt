@@ -42,3 +42,8 @@ org\/openide\/.*
 sun\/.*
 sun\/awt\/.*
 sun\/swing\/.*
+org\/owasp\/benchmark\/score\/.*
+org\/owasp\/benchmark\/score\/parsers\/.*
+org\/owasp\/benchmark\/score\/report\/.*
+org\/owasp\/benchmark\/score\/report\/.*
+org\/owasp\/benchmark\/helpers\/DatabaseHelp.*

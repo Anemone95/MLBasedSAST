@@ -3,3 +3,4 @@
 **/.idea/*
 **/kb
 __pycache__ 
+*.npz 

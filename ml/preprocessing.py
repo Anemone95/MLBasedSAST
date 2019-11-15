@@ -6,8 +6,12 @@
 :copyright: (c) 2019 by Anemone Xu.
 :license: Apache 2.0, see LICENSE for more details.
 """
+import json
+import pathlib
 import re
 import logging
+
+import settings
 
 STRING_PATTERN = re.compile(r'(#\([^);]+\))')
 ABSTRACT_LIST = ['BenchmarkTest\d+', 'testcode', 'moresafe', 'safe', 'Safe']
@@ -61,7 +65,7 @@ def preprocessing(text: str) -> str:
         sample += parseSDGNodeValue(ntype + ' ' + value, ABSTRACT_LIST) + ' :: '  # .lower()
         # except Exception as e:
         #     logging.warning('Exception: {} in {}'.format(e, line))
-    return sample.replace('::',' ')
+    return sample.replace('::', ' ')
 
 
 def parseSDGNodeValue(node_value, to_abstract_list):
@@ -107,5 +111,80 @@ def parseSDGNodeValue(node_value, to_abstract_list):
     return value.rstrip()
 
 
+def load_label(base_dir):
+    hash2label = {}
+    for each_file in pathlib.Path(base_dir).glob('**/*.json'):
+        with open(each_file, 'r') as f:
+            labeled_slices = json.load(f)
+        for each_slice in labeled_slices:
+            hash2label[each_slice["sliceHash"]] = 1 if each_slice["isReal"] else 0
+    return hash2label
+
+
+def get_data_generator(text_processing_func, data_dir: str, label_dict: dict):
+    def gen() -> (str, int):
+        for json_file in pathlib.Path(data_dir).glob('**/*.json'):
+            with open(json_file, 'r') as f:
+                slice_json = json.load(f)
+            slice_hash = json_file.name.split('-')[-1].split('.')[0]
+            if len(slice_json["slice"]) == 0:
+                continue
+            try:
+                slice_text = text_processing_func(slice_json["slice"])
+            except IndexError:
+                print(slice_json["slice"])
+                print()
+                continue
+            if slice_hash not in label_dict:
+                # 无label时只能预测
+                if label_dict is None:
+                    label = -1
+                else:
+                    continue
+            else:
+                label = label_dict[slice_hash]
+            yield slice_text, label
+
+    return gen
+
+
+def parseDataFile(dataFile):
+    print('reading ' + dataFile + ' dataFile...')
+    file_content = open(dataFile, 'r')
+    samples = []
+    labels = []
+    for line in file_content:
+        prog = None
+        if 'truepositive' in line:
+            labels.append(0)
+            prog = re.sub(' truepositive', '', line)
+        else:
+            labels.append(1)
+            prog = re.sub(' falsepositive', '', line)
+        samples.append(prog)
+    print('done...')
+    return samples, labels
+
+
+def get_magrove_generator(text_processing_func, data_dir: str, label_dict: dict):
+    owasp_train_file = r'D:\Store\document\all_my_work\CZY\bishe\mangrove_old\lstm\data\extraction\owasp-slice-train-2.txt'
+    owasp_test_file = r'D:\Store\document\all_my_work\CZY\bishe\mangrove_old\lstm\data\extraction\owasp-slice-test-2.txt'
+
+    owasp_train_file = settings.relative_path_from_root('data/mangrove/t-train.txt')
+    owasp_test_file = settings.relative_path_from_root('data/mangrove/t-test.txt')
+    train_x, train_y = parseDataFile(owasp_train_file)
+    test_x, test_y = parseDataFile(owasp_test_file)
+
+    def gen() -> (str, int):
+        for idx in range(len(train_x)):
+            yield train_x[idx], train_y[idx]
+        for idx in range(len(test_x)):
+            yield test_x[idx], test_y[idx]
+
+    return gen
+
+
 if __name__ == '__main__':
-    print(preprocessing("A::B::C::D::E::F"))
+    for x, y in get_magrove_generator(preprocessing, "", "")():
+        if y == 1:
+            print(x, y)

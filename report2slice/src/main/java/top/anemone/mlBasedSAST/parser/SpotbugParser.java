@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Data
 public class SpotbugParser implements Parser {
     private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.9.0.jar";
-    // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi
+    // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
             "COMMAND_INJECTION",
             "XSS_JSP_PRINT",
@@ -33,7 +33,9 @@ public class SpotbugParser implements Parser {
             "SCALA_SQL_INJECTION_SLICK",
             "SCALA_SQL_INJECTION_ANORM",
             "SQL_INJECTION_TURBINE",
-            "UNVALIDATED_REDIRECT"
+            "UNVALIDATED_REDIRECT",
+            "LDAP_INJECTION",
+            "XPATH_INJECTION"
     );
 
     public static void main(String[] args) throws NotFoundException, IOException, BCELParserException {
