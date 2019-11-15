@@ -15,8 +15,9 @@ from _theano.tokenizer import *
 
 def load_data(data_dir: str, label_dir: str,
               tokenizer: Tokenizer = None,
-              valid_portion: int = 0.2,
-              test_portion: int = 0.1) -> (list, list, list):
+              valid_portion: int = 0.0,
+              test_portion: int = 0.1,
+              update_dict=True) -> (list, list, list):
     if label_dir is None:
         label_dict = None
     else:
@@ -30,7 +31,8 @@ def load_data(data_dir: str, label_dir: str,
         if len(labels) > 100:
             break
 
-    tokenizer.update_dict(samples)
+    if update_dict:
+        tokenizer.update_dict(samples)
     samples = list(map(lambda e: tokenizer.encode(e), samples))
 
     # split all set into test set

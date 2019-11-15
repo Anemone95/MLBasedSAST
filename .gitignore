@@ -4,3 +4,4 @@
 **/kb
 __pycache__ 
 *.npz 
+ml/model

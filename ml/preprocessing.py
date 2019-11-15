@@ -135,14 +135,14 @@ def get_data_generator(text_processing_func, data_dir: str, label_dict: dict):
                 print(slice_json["slice"])
                 print()
                 continue
-            if slice_hash not in label_dict:
+            if label_dict is None:
                 # 无label时只能预测
-                if label_dict is None:
-                    label = -1
-                else:
-                    continue
-            else:
+                label = -1
+            elif slice_hash in label_dict:
                 label = label_dict[slice_hash]
+            else:
+                logging.warning("{} not in label".format(json_file))
+                continue
             yield slice_text, label
 
     return gen

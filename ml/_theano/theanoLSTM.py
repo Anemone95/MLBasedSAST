@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import pickle
+
 import numpy
 import sys
 import theano
@@ -309,8 +311,8 @@ def build_model(tparams, options, verbose):
                                  verbose=verbose)
     proj = (proj * mask[:, :, None]).sum(axis=0)
     proj = proj / mask.sum(axis=0)[:, None]
-    # if options['use_dropout']:
-    #     proj = dropout_layer(proj, use_noise, trng)
+    if options['use_dropout']:
+        proj = dropout_layer(proj, use_noise, trng)
 
     pred = tensor.nnet.softmax(tensor.dot(proj, tparams['U']) + tparams['b'])
     f_pred_prob = theano.function([x, mask], pred, name='f_pred_prob')
@@ -472,7 +474,7 @@ def train_lstm(
     try:
         eidx = 0
         # 一次训练
-        while eidx < max_epochs or time_out > (time.time() - start_time) / 60.0:
+        while eidx < max_epochs and time_out > (time.time() - start_time) / 60.0:
             eidx = eidx + 1
             n_samples = 0
 
@@ -556,6 +558,8 @@ def train_lstm(
     valid_err = test_err
 
     if saveto:
+        with open(saveto + '.args', 'wb') as f:
+            pickle.dump(model_options, f)
         numpy.savez(saveto, train_err=train_err, valid_err=valid_err, test_err=test_err, history_errs=history_errs,
                     **best_p)
     print('%s\t%d\t%d\t%d\t%.2f\t%.2f\t%s\t%d\t%.2f\t%.2f\t%.2f' % (
@@ -564,10 +568,11 @@ def train_lstm(
 
 
 # TODO
-def test_lstm(dim_proj=128, use_dropout=True, n_words=7000, dataFile=None, reload_model=None):
+def test_lstm(reload_model, data_dir, tokenizer, use_dropout=True, n_words=7000, dim_proj=128):
     # Model options
     model_options = locals().copy()
-    _, _, test = dataloader.load_data(data_dir, label_dir, tokenizer=tokenizer, test_portion=1)
+    _, _, test = dataloader.load_data(data_dir, label_dir=None, tokenizer=tokenizer, valid_portion=0, test_portion=1,
+                                      update_dict=False)
     model_options['ydim'] = numpy.max(test[1]) + 1
     params = init_params(model_options)
     if reload_model:
@@ -580,16 +585,35 @@ def test_lstm(dim_proj=128, use_dropout=True, n_words=7000, dataFile=None, reloa
     print('TestAcc\n%.2f' % ((1 - test_err) * 100.0))
 
 
-def predict(model, data_dir, tokenizer):
-    _, _, test = dataloader.load_data(data_dir, label_dir=None, tokenizer=tokenizer, test_portion=1)
-    model_options = init_params({'ydim': 2, 'n_words': -1})
-    load_params(model, model_options)
-    tparams = init_tparams(model_options)
+def load_model(model_npz_path: str, tokenizer_pkl_path: str):
+    # with open(model_npz_path + '.args', 'rb') as f:
+    #     model_options = pickle.load(f)
+    #
+    model_options = {'use_dropout': True, 'n_words': 1000, 'dim_proj': 128, "ydim": 2}
+    params = init_params(model_options)
+    load_params(model_npz_path, params)
+    tparams = init_tparams(params)
     (_, _, _, _, _, f_pred, _) = build_model(tparams, model_options, False)
-    x, mask, y = prepare_data(test[0], numpy.array(test[1]), maxlen=None)
+    with open(tokenizer_pkl_path, 'rb') as f:
+        tokenizer = pickle.load(f)
+    return f_pred, tokenizer
+
+
+def predict(model, data_dir, tokenizer):
+    model_options = {'use_dropout': True, 'n_words': tokenizer, 'dim_proj': 128, "ydim": 2}
+    _, _, test = dataloader.load_data(data_dir, label_dir=None, tokenizer=tokenizer, valid_portion=0, test_portion=1,
+                                      update_dict=False)
+    params = init_params(model_options)
+    load_params(model, params)
+    tparams = init_tparams(params)
+    (_, _, _, _, _, f_pred, _) = build_model(tparams, model_options, False)
+    test_size = len(test[0])
+
+    tmp = test[0]
+    x, mask, y = prepare_data(tmp, numpy.array(test[1]), maxlen=None)
+    # print("x:")
     preds = f_pred(x, mask)
-    for i in preds:
-        print(preds)
+    print(preds)
 
 
 if __name__ == '__main__':

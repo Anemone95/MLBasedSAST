@@ -25,8 +25,8 @@ import java.util.*;
 public class Warning2Slice {
     private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
     public static void main(String[] args) throws NotFoundException, BCELParserException, IOException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, ClassNotFoundException, InterruptedException {
-        File report = new File("bugreports/benchmark.xml");
-        List<File> appJars = Collections.singletonList(new File("bugreports/benchmark.war"));
+        File report = new File("bugreports/benchmark1.1.xml");
+        List<File> appJars = Collections.singletonList(new File("bugreports/benchmark1.1.war"));
 
         toSlice(appJars, report, "kb");
     }
