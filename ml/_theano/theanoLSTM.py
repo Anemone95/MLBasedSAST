@@ -511,10 +511,9 @@ def train_lstm(
             use_noise.set_value(0.)
             train_err, _ = pred_error(f_pred, prepare_data, train, train_batch)
             test_err, details = pred_error(f_pred, prepare_data, test, test_batch)
-            valid_err = test_err
+            valid_err = test_err if len(test[0]) > 0 else train_err
             history_errs.append([valid_err, test_err])
-
-            if (best_p is None or valid_err <= numpy.array(history_errs)[:, 0].min()):
+            if best_p is None or (valid_err <= numpy.array(history_errs)[:, 0].min()):
                 best_p = unzip(tparams)
                 bad_counter = 0
                 last_best_time = (time.time() - start_time) / 60.0
@@ -571,24 +570,6 @@ def train_lstm(
         details, eidx, total_time / eidx, last_best_time, total_time))
 
 
-# TODO
-def test_lstm(reload_model, data_dir, tokenizer, use_dropout=True, n_words=7000, dim_proj=128):
-    # Model options
-    model_options = locals().copy()
-    _, _, test = dataloader.load_data(data_dir, label_dir=None, tokenizer=tokenizer, valid_portion=0, test_portion=1,
-                                      update_dict=False)
-    model_options['ydim'] = numpy.max(test[1]) + 1
-    params = init_params(model_options)
-    if reload_model:
-        load_params(reload_model, params)
-    tparams = init_tparams(params)
-    (_, _, _, _, _, f_pred, _) = build_model(tparams, model_options, False)
-    test_size = len(test[0])
-    kf_test = get_minibatches_idx(test_size, test_size)
-    test_err, _ = pred_error(f_pred, prepare_data, test, kf_test, False)  # verbose
-    print('TestAcc\n%.2f' % ((1 - test_err) * 100.0))
-
-
 def load_model(model_npz_path: str) -> (object, Tokenizer):
     with open(model_npz_path + '.args', 'rb') as f:
         model_options = pickle.load(f)
@@ -602,6 +583,19 @@ def load_model(model_npz_path: str) -> (object, Tokenizer):
     return f_pred, tokenizer
 
 
+# TODO
+def test_lstm(model, data_dir, label_dir):
+    f_pred, tokenizer = model
+    # Model options
+    _, _, test = dataloader.load_data(data_dir, label_dir=label_dir, tokenizer=tokenizer, valid_portion=0,
+                                      test_portion=1,
+                                      update_dict=False)
+    test_size = len(test[0])
+    kf_test = get_minibatches_idx(test_size, test_size)
+    test_err, _ = pred_error(f_pred, prepare_data, test, kf_test, False)  # verbose
+    print('TestAcc\n%.2f' % ((1 - test_err) * 100.0))
+
+
 def predict(model: [object, Tokenizer], _slice):
     f_pred, tokenizer = model
     # TODO padding
@@ -610,7 +604,7 @@ def predict(model: [object, Tokenizer], _slice):
     x, mask, y = prepare_data(tmp, numpy.array(test[1]), maxlen=None)
     # print("x:")
     preds = f_pred(x, mask)
-    print(preds)
+    return True if preds[0] == 1 else False
 
 
 if __name__ == '__main__':

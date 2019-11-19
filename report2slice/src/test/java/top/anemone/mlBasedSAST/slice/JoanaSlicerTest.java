@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import top.anemone.mlBasedSAST.data.TransformedJar;
 import top.anemone.mlBasedSAST.exception.NotFoundException;
 
-import javax.print.DocFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -21,7 +20,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static top.anemone.mlBasedSAST.slice.JoanaSlicer.computeSlice;
 import static top.anemone.mlBasedSAST.slice.JoanaSlicer.generateConfig;
-import static top.anemone.mlBasedSAST.slice.Warning2Slice.transformJar;
+import static top.anemone.mlBasedSAST.slice.Report2Slice.transformJar;
 
 public class JoanaSlicerTest {
 
@@ -82,7 +81,7 @@ public class JoanaSlicerTest {
                 libJars.add(f.toURL());
             }
         }
-        libJars.add(Warning2Slice.class.getClassLoader().getResource("contrib/servlet-api.jar"));
+        libJars.add(Report2Slice.class.getClassLoader().getResource("contrib/servlet-api.jar"));
         SDGBuilder.SDGBuilderConfig config = JoanaSlicer.generateConfig(transformedAppJars, libJars, exclusionsFile);
         String result=computeSlice(config, entryClass, entryMethod, entryRef, sink, pdgFile);
         System.out.println(result);

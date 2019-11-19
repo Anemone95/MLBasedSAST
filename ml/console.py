@@ -6,6 +6,7 @@
 :copyright: (c) 2019 by Anemone Xu.
 :license: Apache 2.0, see LICENSE for more details.
 """
+import json
 import logging
 import pickle
 
@@ -27,14 +28,15 @@ class TheanoCommand:
                    dim_proj=dim, max_epochs=epochs, batch_size=8,
                    saveto=model_file, time_out=timeout * 60.0)
 
-    def test(self, model, data_dir, tokenizer_pkl: str):
-        with open(tokenizer_pkl, 'rb') as f:
-            tokenizer = pickle.load(f)
-        test_lstm(model, data_dir, tokenizer)
+    def test(self, model_npz, slice_dir, label_dir):
+        model = load_model(model_npz)
+        test_lstm(model, slice_dir, label_dir)
 
     def predict(self, model_npz, slice_json):
         model = load_model(model_npz)
-        predict(model, "AAA :: BBB")
+        with open(slice_json, 'r') as f:
+            slice = json.load(f)
+        print(predict(model, slice["slice"]))
 
 
 if __name__ == '__main__':

@@ -28,7 +28,7 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
         except json.decoder.JSONDecodeError:
             logging.warning("Parse {} error".format(each_file))
             continue
-        label["sliceHash"] = each_file.name.split("-")[-1].split(".")[0]
+        label["traceHash"] = each_file.name.split("-")[-1].split(".")[0]
         label["trace"] = slice["trace"]
         test_name = slice["trace"]["source"]["clazz"].split(".")[-1]
         if test_name not in table:

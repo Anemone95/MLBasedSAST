@@ -9,6 +9,9 @@ public class Trace {
     private Source source;
     private Sink sink;
     private List<PassThrough> passThroughs;
+    public String getHash(){
+        return Integer.toString(Math.abs(hashCode()));
+    }
 //    public int hashCode(){
 //        int h = source.hashCode();
 //        h=31*h+sink.hashCode();
