@@ -410,7 +410,7 @@ def train_lstm(
     logging.info("model options: {}".format(model_options))
 
     logging.info('Loading data')
-    train, valid, test = dataloader.load_data(data_dir, label_dir, tokenizer=tokenizer, valid_portion=0)
+    train, valid, test = dataloader.load_data(data_dir, label_dir, tokenizer=tokenizer, valid_portion=0, test_portion=0)
     model_options['n_words'] = len(tokenizer.get_token_dict()) + 10
     if test_size > 0:
         # The test set is sorted by size, but we want to keep random
@@ -553,11 +553,15 @@ def train_lstm(
     train_err, _ = pred_error(f_pred, prepare_data, train, kf_train_sorted)
 
     test_size = len(test[0])
-    kf_test = get_minibatches_idx(test_size, test_size)
-    test_err, details = pred_error(f_pred, prepare_data, test, kf_test)
-    valid_err = test_err
+    valid_err, test_err = 0, 0
+    if test_size > 0:
+        kf_test = get_minibatches_idx(test_size, test_size)
+        test_err, details = pred_error(f_pred, prepare_data, test, kf_test)
+        valid_err = test_err
 
     if saveto:
+        with open(settings.relative_path_from_root(saveto + '.tokenizer'), 'wb') as f:
+            pickle.dump(tokenizer, f)
         with open(saveto + '.args', 'wb') as f:
             pickle.dump(model_options, f)
         numpy.savez(saveto, train_err=train_err, valid_err=valid_err, test_err=test_err, history_errs=history_errs,
@@ -585,30 +589,23 @@ def test_lstm(reload_model, data_dir, tokenizer, use_dropout=True, n_words=7000,
     print('TestAcc\n%.2f' % ((1 - test_err) * 100.0))
 
 
-def load_model(model_npz_path: str, tokenizer_pkl_path: str):
-    # with open(model_npz_path + '.args', 'rb') as f:
-    #     model_options = pickle.load(f)
-    #
-    model_options = {'use_dropout': True, 'n_words': 1000, 'dim_proj': 128, "ydim": 2}
+def load_model(model_npz_path: str) -> (object, Tokenizer):
+    with open(model_npz_path + '.args', 'rb') as f:
+        model_options = pickle.load(f)
+
     params = init_params(model_options)
     load_params(model_npz_path, params)
     tparams = init_tparams(params)
     (_, _, _, _, _, f_pred, _) = build_model(tparams, model_options, False)
-    with open(tokenizer_pkl_path, 'rb') as f:
+    with open(model_npz_path + '.tokenizer', 'rb') as f:
         tokenizer = pickle.load(f)
     return f_pred, tokenizer
 
 
-def predict(model, data_dir, tokenizer):
-    model_options = {'use_dropout': True, 'n_words': tokenizer, 'dim_proj': 128, "ydim": 2}
-    _, _, test = dataloader.load_data(data_dir, label_dir=None, tokenizer=tokenizer, valid_portion=0, test_portion=1,
-                                      update_dict=False)
-    params = init_params(model_options)
-    load_params(model, params)
-    tparams = init_tparams(params)
-    (_, _, _, _, _, f_pred, _) = build_model(tparams, model_options, False)
-    test_size = len(test[0])
-
+def predict(model: [object, Tokenizer], _slice):
+    f_pred, tokenizer = model
+    # TODO padding
+    test = [[tokenizer.encode(_slice)], [-1]]
     tmp = test[0]
     x, mask, y = prepare_data(tmp, numpy.array(test[1]), maxlen=None)
     # print("x:")

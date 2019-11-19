@@ -28,8 +28,8 @@ def load_data(data_dir: str, label_dir: str,
         samples.append(_slice)
         labels.append(label)
         # FIXME for debug
-        if len(labels) > 100:
-            break
+        # if len(labels) > 100:
+        #     break
 
     if update_dict:
         tokenizer.update_dict(samples)

@@ -57,6 +57,7 @@ public class SpotbugParser implements Parser {
 
     public SortedBugCollection loadBugs(File source) throws PluginException {
         Project project = new Project();
+        // 加载插件
         Plugin.loadCustomPlugin(Objects.requireNonNull(SpotbugParser.class.getClassLoader().getResource(findsecbugsPluginPath)),
                 project);
         SortedBugCollection col = new SortedBugCollection(project);

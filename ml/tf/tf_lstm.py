@@ -58,7 +58,7 @@ def lr_schedule(epoch):
 def train(slice_dir: str, label_dir: str):
     label_dict = preprocessing.load_label(label_dir)
     all_labeled_data = tf.data.Dataset.from_generator(
-        preprocessing.get_magrove_generator(preprocessing.preprocessing, slice_dir, label_dict),
+        preprocessing.get_data_generator(preprocessing.preprocessing, slice_dir, label_dict),
         (tf.string, tf.int64), (tf.TensorShape([]), tf.TensorShape([])))
 
     # 打乱数据
@@ -90,12 +90,12 @@ def train(slice_dir: str, label_dir: str):
 
     # 对数据分组（之后按组计算损失函数），并且填充文本至固定长度，这时vocabsize=len（vocabulary_set）+1
     BATCH_SIZE = 8  # BATCH_SIZE>epoch*epoches
-    TAKE_SIZE = 100
+    TAKE_SIZE = 400
     train_data = all_encoded_data.skip(TAKE_SIZE).shuffle(BUFFER_SIZE)
     train_data = train_data.padded_batch(BATCH_SIZE, padded_shapes=([-1], []))
     # train_data = train_data.repeat(2)
     # 获取补全后的长度
-    FIXED_LENGTH = next(iter(train_data))[0].shape[1]
+    # FIXED_LENGTH = next(iter(train_data))[0].shape[1]
 
     test_data = all_encoded_data.take(TAKE_SIZE)
     test_data = test_data.padded_batch(BATCH_SIZE, padded_shapes=([-1], []))
@@ -122,7 +122,7 @@ def train(slice_dir: str, label_dir: str):
     # 训练
     lr_callback = tf.keras.callbacks.LearningRateScheduler(lr_schedule)
     # tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
-    history = model.fit(train_data, epochs=20,
+    history = model.fit(train_data, epochs=10,
                         validation_data=test_data,
                         validation_steps=3
                         )
@@ -137,7 +137,7 @@ def train(slice_dir: str, label_dir: str):
 
 
 def main():
-    train('data/slice', 'data/label')
+    train('data/slice/benchmark1.1', 'data/label/benchmark1.1')
 
 
 if __name__ == '__main__':

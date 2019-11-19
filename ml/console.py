@@ -11,7 +11,7 @@ import pickle
 
 import fire
 import time
-from _theano.theanoLSTM import train_lstm, predict,test_lstm
+from _theano.theanoLSTM import train_lstm, predict, test_lstm, load_model
 from _theano.tokenizer import Tokenizer
 import settings
 
@@ -26,18 +26,15 @@ class TheanoCommand:
                    tokenizer=tokenizer,
                    dim_proj=dim, max_epochs=epochs, batch_size=8,
                    saveto=model_file, time_out=timeout * 60.0)
-        with open(settings.relative_path_from_root('model/theano-tokenizer-{}.pkl'.format(current_time)), 'wb') as f:
-            pickle.dump(tokenizer, f)
 
     def test(self, model, data_dir, tokenizer_pkl: str):
         with open(tokenizer_pkl, 'rb') as f:
             tokenizer = pickle.load(f)
         test_lstm(model, data_dir, tokenizer)
 
-    def predict(self, model, data_dir, tokenizer_pkl: str):
-        with open(tokenizer_pkl, 'rb') as f:
-            tokenizer = pickle.load(f)
-        predict(model, data_dir, tokenizer)
+    def predict(self, model_npz, slice_json):
+        model = load_model(model_npz)
+        predict(model, "AAA :: BBB")
 
 
 if __name__ == '__main__':
