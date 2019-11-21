@@ -28,11 +28,11 @@ class TheanoCommand:
                    dim_proj=dim, max_epochs=epochs, batch_size=8,
                    saveto=model_file, time_out=timeout * 60.0)
 
-    def test(self, model_npz, slice_dir, label_dir):
+    def test(self, model_npz: str, slice_dir: str, label_dir: str):
         model = load_model(model_npz)
         test_lstm(model, slice_dir, label_dir)
 
-    def predict(self, model_npz, slice_json):
+    def predict(self, model_npz: str, slice_json: str):
         model = load_model(model_npz)
         with open(slice_json, 'r') as f:
             slice = json.load(f)

@@ -6,16 +6,17 @@
 :copyright: (c) 2019 by Anemone Xu.
 :license: Apache 2.0, see LICENSE for more details.
 """
-
+import fire
 from flask import Flask, jsonify, request
 import os
 import settings
 import json
-from _theano.theanoLSTM import load_model
+import _theano.theanoLSTM as lstm
+import logging
 
 app = Flask(__name__)
 
-model = load_model(settings.relative_path_from_root("model/theano-lstm-2019-11-19-12-22.npz"))
+MODEL = None
 
 
 @app.route('/alive')
@@ -23,18 +24,21 @@ def alive():
     return jsonify({"msg": "alive"}), 200
 
 
-@app.route('/predict')
+@app.route('/predict', methods=['GET', 'POST'])
 def predict():
     """
     预测一个slice, 同时将slice保存
     :return:
     """
-    slice = request.get_json()
-    data_dir = settings.relative_path_from_root('data/slice/' + slice['project'])
+    slice_json = request.get_json()
+    data_dir = settings.relative_path_from_root('data/slice/' + slice_json['project'])
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
-
-    return jsonify({"msg": "true"}), 200
+    with open(data_dir + '/slice-' + slice_json["flowHash"] + ".json", 'w') as f:
+        json.dump(slice_json, f)
+    isTP = lstm.predict(MODEL, slice_json["slice"])
+    logging.info("Predict {0} as {1}".format(slice_json["flowHash"], isTP))
+    return jsonify({"msg": str(isTP)}), 200
 
 
 @app.route('/label', methods=['GET', 'POST'])
@@ -48,16 +52,17 @@ def label():
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
 
-    with open(data_dir+"/label-"+label_json["traceHash"], 'w') as f:
+    with open(data_dir + "/label-" + label_json["flowHash"] + ".json", 'w') as f:
         json.dump(label_json, f)
 
     return jsonify({"msg": "true"}), 200
 
 
-# @app.route('/nodes/get', methods=['GET'])
-# def get_nodes():
-#     request.args.get('aaa')
-#     return jsonify(response), 200
+def server(model_npz, host='127.0.0.1', port=8888, debug=False):
+    global MODEL
+    MODEL = lstm.load_model(settings.relative_path_from_root(model_npz))
+    app.run(host=host, port=port, debug=debug)
+
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8888)
+    fire.Fire(server)
