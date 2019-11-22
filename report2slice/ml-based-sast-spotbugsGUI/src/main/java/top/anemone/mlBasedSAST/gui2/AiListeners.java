@@ -76,8 +76,8 @@ public class AiListeners implements LogSync {
         BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
         List<File> appJarsinReport = project.getFileList().stream().map(File::new).collect(Collectors.toList());
         List<BugInstance> bugInstances = SpotbugParser.secBugFilter(bugCollection);
-        Map<BugInstance, TaintFlow> bugInstance2Flow = AIBasedSpotbugProject.getInstance().getBugInstanceFlowMap();
         // parse to taint flow
+        Map<BugInstance, TaintFlow> bugInstance2Flow = AIBasedSpotbugProject.getInstance().getBugInstanceFlowMap();
         if (bugInstance2Flow.size()!=bugInstances.size()){
             aiAnalyzingDialog.updateStage("Parse bug instances to taint flow");
             for (int i = 0; i < bugInstances.size(); i++) {

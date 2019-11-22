@@ -19,3 +19,4 @@
 org.owasp.benchmark.testcode.BenchmarkTest00336,64,,label,doPost(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V:org.owasp.benchmark.testcode.BenchmarkTest00336,5 2 3 4 5 6 7 8 9 10 11
 分析
 sink类，sink行号，jar包路径，label，入口函数签名，入口类，suffix
+
