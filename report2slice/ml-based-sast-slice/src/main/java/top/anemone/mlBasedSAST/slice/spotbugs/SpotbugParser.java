@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import lombok.Data;
+import org.dom4j.DocumentException;
 import top.anemone.mlBasedSAST.slice.data.*;
 import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
 import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
@@ -57,19 +58,15 @@ public class SpotbugParser implements Parser {
         return bugInstances;
     }
 
-    public SortedBugCollection loadBugs(File source) throws PluginException {
+    public SortedBugCollection loadBugs(File source) throws PluginException, IOException, DocumentException {
         Project project = new Project();
         // 加载插件
         Plugin.loadCustomPlugin(Objects.requireNonNull(SpotbugParser.class.getClassLoader().getResource(findsecbugsPluginPath)),
                 project);
         SortedBugCollection col = new SortedBugCollection(project);
-        try {
-            col.readXML(source);
-            if (col.hasDeadBugs()) {
-                addDeadBugMatcher(col);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        col.readXML(source);
+        if (col.hasDeadBugs()) {
+            addDeadBugMatcher(col);
         }
         return col;
     }
@@ -88,7 +85,7 @@ public class SpotbugParser implements Parser {
         SortedBugCollection sortedBugCollection;
         try {
             sortedBugCollection = this.loadBugs(xml);
-        } catch (PluginException e) {
+        } catch (Exception e) {
             throw new NotFoundException(xml + " not found");
         }
         // 获取报告中的jar包地址，但是如果分析过程与报告产生过程不在一起，地址会很找不到，这时只能从appJars中获取

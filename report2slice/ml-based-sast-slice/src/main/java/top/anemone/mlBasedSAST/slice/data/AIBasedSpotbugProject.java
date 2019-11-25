@@ -88,4 +88,8 @@ public class AIBasedSpotbugProject {
 //    public void setBugInstanceTraceMap(Map<BugInstance, TaintFlow> bugInstanceFlowMap) {
 //        this.bugInstanceFlowMap = bugInstanceFlowMap;
 //    }
+    public Map<BugInstance, Boolean> getBugInstancePredictionMap(){
+        return bugInstancePredictionMap;
+    }
+
 }

@@ -16,6 +16,7 @@ public class OkHttp {
         Response response = null;
         response = client.newCall(request).execute();
         if (response.isSuccessful()){
+            // TODO replace with Gson
             T obj = JSON.parseObject(response.body().string(), clazz);
             return obj;
         } else {

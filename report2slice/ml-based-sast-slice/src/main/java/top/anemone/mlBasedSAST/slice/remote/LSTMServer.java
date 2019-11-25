@@ -5,6 +5,7 @@ import lombok.Data;
 import top.anemone.mlBasedSAST.slice.data.VO.Label;
 import top.anemone.mlBasedSAST.slice.data.VO.Response;
 import top.anemone.mlBasedSAST.slice.data.VO.Slice;
+import top.anemone.mlBasedSAST.slice.exception.RemoteException;
 import top.anemone.mlBasedSAST.slice.utils.OkHttp;
 
 import java.io.IOException;
@@ -29,7 +30,6 @@ public class LSTMServer {
         try {
             serverStatus = OkHttp.get(this.remoteServer+"/alive", Response.class);
         } catch (IOException e) {
-            e.printStackTrace();
             return false;
         }
         if(serverStatus !=null){
@@ -44,8 +44,13 @@ public class LSTMServer {
         return response;
     }
 
-    public boolean predict(Slice slice) throws IOException {
-        Response response = OkHttp.post(this.remoteServer+"/predict", slice, Response.class);
+    public boolean predict(Slice slice) throws RemoteException {
+        Response response = null;
+        try {
+            response = OkHttp.post(this.remoteServer+"/predict", slice, Response.class);
+        } catch (IOException e) {
+            throw new RemoteException(e.getMessage());
+        }
         return response.getMsg().equals("True");
     }
 }
