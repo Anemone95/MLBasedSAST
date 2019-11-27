@@ -3,7 +3,6 @@ package top.anemone.mlBasedSAST.slice.spotbugs;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.graph.GraphIntegrity;
-import com.sun.javafx.collections.MappingChange;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import org.slf4j.Logger;

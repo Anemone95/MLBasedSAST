@@ -5,15 +5,18 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.launchGUI.LaunchGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.anemone.mlBasedSAST.slice.utils.JarUtil;
 
 import java.awt.*;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
 public class MyGUI extends LaunchGUI{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MyGUI.class);
-    private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.9.0.jar";
+    private static String findsecbugsPluginPath = JarUtil.getPath()+"/contrib/findsecbugs-plugin-1.10.1.jar";
     public static void main(String[] args) {
         launchGUI(null);
     }
@@ -23,9 +26,9 @@ public class MyGUI extends LaunchGUI{
             throw new IllegalStateException("Running in GUIbk headless mode, can't open GUIbk");
         }
         GUISaveState.loadInstance();
-        URL findsecbugsURL= MyGUI.class.getClassLoader().getResource(findsecbugsPluginPath);
 
         try {
+            URL findsecbugsURL= new File(findsecbugsPluginPath).toURL();
             FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
             MainFrame.makeInstance(factory);
             MainFrame instance = MainFrame.getInstance();

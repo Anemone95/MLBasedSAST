@@ -12,7 +12,7 @@ import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
 import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
 import top.anemone.mlBasedSAST.slice.parser.Parser;
 import top.anemone.mlBasedSAST.slice.utils.BCELParser;
-import top.anemone.mlBasedSAST.slice.data.*;
+import top.anemone.mlBasedSAST.slice.utils.JarUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class SpotbugParser implements Parser {
-    private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.10.1.jar";
+    private static String findsecbugsPluginPath = JarUtil.getPath()+"/contrib/findsecbugs-plugin-1.10.1.jar";
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugParser.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
@@ -45,6 +45,7 @@ public class SpotbugParser implements Parser {
     );
 
     public static void main(String[] args) throws NotFoundException, IOException, BCELParserException {
+//        System.out.println(JarUtil.getPath());
         SpotbugParser spotbugParser = new SpotbugParser();
         TaintProject taintProject=spotbugParser.parse(new File("bugreports/spotbugs.xml"),null);
         System.out.println(taintProject);
@@ -64,9 +65,7 @@ public class SpotbugParser implements Parser {
     public SortedBugCollection loadBugs(File source) throws PluginException, IOException, DocumentException {
         Project project = new Project();
         // 加载插件
-        LOGGER.info("Get findsecbugs plugin: "+SpotbugParser.class.getClassLoader().getResource(findsecbugsPluginPath));
-        Plugin.loadCustomPlugin(Objects.requireNonNull(SpotbugParser.class.getClassLoader().getResource(findsecbugsPluginPath)),
-                project);
+        Plugin.loadCustomPlugin(new File(findsecbugsPluginPath), project);
         SortedBugCollection col = new SortedBugCollection(project);
         col.readXML(source);
         if (col.hasDeadBugs()) {

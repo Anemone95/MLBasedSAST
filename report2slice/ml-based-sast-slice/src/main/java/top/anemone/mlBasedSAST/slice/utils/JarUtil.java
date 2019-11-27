@@ -208,4 +208,11 @@ public class JarUtil {
             outputStream.write(buffer, 0, n);
         }
     }
+    public static String getPath(){
+        String path= JarUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        if(path.endsWith(".jar")){
+          path = path.substring(0, path.lastIndexOf("/") + 1);
+        }
+        return path;
+    }
 }
