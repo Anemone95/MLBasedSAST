@@ -1,7 +1,5 @@
 package top.anemone.mlBasedSAST.console;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.PluginException;
@@ -14,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import top.anemone.mlBasedSAST.slice.data.AIBasedSpotbugProject;
 import top.anemone.mlBasedSAST.slice.data.TaintFlow;
-import top.anemone.mlBasedSAST.slice.exception.CreateDirectoryException;
-import top.anemone.mlBasedSAST.slice.exception.RemoteException;
 import top.anemone.mlBasedSAST.slice.remote.LSTMServer;
 import top.anemone.mlBasedSAST.slice.spotbugs.PredictorCallback;
 import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugParser;
@@ -23,9 +19,7 @@ import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugPredictor;
 import top.anemone.mlBasedSAST.slice.utils.JsonUtil;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.rmi.server.RemoteServer;
 import java.util.List;
 
 public class AiConsole {

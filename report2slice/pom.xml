@@ -9,8 +9,9 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>ml-based-sast-spotbugsUI</module>
+        <module>ml-based-sast-spotbugsGUI</module>
         <module>ml-based-sast-slice</module>
+        <module>ml-based-sast-cli</module>
     </modules>
 
     <dependencyManagement>

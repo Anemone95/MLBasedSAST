@@ -5,6 +5,8 @@ import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import lombok.Data;
 import org.dom4j.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.anemone.mlBasedSAST.slice.data.*;
 import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
 import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
@@ -20,7 +22,8 @@ import java.util.stream.Collectors;
 
 @Data
 public class SpotbugParser implements Parser {
-    private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.9.0.jar";
+    private static String findsecbugsPluginPath = "contrib/findsecbugs-plugin-1.10.1.jar";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugParser.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
             "COMMAND_INJECTION",
@@ -61,6 +64,7 @@ public class SpotbugParser implements Parser {
     public SortedBugCollection loadBugs(File source) throws PluginException, IOException, DocumentException {
         Project project = new Project();
         // 加载插件
+        LOGGER.info("Get findsecbugs plugin: "+SpotbugParser.class.getClassLoader().getResource(findsecbugsPluginPath));
         Plugin.loadCustomPlugin(Objects.requireNonNull(SpotbugParser.class.getClassLoader().getResource(findsecbugsPluginPath)),
                 project);
         SortedBugCollection col = new SortedBugCollection(project);
