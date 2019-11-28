@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class SpotbugParser implements Parser {
-    private static String findsecbugsPluginPath = JarUtil.getPath()+"/contrib/findsecbugs-plugin-1.10.1.jar";
+    private static String findsecbugsPluginPath = JarUtil.getPath()+ "/contrib/findsecbugs-plugin-1.10.1.jar";
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugParser.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
@@ -44,7 +44,7 @@ public class SpotbugParser implements Parser {
             "XPATH_INJECTION"
     );
 
-    public static void main(String[] args) throws NotFoundException, IOException, BCELParserException {
+    public static void main(String[] args) throws NotFoundException, IOException, BCELParserException, PluginException {
 //        System.out.println(JarUtil.getPath());
         SpotbugParser spotbugParser = new SpotbugParser();
         TaintProject taintProject=spotbugParser.parse(new File("bugreports/spotbugs.xml"),null);
@@ -84,17 +84,17 @@ public class SpotbugParser implements Parser {
     }
 
     @Override
-    public TaintProject parse(File xml, List<File> appJars) throws NotFoundException, IOException, BCELParserException {
+    public TaintProject parse(File xml, List<File> appJars) throws NotFoundException, IOException, BCELParserException, PluginException {
         SortedBugCollection sortedBugCollection;
         try {
             sortedBugCollection = this.loadBugs(xml);
-        } catch (Exception e) {
+        } catch (IOException|DocumentException e) {
             throw new NotFoundException(xml + " not found");
         }
         // 获取报告中的jar包地址，但是如果分析过程与报告产生过程不在一起，地址会很找不到，这时只能从appJars中获取
         List<String> analysisTargets;
         analysisTargets=sortedBugCollection.getProject().getFileList();
-        List<File> appJarsinReport=analysisTargets.stream().map(File::new).filter(e->e.exists()).collect(Collectors.toList());
+        List<File> appJarsinReport=analysisTargets.stream().map(File::new).filter(File::exists).collect(Collectors.toList());
         appJarsinReport.addAll(appJars);
         List<BugInstance> bugInstances = secBugFilter(sortedBugCollection);
         List<TaintFlow> traces = new LinkedList<>();

@@ -12,6 +12,7 @@
         <module>ml-based-sast-spotbugsGUI</module>
         <module>ml-based-sast-slice</module>
         <module>ml-based-sast-cli</module>
+        <module>ml-based-sast-contrib-resources</module>
     </modules>
 
     <dependencyManagement>

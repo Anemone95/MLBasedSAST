@@ -3,6 +3,7 @@ package top.anemone.mlBasedSAST.slice.slice;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.graph.GraphIntegrity;
+import edu.umd.cs.findbugs.PluginException;
 import top.anemone.mlBasedSAST.slice.data.TaintFlow;
 import top.anemone.mlBasedSAST.slice.data.VO.Slice;
 import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
@@ -26,7 +27,7 @@ import java.util.*;
 @SuppressWarnings("Duplicates")
 public class Report2Slice {
     private static final Logger LOGGER = LoggerFactory.getLogger(Report2Slice.class);
-    public static void main(String[] args) throws NotFoundException, BCELParserException, IOException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, ClassNotFoundException, InterruptedException {
+    public static void main(String[] args) throws NotFoundException, BCELParserException, IOException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, ClassNotFoundException, InterruptedException, PluginException {
         File report = new File("bugreports/benchmark1.1.xml");
         List<File> appJars = Collections.singletonList(new File("bugreports/benchmark1.1.war"));
 
@@ -54,7 +55,7 @@ public class Report2Slice {
         return entryPackages;
     }
     // TODO 拆分函数，转移到按钮上
-    public static List<Slice> toSlice(List<File> appJars, File report, String knowledgeBase) throws IOException, BCELParserException, NotFoundException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, InterruptedException {
+    public static List<Slice> toSlice(List<File> appJars, File report, String knowledgeBase) throws IOException, BCELParserException, NotFoundException, ClassHierarchyException, CancelException, GraphIntegrity.UnsoundGraphException, InterruptedException, PluginException {
 
         SpotbugParser spotbugParser = new SpotbugParser();
         TaintProject project = spotbugParser.parse(report, appJars);
@@ -81,7 +82,7 @@ public class Report2Slice {
                 libJars.add(f.toURL());
             }
         }
-        libJars.add(Report2Slice.class.getClassLoader().getResource("contrib/servlet-api.jar"));
+        libJars.add(new File(JarUtil.getPath()+"/contrib/servlet-api.jar").toURL());
         JoanaSlicer slicer=new JoanaSlicer();
         slicer.generateConfig(transformedAppJars, libJars, exclusionsFile);
 

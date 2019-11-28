@@ -13,9 +13,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ml-based-sast-contrib-resources</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>top.anemone</groupId>
             <artifactId>ml-based-sast-slice</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.argparse4j</groupId>
@@ -24,8 +29,24 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <resourceBundles>
+                        <resourceBundle>top.anemone:ml-based-sast-contrib-resources:${project.version}</resourceBundle>
+                    </resourceBundles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- java编译插件 -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -72,11 +93,7 @@
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/resources</directory>
-                                    <filtering>true</filtering>
-                                    <includes>
-                                        <include>contrib/*</include>
-                                    </includes>
+                                    <directory>${project.build.directory}/maven-shared-archive-resources/</directory>
                                 </resource>
                             </resources>
                         </configuration>
