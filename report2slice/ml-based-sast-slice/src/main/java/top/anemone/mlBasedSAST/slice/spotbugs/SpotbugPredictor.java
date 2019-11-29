@@ -90,7 +90,7 @@ public class SpotbugPredictor {
             }).collect(Collectors.toList());
             // impossible
             if (libJars.contains(null)) {
-                throw new NullPointerException("lib jars contains null pointer");
+                throw new NotFoundException("lib jars contains null pointer");
             }
             for (int i = 0; i < appJarsinReport.size(); i++) {
                 File appJar = appJarsinReport.get(i);

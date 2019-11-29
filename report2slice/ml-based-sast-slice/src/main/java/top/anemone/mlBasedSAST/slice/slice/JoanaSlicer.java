@@ -81,7 +81,7 @@ public class JoanaSlicer {
             StackTraceElement stackTraceElement=e.getStackTrace()[2];
             if(stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
                     && stackTraceElement.getMethodName().equals("<init>")){
-                throw new RootNodeNotFoundException("Entry class not found in call-graph");
+                throw new RootNodeNotFoundException("Entry class not found in call-graph (or it was in primordial jar)");
             }
         }
         LOGGER.info("SDG build done! Optimizing...");
