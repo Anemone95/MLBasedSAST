@@ -1,5 +1,6 @@
 package top.anemone.mlBasedSAST.slice.utils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,10 @@ public class JarUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JarUtil.class);
     private static final int BUFFER_ZISE = 1024 * 1024;
+
+    public static String getJarMD5(String jar) throws IOException {
+        return DigestUtils.md5Hex(new FileInputStream(jar));
+    }
 
 //    public static ClassLoader getWarClassLoader(Path warPath) throws IOException {
 //        final Path tmpDir = Files.createTempDirectory("exploded-war");

@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import top.anemone.mlBasedSAST.slice.data.AIBasedSpotbugProject;
 import top.anemone.mlBasedSAST.slice.data.TaintFlow;
+import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
+import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
 import top.anemone.mlBasedSAST.slice.remote.LSTMServer;
 import top.anemone.mlBasedSAST.slice.spotbugs.PredictorCallback;
 import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugParser;
@@ -20,16 +22,19 @@ import top.anemone.mlBasedSAST.slice.utils.JsonUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class AiConsole {
     private static final Logger LOGGER = LoggerFactory.getLogger(AiConsole.class);
 
-    public static void main(String[] args) throws PluginException, IOException, DocumentException {
+    public static void main(String[] args) throws PluginException, IOException, DocumentException, NotFoundException, BCELParserException {
         ArgumentParser parser = ArgumentParsers.newFor("AiConsole").build()
                 .defaultHelp(true);
         parser.addArgument("-f", "--results-file").required(true)
                 .help("Specify SpotBugs analysis results(.xml)");
+        parser.addArgument( "--temp-dir")
+                .help("Specify a dir to store temporary files");
         parser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8888")
                 .help("Specify prediction server");
         parser.addArgument("-o", "--output")
@@ -42,7 +47,7 @@ public class AiConsole {
             System.exit(1);
         }
         AIBasedSpotbugProject.getInstance().setServer(new LSTMServer(ns.getString("server")));
-        getPredictionFromXML(ns.getString("results_file"));
+        getPredictionFromXML(ns.getString("results_file"), ns.getString("temp_dir"));
         if (ns.getString("output")==null){
             JsonUtil.toJson(AIBasedSpotbugProject.getInstance().getBugInstancePredictionMap());
         } else {
@@ -50,7 +55,7 @@ public class AiConsole {
         }
 
     }
-    public static void getPredictionFromXML(String xmlFile) throws IOException, PluginException, DocumentException {
+    public static void getPredictionFromXML(String xmlFile, String tempDir) throws IOException, PluginException, DocumentException, NotFoundException, BCELParserException {
 
         PredictorCallback callback=new PredictorCallback() {
             @Override
@@ -86,6 +91,9 @@ public class AiConsole {
             @Override
             public void slice(int idx, List<BugInstance> bugInstances, TaintFlow flow, String error) {
                 LOGGER.info(String.format("Slicing (%d/%d): %s", idx+1, bugInstances.size(), bugInstances.get(idx)));
+                if (error!=null && error.length()!=0){
+                    LOGGER.error("Got error: "+error);
+                }
             }
 
             @Override
@@ -94,13 +102,15 @@ public class AiConsole {
             }
 
             @Override
-            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, boolean isTP) {
+            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, Boolean isTP) {
                 LOGGER.info(String.format("Getting Prediction (%d/%d): %b", idx+1, bugInstances.size(), isTP));
             }
         };
 
         SpotbugParser spotbugParser = new SpotbugParser();
         BugCollection bugCollection = spotbugParser.loadBugs(new File(xmlFile));
-        SpotbugPredictor.predictFromBugCollection(bugCollection, callback);
+        File tempDirFile=new File(tempDir);
+        tempDirFile.mkdirs();
+        SpotbugPredictor.predictFromBugCollection(bugCollection, callback, tempDirFile.toPath());
     }
 }

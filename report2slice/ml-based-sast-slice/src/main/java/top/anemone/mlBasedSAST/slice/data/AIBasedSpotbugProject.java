@@ -64,7 +64,7 @@ public class AIBasedSpotbugProject {
     public Boolean getBugInstancePrediction(BugInstance bugInstance){
         return bugInstancePredictionMap.getOrDefault(bugInstance,null);
     }
-    public void setBugInstancePrediction(BugInstance bugInstance, boolean isTP){
+    public void setBugInstancePrediction(BugInstance bugInstance, Boolean isTP){
         bugInstancePredictionMap.put(bugInstance, isTP);
     }
 

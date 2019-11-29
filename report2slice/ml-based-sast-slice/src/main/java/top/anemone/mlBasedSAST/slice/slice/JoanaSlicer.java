@@ -33,6 +33,7 @@ import top.anemone.mlBasedSAST.slice.data.TaintFlow;
 import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.anemone.mlBasedSAST.slice.exception.RootNodeNotFoundException;
 
 import java.io.*;
 import java.net.URL;
@@ -53,10 +54,10 @@ public class JoanaSlicer {
         return config;
     }
     public String computeSlice(TaintFlow trace) throws GraphIntegrity.UnsoundGraphException, CancelException, ClassHierarchyException, NotFoundException, IOException {
-        String entryClass = "L" + trace.getSource().getClazz().replace('.', '/');
-        String entryMethod = trace.getSource().getMethod();
-        String entryRef = trace.getSource().getSig();
         PassThrough lastPassThrough = trace.getPassThroughs().get(trace.getPassThroughs().size() - 1);
+        String entryClass = "L" + lastPassThrough.getClazz().replace('.', '/');
+        String entryMethod = lastPassThrough.getMethod();
+        String entryRef = lastPassThrough.getSig();
         String[] tmp = lastPassThrough.getClazz().split("\\.");
         tmp[tmp.length - 1] = lastPassThrough.getFileName();
         String joanaFilename = String.join("/", tmp);
@@ -74,7 +75,15 @@ public class JoanaSlicer {
         // 根据class, method, ref在classloader中找入口函数
         config.entry = findMethod(this.config, entryClass, entryMethod, entryRef);
         // 构造SDG
-        localSdg = SDGBuilder.build(this.config);
+        try {
+            localSdg = SDGBuilder.build(this.config);
+        } catch (NoSuchElementException e){
+            StackTraceElement stackTraceElement=e.getStackTrace()[2];
+            if(stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
+                    && stackTraceElement.getMethodName().equals("<init>")){
+                throw new RootNodeNotFoundException("Entry class not found in call-graph");
+            }
+        }
         LOGGER.info("SDG build done! Optimizing...");
         // 剪枝
         CSDGPreprocessor.preprocessSDG(localSdg);
@@ -116,6 +125,10 @@ public class JoanaSlicer {
             scope.addToScope(ClassLoaderReference.Application, new JarStreamModule(new FileInputStream(appJar)));
         }
         for (URL lib : libJars) {
+            if (appJars.contains(new File(lib.getFile()))){
+                LOGGER.warn(lib+"in app scope.");
+                continue;
+            }
             if (lib.getProtocol().equals("file")) {
                 scope.addToScope(ClassLoaderReference.Primordial, new JarStreamModule(new FileInputStream(lib.getFile())));
             } else {

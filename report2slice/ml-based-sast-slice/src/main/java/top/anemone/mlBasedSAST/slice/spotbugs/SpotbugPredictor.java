@@ -33,11 +33,11 @@ public class SpotbugPredictor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Report2Slice.class);
 
-    public static Map<BugInstance, Boolean> predictFromBugCollection(BugCollection bugCollection, PredictorCallback callback) throws CreateDirectoryException, RemoteException {
+    public static Map<BugInstance, Boolean> predictFromBugCollection(BugCollection bugCollection, PredictorCallback callback) throws IOException, NotFoundException, BCELParserException {
         return predictFromBugCollection(bugCollection,callback, null);
     }
 
-    public static Map<BugInstance, Boolean> predictFromBugCollection(BugCollection bugCollection, PredictorCallback callback, Path tempDirectory) throws CreateDirectoryException, RemoteException {
+    public static Map<BugInstance, Boolean> predictFromBugCollection(BugCollection bugCollection, PredictorCallback callback, Path tempDirectory) throws IOException, BCELParserException, NotFoundException {
         if (!AIBasedSpotbugProject.getInstance().getServer().isAlive()) {
             throw new RemoteException(AIBasedSpotbugProject.getInstance().getServer().toString() + " is not alive");
         }
@@ -59,7 +59,7 @@ public class SpotbugPredictor {
                 String error = null;
                 try {
                     flows = SpotbugParser.bugInstance2Flow(bugInstance, appJarsinReport);
-                } catch (NotFoundException | BCELParserException | IOException e) {
+                } catch (NotFoundException | BCELParserException e) {
                     error = ExceptionUtil.getStackTrace(e);
                 }
                 bugInstance2Flow.put(bugInstance, flows.get(0));
@@ -135,7 +135,7 @@ public class SpotbugPredictor {
             try {
                 slice = slicer.computeSlice(flow);
                 bugInstance2Slice.put(bugInstances.get(i), slice);
-            } catch (GraphIntegrity.UnsoundGraphException | CancelException | ClassHierarchyException | NotFoundException | IOException e) {
+            } catch (GraphIntegrity.UnsoundGraphException | CancelException | ClassHierarchyException | NotFoundException | IOException | NoSuchElementException e) {
                 error = ExceptionUtil.getStackTrace(e);
             }
             callback.slice(i, bugInstances, flow, error);
@@ -145,8 +145,11 @@ public class SpotbugPredictor {
         for (int i = 0; i < bugInstances.size(); i++) {
             TaintFlow flow = bugInstance2Flow.get(bugInstances.get(i));
             String sliceStr = bugInstance2Slice.get(bugInstances.get(i));
-            Slice slice = new Slice(flow, sliceStr, flow.getHash(), bugCollection.getProject().getProjectName());
-            Boolean isTP = AIBasedSpotbugProject.getInstance().getServer().predict(slice);
+            Boolean isTP=null;
+            if(flow!=null){
+                Slice slice = new Slice(flow, sliceStr, flow.getHash(), bugCollection.getProject().getProjectName());
+                isTP = AIBasedSpotbugProject.getInstance().getServer().predict(slice);
+            }
             AIBasedSpotbugProject.getInstance().setBugInstancePrediction(bugInstances.get(i), isTP);
             callback.prediction(i, bugInstances, flow, isTP);
         }

@@ -142,7 +142,7 @@ public class SpotbugParser implements Parser {
             }
         }
         if (sourceLineAnnotation == null) {
-            return traces;
+            throw new NotFoundException(bugInstance.toString()+" can't find source");
         }
         source.setClazz(sourceLineAnnotation.getClassName());
         source.setFileName(sourceLineAnnotation.getSourceFile());

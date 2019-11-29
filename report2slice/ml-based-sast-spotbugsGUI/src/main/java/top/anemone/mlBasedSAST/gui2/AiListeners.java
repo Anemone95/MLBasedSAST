@@ -11,6 +11,8 @@ import edu.umd.cs.findbugs.log.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlBasedSAST.slice.data.AIBasedSpotbugProject;
 import top.anemone.mlBasedSAST.slice.data.TaintFlow;
+import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
+import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
 import top.anemone.mlBasedSAST.slice.slice.Report2Slice;
 import top.anemone.mlBasedSAST.slice.spotbugs.PredictorCallback;
 import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugPredictor;
@@ -62,7 +64,7 @@ public class AiListeners implements LogSync {
 
     }
 
-    public static void doSliceAndPredict(Project project, AiAnalyzingDialog aiAnalyzingDialog) throws IOException, ClassHierarchyException, InterruptedException {
+    public static void doSliceAndPredict(Project project, AiAnalyzingDialog aiAnalyzingDialog) throws IOException, NotFoundException, BCELParserException {
         PredictorCallback callback=new PredictorCallback() {
             @Override
             public void bugInstance2FlowInit(List<BugInstance> bugInstances) {
@@ -110,7 +112,7 @@ public class AiListeners implements LogSync {
             }
 
             @Override
-            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, boolean isTP) {
+            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, Boolean isTP) {
                 aiAnalyzingDialog.updateCount(idx + 1, bugInstances.size());
             }
         };

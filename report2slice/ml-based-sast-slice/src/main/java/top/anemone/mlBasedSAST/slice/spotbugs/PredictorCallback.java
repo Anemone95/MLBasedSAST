@@ -15,5 +15,5 @@ public interface PredictorCallback {
     void sliceInit(List<BugInstance> bugInstances);
     void slice(int idx, List<BugInstance> bugInstances, TaintFlow flow, String error);
     void predictionInit(List<BugInstance> bugInstances);
-    void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, boolean isTP);
+    void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, Boolean isTP);
 }
