@@ -1,5 +1,6 @@
 package top.anemone.mlBasedSAST.slice.data;
 
+import com.ibm.icu.impl.locale.XLocaleDistance;
 import edu.umd.cs.findbugs.BugInstance;
 import top.anemone.mlBasedSAST.slice.remote.LSTMServer;
 import top.anemone.mlBasedSAST.slice.slice.JoanaSlicer;
@@ -8,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AIBasedSpotbugProject {
+    public static final String TP=Boolean.toString(true);
+    public static final String FP=Boolean.toString(true);
+    public static final String ERROR="ERROR";
     private static AIBasedSpotbugProject instance = new AIBasedSpotbugProject();
 
     private AIBasedSpotbugProject() {
@@ -26,7 +30,7 @@ public class AIBasedSpotbugProject {
 
     private Map<BugInstance, TaintFlow> bugInstanceFlowMap;
 
-    private Map<BugInstance, Boolean> bugInstancePredictionMap;
+    private Map<BugInstance, String> bugInstancePredictionMap;
 
     private Map<BugInstance, Boolean> bugInstanceLabelMap;
 
@@ -61,10 +65,10 @@ public class AIBasedSpotbugProject {
         bugInstanceLabelMap.put(bugInstance, isTP);
     }
 
-    public Boolean getBugInstancePrediction(BugInstance bugInstance){
+    public String getBugInstancePrediction(BugInstance bugInstance){
         return bugInstancePredictionMap.getOrDefault(bugInstance,null);
     }
-    public void setBugInstancePrediction(BugInstance bugInstance, Boolean isTP){
+    public void setBugInstancePrediction(BugInstance bugInstance, String isTP){
         bugInstancePredictionMap.put(bugInstance, isTP);
     }
 
@@ -88,7 +92,7 @@ public class AIBasedSpotbugProject {
 //    public void setBugInstanceTraceMap(Map<BugInstance, TaintFlow> bugInstanceFlowMap) {
 //        this.bugInstanceFlowMap = bugInstanceFlowMap;
 //    }
-    public Map<BugInstance, Boolean> getBugInstancePredictionMap(){
+    public Map<BugInstance, String> getBugInstancePredictionMap(){
         return bugInstancePredictionMap;
     }
 

@@ -6,7 +6,7 @@ import top.anemone.mlBasedSAST.slice.data.TaintFlow;
 import java.io.File;
 import java.util.List;
 
-public interface PredictorCallback {
+public interface PredictionMonitor {
     void bugInstance2FlowInit(List<BugInstance> bugInstances);
     void bugInstance2Flow(int idx, List<BugInstance> bugInstances, List<TaintFlow> flows, String error);
     void unzipJarInit(List<File> appJarsinReport);
@@ -15,5 +15,5 @@ public interface PredictorCallback {
     void sliceInit(List<BugInstance> bugInstances);
     void slice(int idx, List<BugInstance> bugInstances, TaintFlow flow, String error);
     void predictionInit(List<BugInstance> bugInstances);
-    void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, Boolean isTP);
+    void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, String isTP);
 }

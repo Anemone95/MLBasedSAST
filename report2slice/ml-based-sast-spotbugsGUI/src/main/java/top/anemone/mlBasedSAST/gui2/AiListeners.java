@@ -1,6 +1,5 @@
 package top.anemone.mlBasedSAST.gui2;
 
-import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
@@ -14,7 +13,7 @@ import top.anemone.mlBasedSAST.slice.data.TaintFlow;
 import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
 import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
 import top.anemone.mlBasedSAST.slice.slice.Report2Slice;
-import top.anemone.mlBasedSAST.slice.spotbugs.PredictorCallback;
+import top.anemone.mlBasedSAST.slice.spotbugs.PredictionMonitor;
 import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugPredictor;
 
 import javax.swing.*;
@@ -65,7 +64,7 @@ public class AiListeners implements LogSync {
     }
 
     public static void doSliceAndPredict(Project project, AiAnalyzingDialog aiAnalyzingDialog) throws IOException, NotFoundException, BCELParserException {
-        PredictorCallback callback=new PredictorCallback() {
+        PredictionMonitor callback=new PredictionMonitor() {
             @Override
             public void bugInstance2FlowInit(List<BugInstance> bugInstances) {
                 aiAnalyzingDialog.updateStage("Parse bug instances to taint flow");
@@ -112,7 +111,7 @@ public class AiListeners implements LogSync {
             }
 
             @Override
-            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, Boolean isTP) {
+            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, String isTP) {
                 aiAnalyzingDialog.updateCount(idx + 1, bugInstances.size());
             }
         };

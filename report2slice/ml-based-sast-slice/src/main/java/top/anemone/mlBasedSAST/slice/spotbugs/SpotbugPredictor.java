@@ -22,7 +22,6 @@ import top.anemone.mlBasedSAST.slice.utils.JarUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,11 +32,11 @@ public class SpotbugPredictor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Report2Slice.class);
 
-    public static Map<BugInstance, Boolean> predictFromBugCollection(BugCollection bugCollection, PredictorCallback callback) throws IOException, NotFoundException, BCELParserException {
+    public static Map<BugInstance, String> predictFromBugCollection(BugCollection bugCollection, PredictionMonitor callback) throws IOException, NotFoundException, BCELParserException {
         return predictFromBugCollection(bugCollection,callback, null);
     }
 
-    public static Map<BugInstance, Boolean> predictFromBugCollection(BugCollection bugCollection, PredictorCallback callback, Path tempDirectory) throws IOException, BCELParserException, NotFoundException {
+    public static Map<BugInstance, String> predictFromBugCollection(BugCollection bugCollection, PredictionMonitor callback, Path tempDirectory) throws IOException, BCELParserException, NotFoundException {
         if (!AIBasedSpotbugProject.getInstance().getServer().isAlive()) {
             throw new RemoteException(AIBasedSpotbugProject.getInstance().getServer().toString() + " is not alive");
         }
@@ -59,10 +58,10 @@ public class SpotbugPredictor {
                 String error = null;
                 try {
                     flows = SpotbugParser.bugInstance2Flow(bugInstance, appJarsinReport);
+                    bugInstance2Flow.put(bugInstance, flows.get(0));
                 } catch (NotFoundException | BCELParserException e) {
                     error = ExceptionUtil.getStackTrace(e);
                 }
-                bugInstance2Flow.put(bugInstance, flows.get(0));
                 callback.bugInstance2Flow(i, bugInstances, flows, error);
             }
         }
@@ -80,42 +79,41 @@ public class SpotbugPredictor {
                 }
             }
             List<File> transformedAppJars = new LinkedList<>();
-            List<URL> libJars = auxClasspath.stream().map(e -> {
-                try {
-                    return new File(e).toURI().toURL();
-                } catch (MalformedURLException ex) { // impossible
-                    LOGGER.warn("new URL(" + e + ") Error:");
-                    return null;
-                }
-            }).collect(Collectors.toList());
-            // impossible
-            if (libJars.contains(null)) {
-                throw new NotFoundException("lib jars contains null pointer");
-            }
+            // TODO lib jar also need transform
+            List<File> libJars = auxClasspath.stream().map(File::new).collect(Collectors.toList());
+            Set<String> jarsMd5=new HashSet<>();
             for (int i = 0; i < appJarsinReport.size(); i++) {
                 File appJar = appJarsinReport.get(i);
-                TransformedJar jar = null;
-                String error = null;
-                try {
-                    jar = Report2Slice.transformJar(appJar, tempDirectory, entryPackages);
-                    transformedAppJars.add(jar.getAppJarPath());
-                    for (File f : Objects.requireNonNull(jar.getLibPath().toFile().listFiles())) {
-                        libJars.add(f.toURI().toURL());
+                String jarMD5=JarUtil.getJarMD5(appJar);
+                if(!jarsMd5.contains(jarMD5)){
+                    jarsMd5.add(jarMD5);
+                    TransformedJar jar = null;
+                    String error = null;
+                    try {
+                        jar = Report2Slice.transformJar(appJar, tempDirectory, entryPackages);
+                        transformedAppJars.add(jar.getAppJarPath());
+                        libJars.addAll(Arrays.asList(Objects.requireNonNull(jar.getLibPath().toFile().listFiles())));
+                    } catch (IOException | InterruptedException e) {
+                        error = ExceptionUtil.getStackTrace(e);
                     }
-                } catch (IOException | InterruptedException e) {
-                    error = ExceptionUtil.getStackTrace(e);
+                    callback.unzipJar(i, appJarsinReport, error);
                 }
-                callback.unzipJar(i, appJarsinReport, error);
             }
             callback.generateJoanaConfig();
-            try {
-                libJars.add(new File(JarUtil.getPath() + "/contrib/servlet-api.jar").toURL());
-            } catch (MalformedURLException e) {
-                LOGGER.error(JarUtil.getPath() + "/contrib/servlet-api.jar can't be URL");
-            }
+            libJars.add(new File(JarUtil.getPath() + "/contrib/servlet-api.jar"));
             slicer = new JoanaSlicer();
+            // filter same lib
+            List<URL> uniLibjars=new LinkedList<>();
+            for(File lib: libJars){
+                String jarMD5=JarUtil.getJarMD5(lib);
+                if (!jarsMd5.contains(jarMD5)){
+                    jarsMd5.add(jarMD5);
+                    uniLibjars.add(lib.toURL());
+                }
+            }
+
             try {
-                slicer.generateConfig(transformedAppJars, libJars, null);
+                slicer.generateConfig(transformedAppJars, uniLibjars, null);
             } catch (ClassHierarchyException | IOException e) {
                 e.printStackTrace();
             }
@@ -129,13 +127,16 @@ public class SpotbugPredictor {
             if (bugInstance2Slice.containsKey(bugInstances.get(i))) {
                 continue;
             }
-            TaintFlow flow = bugInstance2Flow.get(bugInstances.get(i));
+            TaintFlow flow = bugInstance2Flow.getOrDefault(bugInstances.get(i), null);
+            if (flow==null){
+                continue;
+            }
             String slice;
             String error = null;
             try {
                 slice = slicer.computeSlice(flow);
                 bugInstance2Slice.put(bugInstances.get(i), slice);
-            } catch (GraphIntegrity.UnsoundGraphException | CancelException | ClassHierarchyException | NotFoundException | IOException | NoSuchElementException e) {
+            } catch (GraphIntegrity.UnsoundGraphException | CancelException | ClassHierarchyException | NotFoundException | IOException | NoSuchElementException | ClassCastException e) {
                 error = ExceptionUtil.getStackTrace(e);
             }
             callback.slice(i, bugInstances, flow, error);
@@ -145,10 +146,10 @@ public class SpotbugPredictor {
         for (int i = 0; i < bugInstances.size(); i++) {
             TaintFlow flow = bugInstance2Flow.get(bugInstances.get(i));
             String sliceStr = bugInstance2Slice.get(bugInstances.get(i));
-            Boolean isTP=null;
-            if(flow!=null){
+            String isTP=AIBasedSpotbugProject.ERROR;
+            if(sliceStr!=null){
                 Slice slice = new Slice(flow, sliceStr, flow.getHash(), bugCollection.getProject().getProjectName());
-                isTP = AIBasedSpotbugProject.getInstance().getServer().predict(slice);
+                isTP = Boolean.toString(AIBasedSpotbugProject.getInstance().getServer().predict(slice));
             }
             AIBasedSpotbugProject.getInstance().setBugInstancePrediction(bugInstances.get(i), isTP);
             callback.prediction(i, bugInstances, flow, isTP);

@@ -42,7 +42,7 @@ import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugParser;
 public class BugRenderer extends DefaultTreeCellRenderer {
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object node, boolean selected, boolean expanded, boolean leaf,
-            int row, boolean hasFocus) {
+                                                  int row, boolean hasFocus) {
         Component toReturn = super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf, row, hasFocus);
 
         if (!(node instanceof BugLeafNode)) {
@@ -52,36 +52,36 @@ public class BugRenderer extends DefaultTreeCellRenderer {
             final Color c;
             Color c1;
             switch (bug.getPriority()) {
-            case Priorities.LOW_PRIORITY:
-                c1 = new Color(0.4f, 0.4f, 0.6f);
-                break;
-            case Priorities.NORMAL_PRIORITY:
-                if (bug.isDead()) {
-                    c1 = new Color(0.2f, 0.2f, 0.2f);
-                } else {
-                    c1 = new Color(255, 204, 0);
-                }
-                break;
-            case Priorities.HIGH_PRIORITY:
-                if (bug.isDead()) {
-                    c1 = new Color(.65f, 0.2f, 0.2f);
-                } else {
-                    c1 = new Color(.85f, 0, 0);
-                }
-                break;
-            case Priorities.EXP_PRIORITY:
-            case Priorities.IGNORE_PRIORITY:
-            default:
-                c1 = Color.BLUE;
-                break;
+                case Priorities.LOW_PRIORITY:
+                    c1 = new Color(0.4f, 0.4f, 0.6f);
+                    break;
+                case Priorities.NORMAL_PRIORITY:
+                    if (bug.isDead()) {
+                        c1 = new Color(0.2f, 0.2f, 0.2f);
+                    } else {
+                        c1 = new Color(255, 204, 0);
+                    }
+                    break;
+                case Priorities.HIGH_PRIORITY:
+                    if (bug.isDead()) {
+                        c1 = new Color(.65f, 0.2f, 0.2f);
+                    } else {
+                        c1 = new Color(.85f, 0, 0);
+                    }
+                    break;
+                case Priorities.EXP_PRIORITY:
+                case Priorities.IGNORE_PRIORITY:
+                default:
+                    c1 = Color.BLUE;
+                    break;
             }
-            if (AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug)!=null){
-                if(!AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug)){
+            if (AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug) != null) {
+                if (!AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug)) {
                     c1 = Color.GRAY;
                 }
             } else {
-                if (AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug)!=null &&
-                        (!AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug)) ){
+                if (AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug) != null &&
+                        (AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug).equals(Boolean.toString(false)))) {
                     c1 = Color.GRAY;
                 }
             }
@@ -109,30 +109,32 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                     }
                 };
                 ((BugRenderer) toReturn).setIcon(icon);
-                if(SpotbugParser.caredVulns.contains(bug.getType())){
-                    String rawText=((BugRenderer) toReturn).getText();
+                if (SpotbugParser.caredVulns.contains(bug.getType())) {
+                    String rawText = ((BugRenderer) toReturn).getText();
                     // show prediction
-                    String prediction=null;
-                    Boolean isTP= AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug);
-                    if(isTP==null){
-                        prediction="[P:UNK]";
-                    } else if (isTP){
-                        prediction="[P:TP]";
-                    } else {
-                        prediction="[P:FP]";
+                    String prediction = null;
+                    String predict = AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug);
+                    if (predict == null) {
+                        prediction = "[P:UNK]";
+                    } else if (predict.equals(AIBasedSpotbugProject.TP)) {
+                        prediction = "[P:TP]";
+                    } else if (predict.equals(AIBasedSpotbugProject.FP)) {
+                        prediction = "[P:FP]";
+                    } else if (predict.equals(AIBasedSpotbugProject.ERROR)) {
+                        prediction = "[P:ERR]";
                     }
-                    String label=null;
-                    isTP = AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug);
-                    if(isTP==null){
-                        label="[L:ULB]";
-                    } else if (isTP){
-                        label="[L:TP]";
+                    String label = null;
+                    Boolean isTP = AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug);
+                    if (isTP == null) {
+                        label = "[L:ULB]";
+                    } else if (isTP) {
+                        label = "[L:TP]";
                     } else {
-                        label="[L:FP]";
+                        label = "[L:FP]";
                     }
 
-                    ((BugRenderer) toReturn).setTextNonSelectionColor(new Color(88,88,88));
-                    ((BugRenderer) toReturn).setText(prediction+label+rawText);
+                    ((BugRenderer) toReturn).setTextNonSelectionColor(new Color(88, 88, 88));
+                    ((BugRenderer) toReturn).setText(prediction + label + rawText);
                 }
             }
             return toReturn;

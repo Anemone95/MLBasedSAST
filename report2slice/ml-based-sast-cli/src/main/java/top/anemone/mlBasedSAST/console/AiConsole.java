@@ -15,14 +15,13 @@ import top.anemone.mlBasedSAST.slice.data.TaintFlow;
 import top.anemone.mlBasedSAST.slice.exception.BCELParserException;
 import top.anemone.mlBasedSAST.slice.exception.NotFoundException;
 import top.anemone.mlBasedSAST.slice.remote.LSTMServer;
-import top.anemone.mlBasedSAST.slice.spotbugs.PredictorCallback;
+import top.anemone.mlBasedSAST.slice.spotbugs.PredictionMonitor;
 import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugParser;
 import top.anemone.mlBasedSAST.slice.spotbugs.SpotbugPredictor;
 import top.anemone.mlBasedSAST.slice.utils.JsonUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 public class AiConsole {
@@ -57,7 +56,7 @@ public class AiConsole {
     }
     public static void getPredictionFromXML(String xmlFile, String tempDir) throws IOException, PluginException, DocumentException, NotFoundException, BCELParserException {
 
-        PredictorCallback callback=new PredictorCallback() {
+        PredictionMonitor callback=new PredictionMonitor() {
             @Override
             public void bugInstance2FlowInit(List<BugInstance> bugInstances) {
                 LOGGER.info("Parsing bug instances to taint flow");
@@ -66,6 +65,9 @@ public class AiConsole {
             @Override
             public void bugInstance2Flow(int idx, List<BugInstance> bugInstances, List<TaintFlow> flows, String error) {
                 LOGGER.info(String.format("Parsing instance(%d/%d): %s", idx+1, bugInstances.size(), bugInstances.get(idx)));
+                if (error!=null && error.length()!=0){
+                    LOGGER.error("Got error: "+error);
+                }
             }
 
             @Override
@@ -76,6 +78,9 @@ public class AiConsole {
             @Override
             public void unzipJar(int idx, List<File> appJarsinReport, String error) {
                 LOGGER.info(String.format("Unzipping jar(%d/%d)", idx+1, appJarsinReport.size()));
+                if (error!=null && error.length()!=0){
+                    LOGGER.error("Got error: "+error);
+                }
             }
 
             @Override
@@ -102,15 +107,19 @@ public class AiConsole {
             }
 
             @Override
-            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, Boolean isTP) {
+            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, String isTP) {
                 LOGGER.info(String.format("Getting Prediction (%d/%d): %b", idx+1, bugInstances.size(), isTP));
             }
         };
 
         SpotbugParser spotbugParser = new SpotbugParser();
         BugCollection bugCollection = spotbugParser.loadBugs(new File(xmlFile));
-        File tempDirFile=new File(tempDir);
-        tempDirFile.mkdirs();
-        SpotbugPredictor.predictFromBugCollection(bugCollection, callback, tempDirFile.toPath());
+        if(tempDir==null){
+            SpotbugPredictor.predictFromBugCollection(bugCollection, callback);
+        } else{
+            File tempDirFile=new File(tempDir);
+            tempDirFile.mkdirs();
+            SpotbugPredictor.predictFromBugCollection(bugCollection, callback, tempDirFile.toPath());
+        }
     }
 }

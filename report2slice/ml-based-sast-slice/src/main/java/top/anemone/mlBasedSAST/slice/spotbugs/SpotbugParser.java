@@ -52,13 +52,24 @@ public class SpotbugParser implements Parser {
     }
 
     /**
-     * @param bugCollection 过滤关心且未被关闭的问题
+     * @param bugCollection 过滤使用污点传播模型，并且未被修复，并且有source点的问题，
      * @return
      */
     public static List<BugInstance> secBugFilter(BugCollection bugCollection) {
         Collection<BugInstance> c = bugCollection.getCollection();
 
-        List<BugInstance> bugInstances = c.stream().filter(e -> caredVulns.contains(e.getType()) && !e.isDead()).collect(Collectors.toList());
+        List<BugInstance> bugInstances = c.stream()
+                .filter(e -> caredVulns.contains(e.getType()) && !e.isDead()) //过滤问题类型，和未被修复的问题
+                .filter(e -> {
+                    // 过滤掉没有source点的问题
+                    for (BugAnnotation annotation:e.getAnnotations()){
+                        if(annotation.toString().equals("Method usage not detected")){
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
         return bugInstances;
     }
 

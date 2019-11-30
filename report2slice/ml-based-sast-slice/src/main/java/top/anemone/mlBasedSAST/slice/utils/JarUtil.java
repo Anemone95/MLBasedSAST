@@ -19,6 +19,9 @@ public class JarUtil {
     public static String getJarMD5(String jar) throws IOException {
         return DigestUtils.md5Hex(new FileInputStream(jar));
     }
+    public static String getJarMD5(File jar) throws IOException {
+        return DigestUtils.md5Hex(new FileInputStream(jar));
+    }
 
 //    public static ClassLoader getWarClassLoader(Path warPath) throws IOException {
 //        final Path tmpDir = Files.createTempDirectory("exploded-war");
