@@ -108,7 +108,7 @@ public class AiConsole {
 
             @Override
             public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, String isTP) {
-                LOGGER.info(String.format("Getting Prediction (%d/%d): %b", idx+1, bugInstances.size(), isTP));
+                LOGGER.info(String.format("Getting Prediction (%d/%d): %s", idx+1, bugInstances.size(), isTP));
             }
         };
 

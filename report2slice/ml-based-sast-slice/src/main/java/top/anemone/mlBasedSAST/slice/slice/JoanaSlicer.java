@@ -50,9 +50,10 @@ public class JoanaSlicer {
     public SDGBuilder.SDGBuilderConfig generateConfig(List<File> appJars, List<URL> libJars, String exclusionsFile) throws ClassHierarchyException, IOException {
         SDGBuilder.SDGBuilderConfig config = getSDGBuilderConfig(appJars, libJars, exclusionsFile);
         config.doParallel = false;
-        this.config=config;
+        this.config = config;
         return config;
     }
+
     public String computeSlice(TaintFlow trace) throws GraphIntegrity.UnsoundGraphException, CancelException, ClassHierarchyException, NotFoundException, IOException {
         PassThrough lastPassThrough = trace.getPassThroughs().get(trace.getPassThroughs().size() - 1);
         String entryClass = "L" + lastPassThrough.getClazz().replace('.', '/');
@@ -62,25 +63,24 @@ public class JoanaSlicer {
         tmp[tmp.length - 1] = lastPassThrough.getFileName();
         String joanaFilename = String.join("/", tmp);
         JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line(joanaFilename, lastPassThrough.getCalledStartLine());
-        String slice = this.computeSlice( entryClass, entryMethod, entryRef, sink, null);
+        String slice = this.computeSlice(entryClass, entryMethod, entryRef, sink, null);
         return slice;
     }
 
     public String computeSlice(String entryClass, String entryMethod, String entryRef,
-                                      JoanaLineSlicer.Line sink, String pdgFile)
-            throws ClassHierarchyException, IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
+                               JoanaLineSlicer.Line sink, String pdgFile)
+            throws IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
         SDG localSdg = null;
-
         LOGGER.info("Building SDG... ");
         // 根据class, method, ref在classloader中找入口函数
         config.entry = findMethod(this.config, entryClass, entryMethod, entryRef);
         // 构造SDG
         try {
             localSdg = SDGBuilder.build(this.config);
-        } catch (NoSuchElementException e){
-            StackTraceElement stackTraceElement=e.getStackTrace()[2];
-            if(stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
-                    && stackTraceElement.getMethodName().equals("<init>")){
+        } catch (NoSuchElementException e) {
+            StackTraceElement stackTraceElement = e.getStackTrace()[2];
+            if (stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
+                    && stackTraceElement.getMethodName().equals("<init>")) {
                 throw new RootNodeNotFoundException("Entry class not found in call-graph (or it was in primordial jar)");
             }
         }
@@ -125,8 +125,8 @@ public class JoanaSlicer {
             scope.addToScope(ClassLoaderReference.Application, new JarStreamModule(new FileInputStream(appJar)));
         }
         for (URL lib : libJars) {
-            if (appJars.contains(new File(lib.getFile()))){
-                LOGGER.warn(lib+"in app scope.");
+            if (appJars.contains(new File(lib.getFile()))) {
+                LOGGER.warn(lib + "in app scope.");
                 continue;
             }
             if (lib.getProtocol().equals("file")) {
@@ -182,7 +182,7 @@ public class JoanaSlicer {
         return scfg;
     }
 
-    static IMethod findMethod(SDGBuilder.SDGBuilderConfig scfg, final String entryClazz, final String entryMethod, String methodRef) throws  NotFoundException {
+    static IMethod findMethod(SDGBuilder.SDGBuilderConfig scfg, final String entryClazz, final String entryMethod, String methodRef) throws NotFoundException {
         // debugPrint(scfg.cha);
         final IClass cl = scfg.cha.lookupClass(TypeReference.findOrCreate(ClassLoaderReference.Application, entryClazz));
         if (cl == null) {
