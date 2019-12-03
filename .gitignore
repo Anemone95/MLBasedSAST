@@ -5,3 +5,4 @@
 __pycache__ 
 *.npz 
 ml/model
+report2slice/slice_dir/
