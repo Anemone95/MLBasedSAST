@@ -34,8 +34,11 @@ import top.anemone.mlsast.slice.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.slice.exception.RootNodeNotFoundException;
+import top.anemone.mlsast.slice.joana.AppEntrypointFactory;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -149,6 +152,8 @@ public class JoanaSlicer {
                                                                   List<URL> libJars, String exclusionsFile)
             throws ClassHierarchyException, IOException {
         SDGBuilder.SDGBuilderConfig scfg = new SDGBuilder.SDGBuilderConfig();
+
+
         scfg.out = System.out;
         scfg.nativeSpecClassLoader = new URLClassLoader(new URL[]{});
         scfg.scope = makeMinimalScope(appJars, libJars, exclusionsFile, scfg.nativeSpecClassLoader);
@@ -179,6 +184,7 @@ public class JoanaSlicer {
         scfg.debugManyGraphsDotOutput = false;
         scfg.debugAccessPath = false;
         scfg.debugStaticInitializers = false;
+        scfg.entrypointFactory=new AppEntrypointFactory();
         return scfg;
     }
 

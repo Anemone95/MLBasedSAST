@@ -136,7 +136,7 @@ public class SpotbugPredictor {
             try {
                 slice = slicer.computeSlice(flow);
                 bugInstance2Slice.put(bugInstances.get(i), slice);
-            } catch (GraphIntegrity.UnsoundGraphException | CancelException | ClassHierarchyException | NotFoundException | IOException | NoSuchElementException | ClassCastException e) {
+            } catch (GraphIntegrity.UnsoundGraphException | CancelException | ClassHierarchyException | NotFoundException | IOException | NoSuchElementException | ClassCastException |IllegalStateException e) {
                 error = ExceptionUtil.getStackTrace(e);
             }
             callback.slice(i, bugInstances, flow, slice, error);
