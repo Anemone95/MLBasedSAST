@@ -28,6 +28,7 @@ import edu.kit.joana.wala.core.ExternalCallCheck;
 import edu.kit.joana.wala.core.Main;
 import edu.kit.joana.wala.core.SDGBuilder;
 import lombok.Data;
+import top.anemone.mlsast.slice.classloader.AppClassloader;
 import top.anemone.mlsast.slice.data.PassThrough;
 import top.anemone.mlsast.slice.data.TaintFlow;
 import top.anemone.mlsast.slice.exception.NotFoundException;
@@ -155,7 +156,7 @@ public class JoanaSlicer {
 
 
         scfg.out = System.out;
-        scfg.nativeSpecClassLoader = new URLClassLoader(new URL[]{});
+        scfg.nativeSpecClassLoader = new AppClassloader(new File[]{});
         scfg.scope = makeMinimalScope(appJars, libJars, exclusionsFile, scfg.nativeSpecClassLoader);
         scfg.cache = new AnalysisCacheImpl();
         scfg.cha = ClassHierarchyFactory.make(scfg.scope);

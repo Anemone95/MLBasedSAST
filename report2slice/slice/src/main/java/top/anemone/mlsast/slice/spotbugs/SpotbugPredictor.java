@@ -80,40 +80,42 @@ public class SpotbugPredictor {
             }
             List<File> transformedAppJars = new LinkedList<>();
             // TODO lib jar also need transform
-            List<File> libJars = auxClasspath.stream().map(File::new).collect(Collectors.toList());
-            Set<String> jarsMd5 = new HashSet<>();
-            for (int i = 0; i < appJarsinReport.size(); i++) {
-                File appJar = appJarsinReport.get(i);
-                String jarMD5 = JarUtil.getJarMD5(appJar);
-                if (!jarsMd5.contains(jarMD5)) {
-                    jarsMd5.add(jarMD5);
-                    TransformedJar jar = null;
-                    String error = null;
-                    try {
-                        jar = Report2Slice.transformJar(appJar, tempDirectory, entryPackages);
-                        transformedAppJars.add(jar.getAppJarPath());
-                        libJars.addAll(Arrays.asList(Objects.requireNonNull(jar.getLibPath().toFile().listFiles())));
-                    } catch (IOException | InterruptedException e) {
-                        error = ExceptionUtil.getStackTrace(e);
-                    }
-                    callback.unzipJar(i, appJarsinReport, error);
-                }
-            }
+//            List<File> libJars = auxClasspath.stream().map(File::new).collect(Collectors.toList());
+//            Set<String> jarsMd5 = new HashSet<>();
+//            for (int i = 0; i < appJarsinReport.size(); i++) {
+//                File appJar = appJarsinReport.get(i);
+//                String jarMD5 = JarUtil.getJarMD5(appJar);
+//                if (!jarsMd5.contains(jarMD5)) {
+//                    jarsMd5.add(jarMD5);
+//                    TransformedJar jar = null;
+//                    String error = null;
+//                    try {
+//                        jar = Report2Slice.transformJar(appJar, tempDirectory, entryPackages);
+//                        transformedAppJars.add(jar.getAppJarPath());
+//                        libJars.addAll(Arrays.asList(Objects.requireNonNull(jar.getLibPath().toFile().listFiles())));
+//                    } catch (IOException | InterruptedException e) {
+//                        error = ExceptionUtil.getStackTrace(e);
+//                    }
+//                    callback.unzipJar(i, appJarsinReport, error);
+//                }
+//            }
             callback.generateJoanaConfig();
-            libJars.add(new File(JarUtil.getPath() + "/contrib/servlet-api.jar"));
+//            libJars.add(new File(JarUtil.getPath() + "/contrib/servlet-api.jar"));
             slicer = new JoanaSlicer();
             // filter same lib
-            List<URL> uniLibjars = new LinkedList<>();
-            for (File lib : libJars) {
-                String jarMD5 = JarUtil.getJarMD5(lib);
-                if (!jarsMd5.contains(jarMD5)) {
-                    jarsMd5.add(jarMD5);
-                    uniLibjars.add(lib.toURL());
-                }
-            }
+//            List<URL> uniLibjars = new LinkedList<>();
+//            for (File lib : libJars) {
+//                String jarMD5 = JarUtil.getJarMD5(lib);
+//                if (!jarsMd5.contains(jarMD5)) {
+//                    jarsMd5.add(jarMD5);
+//                    uniLibjars.add(lib.toURL());
+//                }
+//            }
 
             try {
-                slicer.generateConfig(transformedAppJars, uniLibjars, null);
+//                slicer.generateConfig(transformedAppJars, uniLibjars, null);
+//                uniLibjars.clear();
+                slicer.generateConfig(appJarsinReport, new LinkedList<>(), null);
             } catch (ClassHierarchyException | IOException e) {
                 e.printStackTrace();
             }
