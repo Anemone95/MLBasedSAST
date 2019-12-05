@@ -31,5 +31,5 @@ def transform(data_dir, label_dir):
             f.write('{} {}\n'.format(token, _int))
 
 if __name__ == '__main__':
-    transform(settings.relative_path_from_root('data/slice/benchmark1.1'),
-              settings.relative_path_from_root('data/label/benchmark1.1'))
+    transform(settings.relative_path_from_root('data/slice/benchmark1.2'),
+              settings.relative_path_from_root('data/label/benchmark1.2'))
