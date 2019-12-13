@@ -51,6 +51,9 @@ public class LSTMServer {
         } catch (IOException e) {
             throw new RemoteException(e.getMessage());
         }
+        if (response==null){
+            throw new RemoteException("Remote return null");
+        }
         return response.getMsg().equals("True");
     }
 }

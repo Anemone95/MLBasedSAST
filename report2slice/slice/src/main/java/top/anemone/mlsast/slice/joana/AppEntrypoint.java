@@ -30,7 +30,9 @@ public class AppEntrypoint extends SubtypesEntrypoint {
         TypeReference[] p = getParameterTypes(i);
         switch (p.length) {
             case 0:
-                return -1;
+                // FIXME @Anemone, may cause problem
+                NewSiteReference nonceRef=NewSiteReference.make(m.getStatements().length,TypeReference.JavaLangClass);
+                return m.addPhi(new int[]{nonceRef.getProgramCounter()});
             case 1:
                 if (p[0].isPrimitiveType()) {
                     return m.addLocal();

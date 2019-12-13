@@ -33,7 +33,7 @@ def predict():
     slice_json = request.get_json()
     data_dir = settings.relative_path_from_root('data/slice/' + slice_json['project'])
     if not os.path.exists(data_dir):
-        os.mkdir(data_dir)
+        os.makedirs(data_dir)
     with open(data_dir + '/slice-' + slice_json["flowHash"] + ".json", 'w') as f:
         json.dump(slice_json, f)
     isTP = lstm.predict(MODEL, slice_json["slice"])
@@ -50,7 +50,7 @@ def label():
     label_json = request.get_json()
     data_dir = settings.relative_path_from_root('data/label/' + label_json['project'])
     if not os.path.exists(data_dir):
-        os.mkdir(data_dir)
+        os.makedirs(data_dir)
 
     with open(data_dir + "/label-" + label_json["flowHash"] + ".json", 'w') as f:
         json.dump(label_json, f)

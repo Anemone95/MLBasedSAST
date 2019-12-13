@@ -42,6 +42,12 @@ org\/openide\/.*
 sun\/.*
 sun\/awt\/.*
 sun\/swing\/.*
+java\/net\/.*
+java\/util\/.*
+java\/security\/.*
+java\/math\/.*
+java\/nio\/.*
+java\/io\/.*
 org\/owasp\/benchmark\/score\/.*
 org\/owasp\/benchmark\/score\/parsers\/.*
 org\/owasp\/benchmark\/score\/report\/.*

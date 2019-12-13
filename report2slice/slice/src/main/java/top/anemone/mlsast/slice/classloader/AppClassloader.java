@@ -26,8 +26,9 @@ public class AppClassloader extends ClassLoader {
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException {
         ClassLoader classLoader = new AppClassloader(
                 new File[]{
-                        new File("D:\\Store\\document\\all_my_work\\java-sec-code\\target\\java-sec-code-1.0.0.jar")});
-        classLoader.loadClass("org.joychou.security.WebSecurityConfig");
+                        new File("C:\\Users\\x5651\\Documents\\bishe\\mvn_case\\joana.api-1.0.jar")});
+        Class clz=classLoader.loadClass("com.ibm.wala.viz.PDFViewLauncher");
+        System.out.println(clz);
     }
 
     //    protected Resource getResource(){

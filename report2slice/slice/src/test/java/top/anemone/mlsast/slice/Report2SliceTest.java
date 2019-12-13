@@ -1,6 +1,7 @@
 package top.anemone.mlsast.slice;
 
 import edu.umd.cs.findbugs.PluginException;
+import org.junit.Ignore;
 import org.junit.Test;
 import top.anemone.mlsast.slice.data.TaintFlow;
 import top.anemone.mlsast.slice.exception.BCELParserException;
@@ -32,24 +33,6 @@ public class Report2SliceTest {
         assertTrue(entryPackages.contains("org"));
     }
 
-
-    @Test
-    public void transformJarTest() throws IOException, NotFoundException, BCELParserException, ClassNotFoundException, InterruptedException, PluginException {
-        File appJar = new File("src/test/resources/java-sec-code-1.0.0.jar");
-        Path tempDirectory = Files.createTempDirectory("mlBasedSAST");
-        File report = new File("src/test/resources/spotbugs.xml");
-        List<File> appJars = Collections.singletonList(new File("src/test/resources/java-sec-code-1.0.0.jar"));
-        SpotbugParser spotbugParser = new SpotbugParser();
-        List<TaintFlow> traces=spotbugParser.parse(report, appJars).getTraces();
-        Set<String> entryPackages= Report2Slice.getEntryPackages(traces);
-        try {
-            Report2Slice.transformJar(appJar, tempDirectory, entryPackages);
-        } catch (IOException e){
-            throw e;
-        } finally {
-            JarUtil.deleteDirectory(tempDirectory);
-        }
-    }
 
 
     @Test

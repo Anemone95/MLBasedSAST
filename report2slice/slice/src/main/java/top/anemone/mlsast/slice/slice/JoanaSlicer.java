@@ -7,6 +7,7 @@ import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.JarStreamModule;
 import com.ibm.wala.classLoader.Language;
 import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
+import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.pruned.ApplicationLoaderPolicy;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
@@ -27,7 +28,9 @@ import edu.kit.joana.ifc.sdg.mhpoptimization.CSDGPreprocessor;
 import edu.kit.joana.wala.core.ExternalCallCheck;
 import edu.kit.joana.wala.core.Main;
 import edu.kit.joana.wala.core.SDGBuilder;
+import edu.kit.joana.wala.core.prune.NodeLimitPruner;
 import lombok.Data;
+import org.apache.log4j.lf5.LogLevel;
 import top.anemone.mlsast.slice.classloader.AppClassloader;
 import top.anemone.mlsast.slice.data.PassThrough;
 import top.anemone.mlsast.slice.data.TaintFlow;
@@ -35,7 +38,7 @@ import top.anemone.mlsast.slice.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.slice.exception.RootNodeNotFoundException;
-import top.anemone.mlsast.slice.joana.AppEntrypointFactory;
+import top.anemone.mlsast.slice.joana.*;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -45,6 +48,9 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.*;
+
+import static top.anemone.mlsast.slice.joana.LoggingOutputStream.LogLevel.INFO;
 
 @Data
 public class JoanaSlicer {
@@ -53,12 +59,14 @@ public class JoanaSlicer {
 
     public SDGBuilder.SDGBuilderConfig generateConfig(List<File> appJars, List<URL> libJars, String exclusionsFile) throws ClassHierarchyException, IOException {
         SDGBuilder.SDGBuilderConfig config = getSDGBuilderConfig(appJars, libJars, exclusionsFile);
+//        config.options=new AnalysisOptions();
+//        config.options.setMaxNumberOfNodes(1000);
         config.doParallel = false;
         this.config = config;
         return config;
     }
 
-    public String computeSlice(TaintFlow trace) throws GraphIntegrity.UnsoundGraphException, CancelException, ClassHierarchyException, NotFoundException, IOException {
+    public String computeSlice(TaintFlow trace) throws GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException, IOException {
         PassThrough lastPassThrough = trace.getPassThroughs().get(trace.getPassThroughs().size() - 1);
         String entryClass = "L" + lastPassThrough.getClazz().replace('.', '/');
         String entryMethod = lastPassThrough.getMethod();
@@ -80,7 +88,7 @@ public class JoanaSlicer {
         config.entry = findMethod(this.config, entryClass, entryMethod, entryRef);
         // 构造SDG
         try {
-            localSdg = SDGBuilder.build(this.config);
+            localSdg = SDGBuilder.build(this.config, new Monitor());
         } catch (NoSuchElementException e) {
             StackTraceElement stackTraceElement = e.getStackTrace()[2];
             if (stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
@@ -111,7 +119,7 @@ public class JoanaSlicer {
 //        for (SDGNode sdgNode : sinkNodes) {
 //            if (!jSlicer.toAbstract.contains(sdgNode) && !JoanaLineSlicer.isRemoveNode(sdgNode)) {
 //                relatedNodesStr += sdgNode.getId() + ", ";
-//            }
+
 //        }
 //        relatedNodesStr = relatedNodesStr.substring(0, relatedNodesStr.lastIndexOf(",")) + "]\n";
         String result = Formater.prepareSliceForEncoding(localSdg, slice, jSlicer.toAbstract);
@@ -155,11 +163,11 @@ public class JoanaSlicer {
         SDGBuilder.SDGBuilderConfig scfg = new SDGBuilder.SDGBuilderConfig();
 
 
-        scfg.out = System.out;
+        scfg.out = new PrintStream(new LoggingOutputStream(LOGGER, INFO));
         scfg.nativeSpecClassLoader = new AppClassloader(new File[]{});
         scfg.scope = makeMinimalScope(appJars, libJars, exclusionsFile, scfg.nativeSpecClassLoader);
         scfg.cache = new AnalysisCacheImpl();
-        scfg.cha = ClassHierarchyFactory.make(scfg.scope);
+        scfg.cha = ClassHierarchyFactory.makeWithRoot(scfg.scope);
         scfg.ext = ExternalCallCheck.EMPTY;
         scfg.immutableNoOut = Main.IMMUTABLE_NO_OUT;
         scfg.immutableStubs = Main.IMMUTABLE_STUBS;
@@ -186,6 +194,7 @@ public class JoanaSlicer {
         scfg.debugAccessPath = false;
         scfg.debugStaticInitializers = false;
         scfg.entrypointFactory=new AppEntrypointFactory();
+        scfg.cgPruner=new NodeLimitPruner(400);
         return scfg;
     }
 

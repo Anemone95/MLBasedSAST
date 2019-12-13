@@ -58,7 +58,7 @@ def lr_schedule(epoch):
 def train(slice_dir: str, label_dir: str):
     label_dict = preprocessing.load_label(label_dir)
     all_labeled_data = tf.data.Dataset.from_generator(
-        preprocessing.get_magrove_generator(preprocessing.preprocessing, slice_dir, label_dict),
+        preprocessing.get_data_generator(preprocessing.preprocessing, slice_dir, label_dict),
         (tf.string, tf.int64), (tf.TensorShape([]), tf.TensorShape([])))
 
     # 打乱数据
@@ -137,7 +137,7 @@ def train(slice_dir: str, label_dir: str):
 
 
 def main():
-    train('data/slice/benchmark1.1', 'data/label/benchmark1.1')
+    train('data/slice/benchmark1.2', 'data/label/benchmark1.2')
 
 
 if __name__ == '__main__':

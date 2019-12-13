@@ -36,8 +36,6 @@ public class AiConsole {
                 .defaultHelp(true);
         parser.addArgument("-f", "--results-file").required(true)
                 .help("Specify SpotBugs analysis results(.xml)");
-        parser.addArgument( "--temp-dir")
-                .help("Specify a dir to store temporary files");
         parser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8888")
                 .help("Specify prediction server");
         parser.addArgument("-o", "--output")
@@ -52,7 +50,7 @@ public class AiConsole {
             System.exit(1);
         }
         AIBasedSpotbugProject.getInstance().setServer(new LSTMServer(ns.getString("server")));
-        getPredictionFromXML(ns.getString("results_file"), ns.getString("temp_dir"), ns.getBoolean("dump_slice"));
+        getPredictionFromXML(ns.getString("results_file"), ns.getBoolean("dump_slice"));
         if (ns.getString("output")==null){
             JsonUtil.toJson(AIBasedSpotbugProject.getInstance().getBugInstancePredictionMap());
         } else {
@@ -60,7 +58,7 @@ public class AiConsole {
         }
 
     }
-    public static void getPredictionFromXML(String xmlFile, String tempDir, boolean dumpSlice) throws IOException, PluginException, DocumentException, NotFoundException, BCELParserException {
+    public static void getPredictionFromXML(String xmlFile, boolean dumpSlice) throws IOException, PluginException, DocumentException, NotFoundException, BCELParserException {
 
         PredictionMonitor callback=new PredictionMonitor() {
             @Override
@@ -72,20 +70,7 @@ public class AiConsole {
             public void bugInstance2Flow(int idx, List<BugInstance> bugInstances, List<TaintFlow> flows, String error) {
                 LOGGER.info(String.format("Parsing instance(%d/%d): %s", idx+1, bugInstances.size(), bugInstances.get(idx)));
                 if (error!=null && error.length()!=0){
-                    LOGGER.error("Got error: "+error);
-                }
-            }
-
-            @Override
-            public void unzipJarInit(List<File> appJarsinReport) {
-                LOGGER.info("Unzipping jar");
-            }
-
-            @Override
-            public void unzipJar(int idx, List<File> appJarsinReport, String error) {
-                LOGGER.info(String.format("Unzipping jar(%d/%d)", idx+1, appJarsinReport.size()));
-                if (error!=null && error.length()!=0){
-                    LOGGER.error("Got error: "+error);
+                    LOGGER.error("Got exception: "+error);
                 }
             }
 
@@ -103,7 +88,7 @@ public class AiConsole {
             public void slice(int idx, List<BugInstance> bugInstances, TaintFlow flow, String slice, String error) {
                 LOGGER.info(String.format("Slicing (%d/%d): %s", idx+1, bugInstances.size(), bugInstances.get(idx)));
                 if (error!=null && error.length()!=0){
-                    LOGGER.error("Got error: "+error);
+                    LOGGER.error("Got exception: "+error);
                 }
                 if (dumpSlice){
                     File sliceDir=new File("slice_dir");
@@ -135,12 +120,6 @@ public class AiConsole {
 
         SpotbugParser spotbugParser = new SpotbugParser();
         BugCollection bugCollection = spotbugParser.loadBugs(new File(xmlFile));
-        if(tempDir==null){
-            SpotbugPredictor.predictFromBugCollection(bugCollection, callback);
-        } else{
-            File tempDirFile=new File(tempDir);
-            tempDirFile.mkdirs();
-            SpotbugPredictor.predictFromBugCollection(bugCollection, callback, tempDirFile.toPath());
-        }
+        SpotbugPredictor.predictFromBugCollection(bugCollection, callback);
     }
 }

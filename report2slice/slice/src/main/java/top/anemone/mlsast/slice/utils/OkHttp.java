@@ -4,9 +4,17 @@ import com.google.gson.Gson;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class OkHttp {
     private static OkHttpClient client = new OkHttpClient();
+    {
+        client.newBuilder()
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .build();
+    }
+
     private static MediaType jsonType = MediaType.parse("application/json");
     private static <T> T request(Request request, Class<T> clazz) throws IOException {
         Response response = null;

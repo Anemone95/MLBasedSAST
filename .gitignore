@@ -2,7 +2,8 @@
 **/bugreports/*
 **/.idea/*
 **/kb
-__pycache__ 
-*.npz 
+__pycache__
+*.npz
 ml/model
 report2slice/slice_dir/
+ml/data

@@ -77,17 +77,6 @@ public class AiListeners implements LogSync {
             }
 
             @Override
-            public void unzipJarInit(List<File> appJarsinReport) {
-                aiAnalyzingDialog.updateStage("Unzip jar");
-                aiAnalyzingDialog.updateCount(0, appJarsinReport.size());
-            }
-
-            @Override
-            public void unzipJar(int i, List<File> appJarsinReport, String error) {
-                aiAnalyzingDialog.updateCount(i + 1, appJarsinReport.size());
-            }
-
-            @Override
             public void generateJoanaConfig() {
                 aiAnalyzingDialog.updateStage("Generating Joana Config");
                 aiAnalyzingDialog.updateCount(0,1);
