@@ -353,6 +353,7 @@ public class AppClassHierarchy implements IClassHierarchy {
     Collection<IClass> loadedSuperInterfaces;
 
     try {
+      // FIXME @Anemone null pointer
       loadedSuperclasses = computeSuperclasses(klass);
       loadedSuperInterfaces = klass.getAllImplementedInterfaces();
 

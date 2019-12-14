@@ -48,6 +48,7 @@ java\/security\/.*
 java\/math\/.*
 java\/nio\/.*
 java\/io\/.*
+java\/awt\/.*
 org\/owasp\/benchmark\/score\/.*
 org\/owasp\/benchmark\/score\/parsers\/.*
 org\/owasp\/benchmark\/score\/report\/.*

@@ -204,8 +204,6 @@ public class MainFrameTree {
 
         popupMenu.add(filterMenuItem);
 
-        // TODO
-
         JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labeledAsTruePositive", "Labeled As True Positive");
         labeledAsTP.addActionListener(evt -> {
             setLabel(currentSelectedBugLeaf.getBug(), true);

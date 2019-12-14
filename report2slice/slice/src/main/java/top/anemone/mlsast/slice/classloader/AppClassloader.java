@@ -28,7 +28,9 @@ public class AppClassloader extends ClassLoader {
                 new File[]{
                         new File("C:\\Users\\x5651\\Documents\\bishe\\mvn_case\\joana.api-1.0.jar")});
         Class clz=classLoader.loadClass("com.ibm.wala.viz.PDFViewLauncher");
+        Class clz2=classLoader.loadClass("com.ibm.wala.viz.DotUtil");
         System.out.println(clz);
+        System.out.println(clz2);
     }
 
     //    protected Resource getResource(){

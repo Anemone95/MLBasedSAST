@@ -327,7 +327,6 @@ public class MainFrameMenu {
         aiMenu.add(serverItem);
         serverItem.addActionListener(evt -> aiListeners.setServer());
 
-        // TODO AI logic
         JMenuItem sliceAndPredictItem = MainFrameHelper.newJMenuItem("menu.sliceAndPredict_item", "Slice and Predict");
         aiMenu.add(sliceAndPredictItem);
         sliceAndPredictItem.addActionListener(evt -> aiListeners.sliceAndPredict());

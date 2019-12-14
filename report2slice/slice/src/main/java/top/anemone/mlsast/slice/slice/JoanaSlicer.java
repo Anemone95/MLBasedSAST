@@ -2,10 +2,7 @@ package top.anemone.mlsast.slice.slice;
 
 
 import com.ibm.wala.cfg.exc.intra.MethodState;
-import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.classLoader.JarStreamModule;
-import com.ibm.wala.classLoader.Language;
+import com.ibm.wala.classLoader.*;
 import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
@@ -32,6 +29,7 @@ import edu.kit.joana.wala.core.prune.NodeLimitPruner;
 import lombok.Data;
 import org.apache.log4j.lf5.LogLevel;
 import top.anemone.mlsast.slice.classloader.AppClassloader;
+import top.anemone.mlsast.slice.classloader.AppWalaClassLoaderFactory;
 import top.anemone.mlsast.slice.data.PassThrough;
 import top.anemone.mlsast.slice.data.TaintFlow;
 import top.anemone.mlsast.slice.exception.NotFoundException;
@@ -167,7 +165,7 @@ public class JoanaSlicer {
         scfg.nativeSpecClassLoader = new AppClassloader(new File[]{});
         scfg.scope = makeMinimalScope(appJars, libJars, exclusionsFile, scfg.nativeSpecClassLoader);
         scfg.cache = new AnalysisCacheImpl();
-        scfg.cha = ClassHierarchyFactory.makeWithRoot(scfg.scope);
+        scfg.cha = ClassHierarchyFactory.makeWithRoot(scfg.scope, new AppWalaClassLoaderFactory(scfg.scope.getExclusions()));
         scfg.ext = ExternalCallCheck.EMPTY;
         scfg.immutableNoOut = Main.IMMUTABLE_NO_OUT;
         scfg.immutableStubs = Main.IMMUTABLE_STUBS;
