@@ -165,7 +165,7 @@ public class AppWalaClassLoader extends ClassLoaderImpl {
             }
 
             // springboot jar or war support
-            if (className.contains("classes/")) {
+            if (className.contains("/classes/")) {
                 className = className.replaceFirst(".*?/classes/", "");
             }
 
