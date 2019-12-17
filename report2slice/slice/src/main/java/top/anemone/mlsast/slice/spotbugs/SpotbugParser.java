@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.slice.data.*;
 import top.anemone.mlsast.slice.exception.BCELParserException;
 import top.anemone.mlsast.slice.exception.NotFoundException;
+import top.anemone.mlsast.slice.exception.ParserException;
 import top.anemone.mlsast.slice.parser.Parser;
 import top.anemone.mlsast.slice.utils.BCELParser;
 import top.anemone.mlsast.slice.utils.JarUtil;
@@ -44,10 +45,10 @@ public class SpotbugParser implements Parser {
             "XPATH_INJECTION"
     );
 
-    public static void main(String[] args) throws NotFoundException, IOException, BCELParserException, PluginException {
+    public static void main(String[] args) throws NotFoundException, ParserException {
 //        System.out.println(JarUtil.getPath());
         SpotbugParser spotbugParser = new SpotbugParser();
-        TaintProject taintProject=spotbugParser.parse(new File("bugreports/spotbugs.xml"),null);
+        TaintProject taintProject=spotbugParser.report2taintProject(new File("bugreports/spotbugs.xml"),null);
         System.out.println(taintProject);
     }
 
@@ -95,12 +96,14 @@ public class SpotbugParser implements Parser {
     }
 
     @Override
-    public TaintProject parse(File xml, List<File> appJars) throws NotFoundException, IOException, BCELParserException, PluginException {
+    public TaintProject report2taintProject(File xml, List<File> appJars) throws ParserException, NotFoundException {
         SortedBugCollection sortedBugCollection;
         try {
             sortedBugCollection = this.loadBugs(xml);
         } catch (IOException|DocumentException e) {
             throw new NotFoundException(xml + " not found");
+        } catch (PluginException e) {
+            throw new ParserException(e.toString(), e);
         }
         // 获取报告中的jar包地址，但是如果分析过程与报告产生过程不在一起，地址会很找不到，这时只能从appJars中获取
         List<String> analysisTargets;
@@ -110,7 +113,11 @@ public class SpotbugParser implements Parser {
         List<BugInstance> bugInstances = secBugFilter(sortedBugCollection);
         List<TaintFlow> traces = new LinkedList<>();
         for (BugInstance bugInstance : bugInstances) {
-            traces.addAll(bugInstance2Flow(bugInstance, appJarsinReport));
+            try {
+                traces.addAll(bugInstance2Flow(bugInstance, appJarsinReport));
+            } catch (BCELParserException | IOException e) {
+                throw new ParserException(e.toString(), e);
+            }
         }
         TaintProject taintProject=new TaintProject(sortedBugCollection.getProject().getProjectName(), traces);
         return taintProject;
@@ -143,7 +150,7 @@ public class SpotbugParser implements Parser {
         sink.setMethod(method);
         sink.setSig(sig);
 
-        // TODO parse multi source
+        // TODO report2taintProject multi source
         Source source = new Source();
         SourceLineAnnotation sourceLineAnnotation = null;
         for (int i = 4; i < annotations.size(); i++) {

@@ -7,3 +7,4 @@ __pycache__
 ml/model
 report2slice/slice_dir/
 ml/data
+*.iml

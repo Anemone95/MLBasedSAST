@@ -115,7 +115,7 @@ def init_params(options):
 
 
 def load_params(path, params):
-    pp = numpy.load(path)
+    pp = numpy.load(path, allow_pickle=True)
     for kk, vv in params.items():
         if kk not in pp:
             raise Warning('%s is not in the archive' % kk)

@@ -12,19 +12,17 @@ import top.anemone.mlsast.slice.data.AIBasedSpotbugProject;
 import top.anemone.mlsast.slice.data.TaintFlow;
 import top.anemone.mlsast.slice.exception.BCELParserException;
 import top.anemone.mlsast.slice.exception.NotFoundException;
-import top.anemone.mlsast.slice.slice.Report2Slice;
 import top.anemone.mlsast.slice.spotbugs.PredictionMonitor;
 import top.anemone.mlsast.slice.spotbugs.SpotbugPredictor;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 
 public class AiListeners implements LogSync {
     private final Logger logger = new ConsoleLogger(this);
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Report2Slice.class);
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AiListeners.class);
     public static final boolean GUI2_DEBUG = SystemProperties.getBoolean("gui2.debug");
 
     void setServer() {

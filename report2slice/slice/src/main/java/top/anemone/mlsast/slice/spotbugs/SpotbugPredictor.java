@@ -32,7 +32,7 @@ public class SpotbugPredictor {
 
         List<File> appJarsinReport = bugCollection.getProject().getFileList().stream().map(File::new).collect(Collectors.toList());
         List<BugInstance> bugInstances = SpotbugParser.secBugFilter(bugCollection);
-        // parse to taint flow
+        // report2taintProject to taint flow
         Map<BugInstance, TaintFlow> bugInstance2Flow = AIBasedSpotbugProject.getInstance().getBugInstanceFlowMap();
         if (bugInstance2Flow.size() != bugInstances.size()) {
             monitor.bugInstance2FlowInit(bugInstances);
