@@ -41,7 +41,7 @@ public class GUI2CommandLine extends FindBugsCommandLine {
     private File saveFile;
 
     public GUI2CommandLine() {
-        // Additional constructor just as hack for decoupling the slice package
+        // Additional constructor just as hack for decoupling the core package
         // from gui2 package
         // please add all options in the super class
         super(true);

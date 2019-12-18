@@ -31,8 +31,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
-import top.anemone.mlsast.slice.data.AIBasedSpotbugProject;
-import top.anemone.mlsast.slice.spotbugs.SpotbugParser;
+import top.anemone.mlsast.core.data.AIBasedSpotbugProject;
+import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 
 @SuppressWarnings("serial")
 /**
@@ -109,7 +109,7 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                     }
                 };
                 ((BugRenderer) toReturn).setIcon(icon);
-                if (SpotbugParser.caredVulns.contains(bug.getType())) {
+                if (SpotbugXMLReportParser.caredVulns.contains(bug.getType())) {
                     String rawText = ((BugRenderer) toReturn).getText();
                     // show prediction
                     String prediction = null;

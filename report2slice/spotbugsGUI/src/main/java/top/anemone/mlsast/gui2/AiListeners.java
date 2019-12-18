@@ -8,12 +8,11 @@ import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
 import org.slf4j.LoggerFactory;
-import top.anemone.mlsast.slice.data.AIBasedSpotbugProject;
-import top.anemone.mlsast.slice.data.TaintFlow;
-import top.anemone.mlsast.slice.exception.BCELParserException;
-import top.anemone.mlsast.slice.exception.NotFoundException;
-import top.anemone.mlsast.slice.spotbugs.PredictionMonitor;
-import top.anemone.mlsast.slice.spotbugs.SpotbugPredictor;
+import top.anemone.mlsast.core.Monitor;
+import top.anemone.mlsast.core.data.TaintFlow;
+import top.anemone.mlsast.core.exception.BCELParserException;
+import top.anemone.mlsast.core.exception.NotFoundException;
+import top.anemone.mlsast.core.predict.deprecated.SpotbugPredictor;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -62,44 +61,19 @@ public class AiListeners implements LogSync {
     }
 
     public static void doSliceAndPredict(Project project, AiAnalyzingDialog aiAnalyzingDialog) throws IOException, NotFoundException, BCELParserException {
-        PredictionMonitor callback=new PredictionMonitor() {
+        Monitor monitor = new Monitor() {
+            private String stage;
+
             @Override
-            public void bugInstance2FlowInit(List<BugInstance> bugInstances) {
-                aiAnalyzingDialog.updateStage("Parse bug instances to taint flow");
+            public void init(String stageName, int totalWork) {
+                stage = stageName;
+                aiAnalyzingDialog.updateStage("Doing "+stageName);
+                aiAnalyzingDialog.updateCount(0,totalWork);
             }
 
             @Override
-            public void bugInstance2Flow(int idx, List<BugInstance> bugInstances, List<TaintFlow> flows, String error) {
-                aiAnalyzingDialog.updateCount(idx + 1, bugInstances.size());
-                LOGGER.info("Parsing instance: " + bugInstances.get(idx));
-            }
-
-            @Override
-            public void generateJoanaConfig() {
-                aiAnalyzingDialog.updateStage("Generating Joana Config");
-                aiAnalyzingDialog.updateCount(0,1);
-            }
-
-            @Override
-            public void sliceInit(List<BugInstance> bugInstances) {
-                aiAnalyzingDialog.updateStage("Slicing...");
-                aiAnalyzingDialog.updateCount(0, bugInstances.size());
-            }
-
-            @Override
-            public void slice(int idx, List<BugInstance> bugInstances, TaintFlow flow, String slice,String error) {
-                aiAnalyzingDialog.updateCount(idx + 1, bugInstances.size());
-            }
-
-            @Override
-            public void predictionInit(List<BugInstance> bugInstances) {
-                aiAnalyzingDialog.updateStage("Getting Prediction...");
-                aiAnalyzingDialog.updateCount(0, bugInstances.size());
-            }
-
-            @Override
-            public void prediction(int idx, List<BugInstance> bugInstances, TaintFlow flow, String isTP) {
-                aiAnalyzingDialog.updateCount(idx + 1, bugInstances.size());
+            public void process(int idx, int totalWork, Object input, Object output, String error) {
+                aiAnalyzingDialog.updateCount(idx + 1, totalWork);
             }
         };
 

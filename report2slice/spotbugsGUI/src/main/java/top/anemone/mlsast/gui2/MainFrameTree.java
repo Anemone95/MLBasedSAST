@@ -51,12 +51,12 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
-import top.anemone.mlsast.slice.data.AIBasedSpotbugProject;
-import top.anemone.mlsast.slice.data.TaintFlow;
-import top.anemone.mlsast.slice.data.VO.Label;
-import top.anemone.mlsast.slice.exception.BCELParserException;
-import top.anemone.mlsast.slice.exception.NotFoundException;
-import top.anemone.mlsast.slice.spotbugs.SpotbugParser;
+import top.anemone.mlsast.core.data.AIBasedSpotbugProject;
+import top.anemone.mlsast.core.data.TaintFlow;
+import top.anemone.mlsast.core.data.VO.Label;
+import top.anemone.mlsast.core.exception.BCELParserException;
+import top.anemone.mlsast.core.exception.NotFoundException;
+import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.gui2.FilterActivity.FilterActivityNotifier;
 
 public class MainFrameTree {
@@ -225,7 +225,7 @@ public class MainFrameTree {
             if (!project.getBugInstanceFlowMap().containsKey(bugInstance)){
                 List<File> appJarsinReport=MainFrame.getInstance().getProject().getFileList()
                         .stream().map(File::new).collect(Collectors.toList());
-                List<TaintFlow> traces = SpotbugParser.bugInstance2Flow(bugInstance, appJarsinReport);
+                List<TaintFlow> traces = SpotbugXMLReportParser.bugInstance2Flow(bugInstance, appJarsinReport);
                 project.getBugInstanceFlowMap().put(bugInstance, traces.get(0));
             }
 

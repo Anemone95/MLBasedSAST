@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.launchGUI.LaunchGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.anemone.mlsast.slice.utils.JarUtil;
+import top.anemone.mlsast.core.utils.JarUtil;
 
 import java.awt.*;
 import java.io.File;

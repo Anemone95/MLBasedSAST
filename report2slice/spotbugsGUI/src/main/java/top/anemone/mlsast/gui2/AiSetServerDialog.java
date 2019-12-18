@@ -1,8 +1,7 @@
 package top.anemone.mlsast.gui2;
 
 import edu.umd.cs.findbugs.log.Logger;
-import top.anemone.mlsast.slice.data.AIBasedSpotbugProject;
-import top.anemone.mlsast.slice.remote.LSTMServer;
+import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +40,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Verify") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                boolean isAlive = new LSTMServer(tabTextField.getText()).isAlive();
+                boolean isAlive = new LSTMRemotePredictor(tabTextField.getText()).isAlive();
                 if (isAlive) {
                     JOptionPane.showMessageDialog(MainFrame.getInstance(), "Remote is alive!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -53,7 +52,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Apply") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                AIBasedSpotbugProject.getInstance().setServer(new LSTMServer(tabTextField.getText()));
+                AIBasedSpotbugProject.getInstance().setServer(new LSTMRemotePredictor(tabTextField.getText()));
                 closeDialog();
             }
         }));

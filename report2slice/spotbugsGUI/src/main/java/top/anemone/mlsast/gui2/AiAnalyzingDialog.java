@@ -22,7 +22,7 @@ package top.anemone.mlsast.gui2;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
-import top.anemone.mlsast.slice.utils.ExceptionUtil;
+import top.anemone.mlsast.core.utils.ExceptionUtil;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;

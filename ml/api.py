@@ -30,6 +30,9 @@ def predict():
     预测一个slice, 同时将slice保存
     :return:
     """
+    if not MODEL:
+        logging.warning("Model not specify, can't predict")
+        return jsonify({"msg": "Model not specify, can't predict"}), 500
     slice_json = request.get_json()
     data_dir = settings.relative_path_from_root('data/slice/' + slice_json['project'])
     if not os.path.exists(data_dir):
@@ -58,9 +61,12 @@ def label():
     return jsonify({"msg": "true"}), 200
 
 
-def server(model_npz, host='127.0.0.1', port=8888, debug=False):
+def server(model_npz=None, host='127.0.0.1', port=8888, debug=False):
     global MODEL
-    MODEL = lstm.load_model(settings.relative_path_from_root(model_npz))
+    if model_npz:
+        MODEL = lstm.load_model(settings.relative_path_from_root(model_npz))
+    else:
+        logging.warning("Model not specify, can't predict")
     app.run(host=host, port=port, debug=debug)
 
 
