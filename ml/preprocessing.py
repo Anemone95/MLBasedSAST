@@ -117,7 +117,7 @@ def load_label(base_dir):
         with open(each_file, 'r') as f:
             labeled_slices = json.load(f)
         for each_slice in labeled_slices:
-            hash2label[each_slice["sliceHash"]] = 1 if each_slice["isReal"] else 0
+            hash2label[each_slice["flowHash"]] = 1 if each_slice["isReal"] else 0
     return hash2label
 
 

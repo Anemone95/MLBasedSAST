@@ -30,7 +30,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
 
         float currFS = Driver.getFontSize();
 
-        JTextField tabTextField = new JTextField(AIBasedSpotbugProject.getInstance().getServer().getRemoteServer());
+        JTextField tabTextField = new JTextField(AiProject.getInstance().getServer().getRemoteServer());
         tabTextField.setPreferredSize(new Dimension((int) (currFS * 14), (int) (currFS * 2)));
         addField(mainPanel, c, 0, "Input Server URL: ", tabTextField);
 
@@ -52,7 +52,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Apply") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                AIBasedSpotbugProject.getInstance().setServer(new LSTMRemotePredictor(tabTextField.getText()));
+                AiProject.getInstance().setServer(new LSTMRemotePredictor(tabTextField.getText()));
                 closeDialog();
             }
         }));

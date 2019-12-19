@@ -21,6 +21,7 @@ public class OkHttp {
         response = client.newCall(request).execute();
         if (response.isSuccessful() && response.body() != null) {
             T obj = new Gson().fromJson(response.body().string(), clazz);
+            response.body().close();
             return obj;
         } else {
             return null;

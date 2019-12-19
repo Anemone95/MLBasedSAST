@@ -7,4 +7,7 @@ public class SlicerException extends Exception {
         super(s);
         this.rawException=rawException;
     }
+    public Exception getRawException(){
+        return rawException;
+    }
 }

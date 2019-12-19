@@ -34,6 +34,7 @@ import top.anemone.mlsast.core.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.core.exception.RootNodeNotFoundException;
+import top.anemone.mlsast.core.exception.SlicerException;
 import top.anemone.mlsast.core.joana.*;
 import top.anemone.mlsast.core.slice.Slicer;
 
@@ -56,7 +57,7 @@ public class JoanaSlicer implements Slicer {
         this.config = config;
     }
 
-    public String computeSlice(TaintFlow trace) {
+    public String computeSlice(TaintFlow trace) throws SlicerException {
         PassThrough lastPassThrough = trace.getPassThroughs().get(trace.getPassThroughs().size() - 1);
         String entryClass = "L" + lastPassThrough.getClazz().replace('.', '/');
         String entryMethod = lastPassThrough.getMethod();
@@ -68,14 +69,8 @@ public class JoanaSlicer implements Slicer {
         String slice = null;
         try {
             slice = this.computeSlice(entryClass, entryMethod, entryRef, sink, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (GraphIntegrity.UnsoundGraphException e) {
-            e.printStackTrace();
-        } catch (CancelException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException e) {
+            throw new SlicerException(e.getMessage(), e);
         }
         return slice;
     }

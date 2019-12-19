@@ -88,10 +88,14 @@ public class AiConsole {
                 outputDir.mkdirs();
             }
             for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
-                TaintFlow flow = sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i)).get(0);
-                String sliceStr = sliceProject.getBugInstance2slice().get(sliceProject.getBugInstances().get(i));
-                Slice slice = new Slice(flow, sliceStr, flow.getHash(), sliceProject.getTaintProject().getProjectName());
-                JsonUtil.dumpToFile(slice, outputDir+"/slice-"+flow.getHash());
+                if (sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i))!=null){
+                    TaintFlow flow = sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i)).get(0);
+                    String sliceStr = sliceProject.getBugInstance2slice().get(sliceProject.getBugInstances().get(i));
+                    if (sliceStr!=null){
+                        Slice slice = new Slice(flow, sliceStr, flow.getHash(), sliceProject.getTaintProject().getProjectName());
+                        JsonUtil.dumpToFile(slice, outputDir+"/slice-"+flow.getHash()+".json");
+                    }
+                }
             }
         } else if (ns.getString("command").equals("predict")) {
             LSTMRemotePredictor remotePredictor=new LSTMRemotePredictor(ns.getString("server"));

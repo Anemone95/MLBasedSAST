@@ -10,8 +10,8 @@ import java.util.Map;
 
 @Data
 public class SliceProject<T> {
-    private Map<T, String> bugInstance2slice;
-    private TaintProject<T> taintProject;
+    protected Map<T, String> bugInstance2slice;
+    protected TaintProject<T> taintProject;
     public SliceProject(TaintProject<T> taintProject){
         this.taintProject=taintProject;
         bugInstance2slice=new HashMap<>();

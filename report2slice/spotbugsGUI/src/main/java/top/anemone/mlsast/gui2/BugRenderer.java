@@ -31,8 +31,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
-import top.anemone.mlsast.core.data.AIBasedSpotbugProject;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
+import top.anemone.mlsast.core.predict.PredictEnum;
 
 @SuppressWarnings("serial")
 /**
@@ -75,13 +75,13 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                     c1 = Color.BLUE;
                     break;
             }
-            if (AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug) != null) {
-                if (!AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug)) {
+            if (AiProject.getInstance().getBugInstanceLabel(bug) != null) {
+                if (!AiProject.getInstance().getBugInstanceLabel(bug)) {
                     c1 = Color.GRAY;
                 }
             } else {
-                if (AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug) != null &&
-                        (AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug).equals(Boolean.toString(false)))) {
+                if (AiProject.getInstance().getBugInstancePrediction(bug) != null &&
+                        (AiProject.getInstance().getBugInstancePrediction(bug).equals(PredictEnum.FALSE))) {
                     c1 = Color.GRAY;
                 }
             }
@@ -113,18 +113,18 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                     String rawText = ((BugRenderer) toReturn).getText();
                     // show prediction
                     String prediction = null;
-                    String predict = AIBasedSpotbugProject.getInstance().getBugInstancePrediction(bug);
+                    PredictEnum predict = AiProject.getInstance().getBugInstancePrediction(bug);
                     if (predict == null) {
                         prediction = "[P:UNK]";
-                    } else if (predict.equals(AIBasedSpotbugProject.TP)) {
+                    } else if (predict.equals(PredictEnum.TRUE)) {
                         prediction = "[P:TP]";
-                    } else if (predict.equals(AIBasedSpotbugProject.FP)) {
+                    } else if (predict.equals(PredictEnum.FALSE)) {
                         prediction = "[P:FP]";
-                    } else if (predict.equals(AIBasedSpotbugProject.ERROR)) {
+                    } else if (predict.equals(PredictEnum.ERROR)) {
                         prediction = "[P:ERR]";
                     }
                     String label = null;
-                    Boolean isTP = AIBasedSpotbugProject.getInstance().getBugInstanceLabel(bug);
+                    Boolean isTP = AiProject.getInstance().getBugInstanceLabel(bug);
                     if (isTP == null) {
                         label = "[L:ULB]";
                     } else if (isTP) {

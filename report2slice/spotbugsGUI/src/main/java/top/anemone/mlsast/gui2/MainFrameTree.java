@@ -51,12 +51,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
-import top.anemone.mlsast.core.data.AIBasedSpotbugProject;
-import top.anemone.mlsast.core.data.TaintFlow;
 import top.anemone.mlsast.core.data.VO.Label;
-import top.anemone.mlsast.core.exception.BCELParserException;
-import top.anemone.mlsast.core.exception.NotFoundException;
-import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.gui2.FilterActivity.FilterActivityNotifier;
 
 public class MainFrameTree {
@@ -220,21 +215,21 @@ public class MainFrameTree {
     }
 
     private void setLabel(BugInstance bugInstance, boolean isTP) {
+        AiProject project=AiProject.getInstance();
+        if (project.getPredictProject() == null ||project.getPredictProject().getSliceProject()==null){
+            JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "Need slice before label",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         try {
-            AIBasedSpotbugProject project=AIBasedSpotbugProject.getInstance();
-            if (!project.getBugInstanceFlowMap().containsKey(bugInstance)){
-                List<File> appJarsinReport=MainFrame.getInstance().getProject().getFileList()
-                        .stream().map(File::new).collect(Collectors.toList());
-                List<TaintFlow> traces = SpotbugXMLReportParser.bugInstance2Flow(bugInstance, appJarsinReport);
-                project.getBugInstanceFlowMap().put(bugInstance, traces.get(0));
-            }
-
-            Label label=new Label(MainFrame.getInstance().getProject().toString(), project.getBugInstanceFlowMap().get(bugInstance).getHash(),isTP);
+            Label label=new Label(MainFrame.getInstance().getProject().toString(), project.getPredictProject().getSliceProject().getTaintFlow(bugInstance).get(0).getHash(),isTP);
             project.getServer().postLabel(label);
-            AIBasedSpotbugProject.getInstance().setBugInstanceLabel(currentSelectedBugLeaf.getBug(), isTP);
+            AiProject.getInstance().getPredictProject().putLabel(currentSelectedBugLeaf.getBug(), isTP);
             mainFrame.setProjectChanged(true);
             mainFrame.getTree().setSelectionRow(0); // Selects the top of the Jtree so the CommentsArea syncs up.
-        } catch (IOException | BCELParserException | NotFoundException e) {
+        } catch (IOException e) {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             JOptionPane.showMessageDialog(

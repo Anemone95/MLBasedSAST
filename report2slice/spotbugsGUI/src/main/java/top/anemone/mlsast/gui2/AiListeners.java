@@ -10,11 +10,15 @@ import edu.umd.cs.findbugs.log.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.TaintFlow;
-import top.anemone.mlsast.core.exception.BCELParserException;
-import top.anemone.mlsast.core.exception.NotFoundException;
-import top.anemone.mlsast.core.predict.deprecated.SpotbugPredictor;
+import top.anemone.mlsast.core.exception.*;
+import top.anemone.mlsast.core.parser.impl.SpotbugBugCollectionParser;
+import top.anemone.mlsast.core.predict.PredictProject;
+import top.anemone.mlsast.core.predict.PredictRunner;
+import top.anemone.mlsast.core.slice.SliceRunner;
+import top.anemone.mlsast.core.slice.impl.JoanaSlicer;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -60,7 +64,8 @@ public class AiListeners implements LogSync {
 
     }
 
-    public static void doSliceAndPredict(Project project, AiAnalyzingDialog aiAnalyzingDialog) throws IOException, NotFoundException, BCELParserException {
+    public static void doSliceAndPredict(Project project, AiAnalyzingDialog aiAnalyzingDialog) throws  NotFoundException,
+            PredictorRunnerException, ParserException, SliceRunnerException {
         Monitor monitor = new Monitor() {
             private String stage;
 
@@ -73,12 +78,29 @@ public class AiListeners implements LogSync {
 
             @Override
             public void process(int idx, int totalWork, Object input, Object output, String error) {
-                aiAnalyzingDialog.updateCount(idx + 1, totalWork);
+                aiAnalyzingDialog.updateCount(idx, totalWork);
             }
         };
 
         BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-        SpotbugPredictor.predictFromBugCollection(bugCollection, callback);
+
+        if (AiProject.getInstance().getSliceProject()==null){
+            AiProject.getInstance().setSliceProject(
+                    new SliceRunner<BugInstance>()
+                            .setReportParser(new SpotbugBugCollectionParser(bugCollection))
+                            .setSlicer(new JoanaSlicer())
+                            .run(monitor)
+            );
+        }
+        PredictProject<BugInstance> predictProject=new PredictProject<>();
+        predictProject.setSliceProject(AiProject.getInstance().getSliceProject());
+
+        AiProject.getInstance().setPredictProject(
+                new PredictRunner<BugInstance>()
+                .setReportParser(new SpotbugBugCollectionParser(bugCollection))
+                .setPredictor(AiProject.getInstance().getServer())
+                .run(monitor, predictProject)
+        );
     }
 
     /**
@@ -100,7 +122,7 @@ public class AiListeners implements LogSync {
     }
 
     public void cleanDB() {
-        AIBasedSpotbugProject.getInstance().clean();
+        AiProject.getInstance().setPredictProject(null);
         MainFrame.getInstance().getMainFrameTree().updateBugTree();
 //        MainFrame.getInstance().newProject();
     }

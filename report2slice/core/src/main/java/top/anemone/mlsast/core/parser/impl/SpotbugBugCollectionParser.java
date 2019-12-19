@@ -23,7 +23,7 @@ import static top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser.getBugI
 
 public class SpotbugBugCollectionParser implements ReportParser<BugInstance> {
     private BugCollection bugCollection;
-    SpotbugBugCollectionParser(BugCollection bugCollection){
+    public SpotbugBugCollectionParser(BugCollection bugCollection){
         this.bugCollection=bugCollection;
     }
     @Override

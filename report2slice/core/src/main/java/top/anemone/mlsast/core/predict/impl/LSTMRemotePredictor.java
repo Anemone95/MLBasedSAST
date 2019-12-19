@@ -59,14 +59,15 @@ public class LSTMRemotePredictor implements Predictor {
         return response.getMsg().equals("True");
     }
 
-    public Response label(Label label) throws PredictorException {
+    @Override
+    public void label(Label label) {
         Response response;
         try {
             response = OkHttp.post(this.remoteServer + "/label", label, Response.class);
         } catch (IOException e) {
-            throw new PredictorException(e.getMessage(), e);
+            e.printStackTrace();
+//            throw new PredictorException(e.getMessage(), e);
         }
-        return response;
     }
 
 }

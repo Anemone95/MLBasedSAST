@@ -19,35 +19,25 @@
 │   ├── tf # BLSTM tensorflow实现版本
 │   └── utils # 用于转换格式
 └── report2slice # 切词模块
-    ├── kb # 学习用的知识库
-    │   ├── label
-    │   └── slice
-    ├── ml-based-sast-slice # 核心切词模块
-    ├── ml-based-sast-spotbugsGUI # 改造版spotbugsGUI
+    ├── slice # 生成切片文件
+    ├── core # 核心切片和预测模块
+    ├── cli # 切片/预测控制台入口
+    ├── spotbugsGUI # 改造版spotbugsGUI
     └── pom.xml
 ```
 
 # Build
 
-1. ML-based-SAST 依赖Joana，因此第一步是使用如下命令构建joana：
+1. ML-based-SAST 依赖于改造后的Joana，因此第一步是使用如下命令构建joana：
 
     ```bash
     # Fetch sources
-    git clone https://github.com/Anemone95/joana
+    git clone https://github.com/anemone95/joana
     cd joana
-    git submodule init
-git submodule update
+    mvn clean install -DskipTests
+```
     
-    # Joana depends on WALA, build WALA first
-    cd contrib/wala
-    mvn verify -DskipTests=true -e
-cd ../..
-    
-    # Build Joana and upload to Maven local repository
-    ant -f mvn-build.xml
-    ```
-
-2. 构建切片模块
+2. 构建切片和预测模块
 
    ```bash
    # Fetch sources

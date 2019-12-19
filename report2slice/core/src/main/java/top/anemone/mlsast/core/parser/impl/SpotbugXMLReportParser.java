@@ -28,22 +28,22 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugXMLReportParser.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
-//            "COMMAND_INJECTION",
-//            "XSS_JSP_PRINT",
-//            "XSS_REQUEST_WRAPPER",
-//            "XSS_SERVLET",
-//            "URLCONNECTION_SSRF_FD",
-//            "SQL_INJECTION_HIBERNATE",
-//            "SQL_INJECTION_JDO",
-//            "SQL_INJECTION_JPA",
-            "SQL_INJECTION_JDBC"
-//            "SQL_INJECTION_SPRING_JDBC",
-//            "SCALA_SQL_INJECTION_SLICK",
-//            "SCALA_SQL_INJECTION_ANORM",
-//            "SQL_INJECTION_TURBINE",
-//            "UNVALIDATED_REDIRECT",
-//            "LDAP_INJECTION",
-//            "XPATH_INJECTION"
+            "COMMAND_INJECTION",
+            "XSS_JSP_PRINT",
+            "XSS_REQUEST_WRAPPER",
+            "XSS_SERVLET",
+            "URLCONNECTION_SSRF_FD",
+            "SQL_INJECTION_HIBERNATE",
+            "SQL_INJECTION_JDO",
+            "SQL_INJECTION_JPA",
+            "SQL_INJECTION_JDBC",
+            "SQL_INJECTION_SPRING_JDBC",
+            "SCALA_SQL_INJECTION_SLICK",
+            "SCALA_SQL_INJECTION_ANORM",
+            "SQL_INJECTION_TURBINE",
+            "UNVALIDATED_REDIRECT",
+            "LDAP_INJECTION",
+            "XPATH_INJECTION"
     );
 
     private File xmlReport;

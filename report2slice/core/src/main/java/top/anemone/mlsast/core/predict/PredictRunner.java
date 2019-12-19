@@ -14,6 +14,8 @@ import top.anemone.mlsast.core.slice.SliceRunner;
 import top.anemone.mlsast.core.slice.Slicer;
 import top.anemone.mlsast.core.utils.ExceptionUtil;
 
+import java.util.List;
+
 public class PredictRunner<T> {
     private Predictor predictor;
     private SliceRunner<T> sliceRunner;
@@ -38,31 +40,43 @@ public class PredictRunner<T> {
     }
 
     public PredictProject<T> run(Monitor monitor) throws ParserException, NotFoundException, SliceRunnerException, PredictorRunnerException {
+        return run(monitor, new PredictProject<>());
+    }
+    public PredictProject<T> run(Monitor monitor, PredictProject<T> predictProject) throws ParserException, NotFoundException, SliceRunnerException, PredictorRunnerException {
         if (predictor==null){
             throw new PredictorRunnerException("Predictor not set");
         }
-        SliceProject<T> sliceProject = sliceRunner.run(monitor);
-        PredictProject<T> predictProject=new PredictProject<>(sliceProject);
+        SliceProject<T> sliceProject;
+        if (predictProject.getSliceProject()==null){
+            sliceProject = sliceRunner.run(monitor);
+            predictProject.setSliceProject(sliceProject);
+        } else {
+            sliceProject=predictProject.getSliceProject();
+        }
         monitor.init("Prediction", sliceProject.getBugInstances().size());
         for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
-            TaintFlow flow = sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i)).get(0);
-            if (flow==null){
+            List<TaintFlow> flows = sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i));
+            PredictEnum isTP = PredictEnum.ERROR;
+            if (flows==null){
+                predictProject.putPrediction(sliceProject.getBugInstances().get(i),isTP);
                 continue;
             }
+            TaintFlow flow=flows.get(0);
             String sliceStr = sliceProject.getBugInstance2slice().get(sliceProject.getBugInstances().get(i));
+            if (sliceStr==null){
+                predictProject.putPrediction(sliceProject.getBugInstances().get(i),isTP);
+                continue;
+            }
             Slice slice = new Slice(flow, sliceStr, flow.getHash(), sliceProject.getTaintProject().getProjectName());
-            PredictEnum isTP = PredictEnum.ERROR;
             String err=null;
-            if (sliceStr != null) {
-                try {
-                    if (predictor.predict(slice)) {
-                        isTP = PredictEnum.TRUE;
-                    } else {
-                        isTP = PredictEnum.FALSE;
-                    }
-                } catch (PredictorException e) {
-                    err = ExceptionUtil.getStackTrace(e);
+            try {
+                if (predictor.predict(slice)) {
+                    isTP = PredictEnum.TRUE;
+                } else {
+                    isTP = PredictEnum.FALSE;
                 }
+            } catch (PredictorException e) {
+                err = ExceptionUtil.getStackTrace(e);
             }
             predictProject.putPrediction(sliceProject.getBugInstances().get(i),isTP);
             monitor.process(i+1, sliceProject.getBugInstances().size(), slice, isTP, err);
