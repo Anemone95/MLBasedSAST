@@ -36,7 +36,7 @@ public class AiConsole {
                 .help("Slice and dump into dir");
         sliceParser.addArgument("-f", "--report-file").required(true)
                 .help("Specify SpotBugs analysis report(.xml)");
-        sliceParser.addArgument("-o", "--output-dir").setDefault("slice")
+        sliceParser.addArgument("-o", "--output-dir")
                 .help("Specify slice output dir");
 
         Subparser predictParser = subparsers.addParser("predict").defaultHelp(true)
@@ -83,7 +83,12 @@ public class AiConsole {
                     .setReportParser(new SpotbugXMLReportParser(new File(ns.getString("report_file")), null))
                     .setSlicer(new JoanaSlicer())
                     .run(monitor);
-            File outputDir=new File(ns.getString("output_dir")+File.separator+sliceProject.getProjectName());
+            File outputDir;
+            if (ns.getString("output_dir")!=null){
+                outputDir=new File(ns.getString("output_dir")+File.separator+sliceProject.getProjectName());
+            } else {
+                outputDir=new File("slice"+File.separator+sliceProject.getProjectName());
+            }
             if (!outputDir.exists()){
                 outputDir.mkdirs();
             }

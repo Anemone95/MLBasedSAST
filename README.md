@@ -11,7 +11,7 @@
 │   ├── _theano # BLSTM theano实现版本
 │   ├── api.py # API Server
 │   ├── console.py # CLI
-│   ├── data -> ../report2slice/kb/ # 学习用的知识库
+│   ├── data # 学习用的知识库（包括slice和label）
 │   ├── model # BLSTM model
 │   ├── preprocessing.py # 数据预处理，包括tokenize
 │   ├── settings.py
@@ -35,7 +35,7 @@
     git clone https://github.com/anemone95/joana
     cd joana
     mvn clean install -DskipTests
-```
+    ```
     
 2. 构建切片和预测模块
 
@@ -58,7 +58,7 @@
 
 # Usage
 
-## API.py——启动服务器
+## API.py——预测服务器
 
 启动一个服务器用来预测，接受slice和label，以及启动一个训练
 
@@ -70,7 +70,7 @@ python api.py --model-npz=xxx.npz # run api server
 ## Spotbugs GUI
 
 ```bash
-java -jar xxx.jar
+java -jar report2slice/spotbugsGUI/target/spotbugsGUI-1.0-SNAPSHOT.jar
 ```
 
 启动后可以看到一个修改版的Spotbugs GUI，首先新建/打开一个project，获取分析结果，该步骤与原版操作过程相同：
@@ -97,13 +97,29 @@ java -jar xxx.jar
 
 ### 标记数据
 
-不论是否进行预测，都可以对一个漏洞实例进行标记，右键漏洞实例即可，标记结果会同时发送给服务器，作为将来学习使用
+不论是否进行预测，都可以对一个漏洞实例进行标记（但需要先切片），右键漏洞实例即可，标记结果会同时发送给服务器，作为将来学习使用
 
 ![image-20191121161750306](README/image-20191121161750306.png)
 
+## 命令行入口
+
+命令行入口以Spotbugs的xml报告文件作为输入，以json格式输出切片/预测结果。
+
+### 只做切片
+
+```bash
+java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml # 默认切片保存到./slice/{project}文件夹下，可用--output-dir指定输出目录
+```
+
+### 切片后预测
+
+```bash
+java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml --server http://127.0.0.1:8888/ # 指定预测用服务器，默认预测结果保存到./predict，可用--output指定输出目录
+```
+
 ## console.py——学习控制台
 
-## 启动一次学习
+### 启动一次学习
 
 ```bash
 cd ml
