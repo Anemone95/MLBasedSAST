@@ -42,50 +42,33 @@ public class SliceRunner<T> {
         }
         TaintProject<T> taintProject = reportParser.report2taintProject(monitor);
         monitor.init("Config Slicer", 1);
-        String err = null;
+        Exception exception = null;
         try {
             slicer.config(taintProject.getAppJars(), new LinkedList<>(), null);
         } catch (ClassHierarchyException | IOException e) {
-            err = ExceptionUtil.getStackTrace(e);
+            exception=e;
         } finally {
-            monitor.process(1, 1, null, null, err);
+            monitor.process(1, 1, null, null, exception);
         }
 
         monitor.init("Slice", taintProject.getTaintFlowMap().size());
         SliceProject<T> project = new SliceProject<>(taintProject);
-        for (int i = 0; i < taintProject.getTaintFlowMap().size(); i++) {
+        for (int i = 0; i < taintProject.getBugInstances().size(); i++) {
             List<TaintFlow> flow = taintProject.getTaintFlowMap().get(taintProject.getBugInstances().get(i));
             if (flow == null) {
+                monitor.process(i + 1, taintProject.getBugInstances().size(), flow, null, new NotFoundException("BugInstance's flow not found"));
                 continue;
             }
             String slice = null;
-            String error = null;
+            exception = null;
             try {
                 slice = slicer.computeSlice(flow.get(0));
                 project.getBugInstance2slice().put(taintProject.getBugInstances().get(i), slice);
             } catch (SlicerException e) {
-                error = ExceptionUtil.getStackTrace(e.getRawException());
+                exception = e.getRawException();
             }
-            monitor.process(i + 1, taintProject.getBugInstances().size(), flow.get(0), slice, error);
+            monitor.process(i + 1, taintProject.getBugInstances().size(), flow.get(0), slice, exception);
         }
         return project;
-    }
-
-    public static void main(String[] args) throws NotFoundException, ParserException, SliceRunnerException {
-        Monitor monitor = new Monitor() {
-            @Override
-            public void init(String stageName, int totalWork) {
-                System.out.println(stageName + ", Total work: " + totalWork);
-            }
-
-            @Override
-            public void process(int idx, int totalWork, Object input, Object output, String error) {
-                System.out.println("Progress: " + idx + "/" + totalWork + ".");
-                System.out.println(output);
-            }
-        };
-        new SliceRunner<BugInstance>().setReportParser(new SpotbugXMLReportParser(
-                new File("C:\\Users\\x5651\\Documents\\bishe\\MLBasedSAST\\report2slice\\core\\src\\test\\resources\\java-sec-code-1.0.0-spotbugs.xml"), null))
-                .setSlicer(new JoanaSlicer()).run(monitor);
     }
 }

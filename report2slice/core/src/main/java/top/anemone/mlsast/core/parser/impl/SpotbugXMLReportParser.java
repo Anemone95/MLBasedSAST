@@ -12,6 +12,7 @@ import top.anemone.mlsast.core.data.*;
 import top.anemone.mlsast.core.exception.BCELParserException;
 import top.anemone.mlsast.core.exception.NotFoundException;
 import top.anemone.mlsast.core.exception.ParserException;
+import top.anemone.mlsast.core.exception.SourceNotFoundExcetion;
 import top.anemone.mlsast.core.parser.ReportParser;
 import top.anemone.mlsast.core.utils.BCELParser;
 import top.anemone.mlsast.core.utils.ExceptionUtil;
@@ -129,11 +130,11 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         Map<BugInstance, List<TaintFlow>> traces = new HashMap<>();
         for (int i = 0; i < bugInstances.size(); i++) {
             BugInstance bugInstance = bugInstances.get(i);
-            String err = "";
+            Exception err=null;
             try {
                 traces.put(bugInstance, bugInstance2Flow(bugInstance, appJars));
             } catch (BCELParserException | IOException | NotFoundException e) {
-                err = ExceptionUtil.getStackTrace(e);
+                err=e;
             } finally {
                 if (monitor!=null) monitor.process(i, bugInstances.size(), bugInstance, traces.get(i), err);
             }
@@ -178,7 +179,7 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
             }
         }
         if (sourceLineAnnotation == null) {
-            throw new NotFoundException(bugInstance.toString() + " can't find source");
+            throw new SourceNotFoundExcetion(bugInstance.toString() + " can't find source");
         }
         source.setClazz(sourceLineAnnotation.getClassName());
         source.setFileName(sourceLineAnnotation.getSourceFile());

@@ -8,10 +8,7 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.TaintFlow;
 import top.anemone.mlsast.core.data.VO.Slice;
-import top.anemone.mlsast.core.exception.NotFoundException;
-import top.anemone.mlsast.core.exception.ParserException;
-import top.anemone.mlsast.core.exception.PredictorRunnerException;
-import top.anemone.mlsast.core.exception.SliceRunnerException;
+import top.anemone.mlsast.core.exception.*;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.core.predict.PredictProject;
 import top.anemone.mlsast.core.predict.PredictRunner;
@@ -19,6 +16,7 @@ import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
 import top.anemone.mlsast.core.slice.SliceProject;
 import top.anemone.mlsast.core.slice.SliceRunner;
 import top.anemone.mlsast.core.slice.impl.JoanaSlicer;
+import top.anemone.mlsast.core.utils.ExceptionUtil;
 import top.anemone.mlsast.core.utils.JsonUtil;
 
 import java.io.File;
@@ -66,14 +64,18 @@ public class AiConsole {
             }
 
             @Override
-            public void process(int idx, int totalWork, Object input, Object output, String error) {
+            public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
                 if(stage.equals("Prediction")){
                     LOGGER.info(String.format("Predict result: %s.", output));
                 } else {
                     LOGGER.info(String.format("Stage: %s, Progress: %d/%d.", stage, idx, totalWork));
                 }
-                if(error!=null && error.length()!=0){
-                    LOGGER.error(error);
+                if(exception!=null){
+                    if (exception instanceof SourceNotFoundExcetion){
+                        LOGGER.warn(exception.getMessage());
+                    } else{
+                        LOGGER.error(ExceptionUtil.getStackTrace(exception));
+                    }
                 }
 
             }

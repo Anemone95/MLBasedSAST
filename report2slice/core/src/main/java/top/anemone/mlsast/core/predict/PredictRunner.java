@@ -59,16 +59,18 @@ public class PredictRunner<T> {
             PredictEnum isTP = PredictEnum.ERROR;
             if (flows==null){
                 predictProject.putPrediction(sliceProject.getBugInstances().get(i),isTP);
+                monitor.process(i+1, sliceProject.getBugInstances().size(), null, isTP, new NotFoundException("BugInstance's taint flow not found"));
                 continue;
             }
             TaintFlow flow=flows.get(0);
             String sliceStr = sliceProject.getBugInstance2slice().get(sliceProject.getBugInstances().get(i));
             if (sliceStr==null){
                 predictProject.putPrediction(sliceProject.getBugInstances().get(i),isTP);
+                monitor.process(i+1, sliceProject.getBugInstances().size(), null, isTP, new NotFoundException("BugInstance's slice not found"));
                 continue;
             }
             Slice slice = new Slice(flow, sliceStr, flow.getHash(), sliceProject.getTaintProject().getProjectName());
-            String err=null;
+            Exception exception=null;
             try {
                 if (predictor.predict(slice)) {
                     isTP = PredictEnum.TRUE;
@@ -76,10 +78,10 @@ public class PredictRunner<T> {
                     isTP = PredictEnum.FALSE;
                 }
             } catch (PredictorException e) {
-                err = ExceptionUtil.getStackTrace(e);
+                exception=e.getRawException();
             }
             predictProject.putPrediction(sliceProject.getBugInstances().get(i),isTP);
-            monitor.process(i+1, sliceProject.getBugInstances().size(), slice, isTP, err);
+            monitor.process(i+1, sliceProject.getBugInstances().size(), slice, isTP, exception);
         }
         return predictProject;
     }

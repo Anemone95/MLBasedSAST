@@ -69,7 +69,7 @@ public class JoanaSlicer implements Slicer {
         String slice = null;
         try {
             slice = this.computeSlice(entryClass, entryMethod, entryRef, sink, null);
-        } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException e) {
+        } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException|ClassCastException e) {
             throw new SlicerException(e.getMessage(), e);
         }
         return slice;

@@ -77,7 +77,7 @@ public class AiListeners implements LogSync {
             }
 
             @Override
-            public void process(int idx, int totalWork, Object input, Object output, String error) {
+            public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
                 aiAnalyzingDialog.updateCount(idx, totalWork);
             }
         };
