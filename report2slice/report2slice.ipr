@@ -7,8 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="core" />
-        <module name="spotbugsGUI" />
         <module name="contrib-resources" />
+        <module name="spotbugsGUI" />
         <module name="cli" />
       </profile>
     </annotationProcessing>

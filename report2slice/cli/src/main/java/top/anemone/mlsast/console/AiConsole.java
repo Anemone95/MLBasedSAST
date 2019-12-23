@@ -65,11 +65,6 @@ public class AiConsole {
 
             @Override
             public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
-                if(stage.equals("Prediction")){
-                    LOGGER.info(String.format("Predict result: %s.", output));
-                } else {
-                    LOGGER.info(String.format("Stage: %s, Progress: %d/%d.", stage, idx, totalWork));
-                }
                 if(exception!=null){
                     if (exception instanceof SourceNotFoundExcetion){
                         LOGGER.warn(exception.getMessage());
@@ -77,7 +72,11 @@ public class AiConsole {
                         LOGGER.error(ExceptionUtil.getStackTrace(exception));
                     }
                 }
-
+                if(stage.equals("Prediction")){
+                    LOGGER.info(String.format("Predict result: %s.", output));
+                } else {
+                    LOGGER.info(String.format("Stage: %s, Progress: %d/%d.", stage, idx, totalWork));
+                }
             }
         };
         if (ns.getString("command").equals("slice")) {
