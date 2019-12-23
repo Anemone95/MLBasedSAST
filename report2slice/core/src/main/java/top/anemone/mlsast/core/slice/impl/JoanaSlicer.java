@@ -24,7 +24,6 @@ import edu.kit.joana.ifc.sdg.mhpoptimization.CSDGPreprocessor;
 import edu.kit.joana.wala.core.ExternalCallCheck;
 import edu.kit.joana.wala.core.Main;
 import edu.kit.joana.wala.core.SDGBuilder;
-import edu.kit.joana.wala.core.prune.NodeLimitPruner;
 import lombok.Data;
 import top.anemone.mlsast.core.classloader.AppClassloader;
 import top.anemone.mlsast.core.classloader.AppWalaClassLoaderFactory;
@@ -163,7 +162,7 @@ public class JoanaSlicer implements Slicer {
         scfg.nativeSpecClassLoader = new AppClassloader(new File[]{});
         scfg.scope = makeMinimalScope(appJars, libJars, exclusionsFile, scfg.nativeSpecClassLoader);
         scfg.cache = new AnalysisCacheImpl();
-        scfg.cha = ClassHierarchyFactory.makeWithRoot(scfg.scope, new AppWalaClassLoaderFactory(scfg.scope.getExclusions()));
+        scfg.cha = ClassHierarchyFactory.make(scfg.scope, new AppWalaClassLoaderFactory(scfg.scope.getExclusions()));
         scfg.ext = ExternalCallCheck.EMPTY;
         scfg.immutableNoOut = Main.IMMUTABLE_NO_OUT;
         scfg.immutableStubs = Main.IMMUTABLE_STUBS;
@@ -190,7 +189,6 @@ public class JoanaSlicer implements Slicer {
         scfg.debugAccessPath = false;
         scfg.debugStaticInitializers = false;
         scfg.entrypointFactory=new AppEntrypointFactory();
-        scfg.cgPruner=new NodeLimitPruner(2000);
         return scfg;
     }
 

@@ -18,9 +18,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>top.anemone.joana</groupId>
-            <artifactId>joana-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>joana</groupId>
+            <artifactId>joana.wala.core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.javaparser</groupId>
