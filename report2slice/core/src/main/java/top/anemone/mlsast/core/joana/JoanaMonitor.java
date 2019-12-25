@@ -35,7 +35,7 @@ public class JoanaMonitor implements MonitorUtil.IProgressMonitor {
 
     @Override
     public void worked(int units) {
-        LOGGER.debug("worked: "+units);
+        LOGGER.info("worked: "+units);
     }
 
     @Override
