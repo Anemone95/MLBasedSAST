@@ -62,7 +62,7 @@ def train(slice_dir: str, label_dir: str):
         (tf.string, tf.int64), (tf.TensorShape([]), tf.TensorShape([])))
 
     # 打乱数据
-    BUFFER_SIZE = 5000  # 要大于数据数
+    BUFFER_SIZE = 50  # 要大于数据数
     all_labeled_data = all_labeled_data.shuffle(BUFFER_SIZE, reshuffle_each_iteration=True)
 
     # 打印部分数据
@@ -90,7 +90,7 @@ def train(slice_dir: str, label_dir: str):
 
     # 对数据分组（之后按组计算损失函数），并且填充文本至固定长度，这时vocabsize=len（vocabulary_set）+1
     BATCH_SIZE = 8  # BATCH_SIZE>epoch*epoches
-    TAKE_SIZE = 400
+    TAKE_SIZE = 200
     train_data = all_encoded_data.skip(TAKE_SIZE).shuffle(BUFFER_SIZE)
     train_data = train_data.padded_batch(BATCH_SIZE, padded_shapes=([-1], []))
     # train_data = train_data.repeat(2)
@@ -108,10 +108,12 @@ def train(slice_dir: str, label_dir: str):
 
     # 初始化一个BLSTM
     model = tf.keras.Sequential([
-        tf.keras.layers.Embedding(encoder.vocab_size + 100, 128),
-        tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(128)),  # BLSTM
-        tf.keras.layers.Dense(128, activation='sigmoid'),
-        tf.keras.layers.Dense(1, activation='sigmoid')  # 标签个数
+        # tf.keras.layers.Embedding(encoder.vocab_size + 1, 16, mask_zero=True, trainable=False),
+        tf.keras.layers.Embedding(encoder.vocab_size + 1, 16),
+        # tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64, return_sequences=True)),
+        tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)),  # BLSTM
+        # tf.keras.layers.Dense(128, activation='sigmoid'),
+        tf.keras.layers.Dense(1, activation='linear')  # 标签个数
     ])
 
     # 配置BLSTM
@@ -122,10 +124,8 @@ def train(slice_dir: str, label_dir: str):
     # 训练
     lr_callback = tf.keras.callbacks.LearningRateScheduler(lr_schedule)
     # tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
-    history = model.fit(train_data, epochs=10,
-                        validation_data=test_data,
-                        validation_steps=3
-                        )
+    history = model.fit(train_data, epochs=20,
+                        validation_data=test_data)
 
     # 测试
     test_loss, test_acc = model.evaluate(test_data)

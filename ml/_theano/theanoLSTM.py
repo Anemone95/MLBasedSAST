@@ -384,7 +384,7 @@ def train_lstm(
         data_dir: str,
         label_dir: str,
         tokenizer: Tokenizer,
-        dim_proj=128,  # word embeding dimension and LSTM number of hidden units.
+        dim_proj=16,  # word embeding dimension and LSTM number of hidden units.
         patience=10,  # Number of epoch to wait before early stop if no progress
         max_epochs=5000,  # The maximum number of epoch to run
         disp_freq=10,  # Display to stdout the training progress every N updates

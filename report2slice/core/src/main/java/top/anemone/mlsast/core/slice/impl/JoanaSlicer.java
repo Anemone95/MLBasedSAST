@@ -190,7 +190,7 @@ public class JoanaSlicer implements Slicer {
         scfg.debugAccessPath = false;
         scfg.debugStaticInitializers = false;
         scfg.entrypointFactory=new AppEntrypointFactory();
-        scfg.cgPruner=new NodeLimitPruner(2000);
+        scfg.cgPruner=new NodeLimitPruner(400);
         return scfg;
     }
 
