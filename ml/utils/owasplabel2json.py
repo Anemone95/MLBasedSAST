@@ -14,6 +14,8 @@ import pathlib
 def owasplabel2json(expected_csv, slice_dir, output_json):
     res = []
     table = {}
+    is_real_num = 0
+    not_real_num = 0
     with open(expected_csv, 'r') as f:
         for e in f.readlines():
             if e.startswith('#'):
@@ -35,7 +37,11 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
             continue
         label["isReal"] = table[test_name]
         res.append(label)
-    print("Get ", len(res), "records")
+        if table[test_name]:
+            is_real_num += 1
+        else:
+            not_real_num += 1
+    print("Get records:", len(res), ",true records:", is_real_num, ",false records:", not_real_num)
     with open(output_json, 'w') as f:
         json.dump(res, f, indent=4)
 

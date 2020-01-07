@@ -69,7 +69,7 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         Collection<BugInstance> c = bugCollection.getCollection();
 
         List<BugInstance> bugInstances = c.stream()
-                .filter(e -> caredVulns.contains(e.getType()) && !e.isDead()) //过滤问题类型，和未被修复的问题
+                .filter(e -> caredVulns.contains(e.getType()) && !e.isDead() && e.getPriority()!=3) //过滤问题类型，优先级超低问题和未被修复的问题
                 .filter(e -> {
                     // 过滤掉没有source点的问题
                     for (BugAnnotation annotation : e.getAnnotations()) {

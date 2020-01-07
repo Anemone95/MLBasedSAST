@@ -19,9 +19,10 @@ import torch.optim as optim
 import preprocessing
 from _pytorch.metriccalculator import MetricCalculator
 from _pytorch import blstm
-from _pytorch import text
-
 ## hyper parameter
+import torch.nn.functional as F
+from _pytorch.text import *
+
 EPOCH = 20
 BATCH_SIZE = 16
 HAS_GPU = torch.cuda.is_available()
@@ -29,6 +30,8 @@ BASE_LEARNING_RATE = 0.01
 EMBEDDING_DIM = 16  # embedding
 HIDDEN_DIM = 16  # hidden dim
 LABEL_NUM = 2  # number of labels
+WORD_FREQ = 3
+early_stop_patience = 3
 
 
 def adjust_learning_rate(optimizer, epoch):
@@ -38,10 +41,10 @@ def adjust_learning_rate(optimizer, epoch):
     return optimizer
 
 
-def train():
-    dataset = text.TextDataset("data/slice/benchmark1.1", "data/label/benchmark1.1", preprocessing.preprocessing)
-    train_data, test_data = dataset.divide(0.9)
-    tokenizer = text.Tokenizer(freq_gt=3)
+def train(slice_dir: str, label_dir: str, train_precent: float = 1, saveto: str = None) -> (WordTokenDict, blstm.BLSTM):
+    dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    train_data, test_data = dataset.divide(train_precent)
+    tokenizer = Tokenizer(freq_gt=WORD_FREQ)
     tokenizer.build_dict(train_data)
 
     train_loader = DataLoader(train_data,
@@ -82,7 +85,7 @@ def train():
                 train_labels = torch.squeeze(train_labels)
 
             if HAS_GPU:
-                train_inputs, lengths, train_labels = train_inputs.cuda(), lengths, train_labels.cuda()
+                train_inputs, lengths, train_labels = train_inputs.cuda(), lengths.cuda(), train_labels.cuda()
 
             # 清空梯度
             model.zero_grad()
@@ -103,7 +106,7 @@ def train():
             total += len(train_labels)
             total_loss += loss.item()
         train_loss_.append(total_loss / total)
-        accuracy, recall, precision = metric.compute(["accuracy", "recall", "precision"])
+        accuracy, recall, precision = metric.compute(["accuracy", "tp_recall", "tp_precision"])
         print("[Epoch: {cur_epoch}/{total_epoch}] Training Loss: {loss:.3}, "
               "Acc: {acc:.3}, Precision: {precision:.3}, Recall: {recall:.3}, F1: {f1:.3}"
               .format(cur_epoch=epoch, total_epoch=EPOCH, loss=train_loss_[epoch],
@@ -125,27 +128,96 @@ def train():
             # 转置，否则需要batchfirst=True
             output = model(test_inputs, lengths)
 
-            # calc testing acc
-            _, predicted = torch.max(output.data, 1)
-            if HAS_GPU:
-                metric.update(predicted.cpu(), test_labels.cpu())
-            else:
-                metric.update(predicted, test_labels)
+            # # calc testing acc
+            # _, predicted = torch.max(F.softmax(output), 1)
 
-        accuracy, recall, precision = metric.compute(["accuracy", "recall", "precision"])
+            # calc testing acc
+            output = F.softmax(output)
+            output = output[:, 1] / (output[:, 0] + output[:, 1])  # 0:误报 1:正报
+            predicted2 = output > 0.4  # 谨慎的判断误报，可以减小这个值
+
+            if HAS_GPU:
+                metric.update(predicted2.cpu(), test_labels.cpu())
+            else:
+                metric.update(predicted2, test_labels)
+
+        accuracy, recall, precision, matrix = metric.compute(["accuracy", "fp_recall", "fp_precision", "matrix"])
 
         print("[Epoch: {cur_epoch}/{total_epoch}] Test Acc: {acc:.3},"
               " Precision: {precision:.3}, Recall: {recall:.3}, F1: {f1:.3}"
               .format(cur_epoch=epoch, total_epoch=EPOCH, acc=accuracy, precision=precision, recall=recall,
                       f1=(2 * precision * recall) / (precision + recall)))
+        print(matrix)
         t.append(time.time())
         epoch_time = t[-1] - t[-2]
         eta = (t[-1] - t[0]) / (epoch + 1) * (EPOCH - epoch - 1)
-        print("Epoch Time: {0}, ETA: {1}".format(epoch_time, eta))
+        print("Epoch Time: {0:.3}s, ETA: {1:.3}s".format(epoch_time, eta))
+
+    if saveto:
+        tokenizer.dict.save(saveto + ".token")
+        torch.save(model.state_dict(), saveto + ".pkl")
+    return tokenizer.dict, model
+
+
+def load(saved_model: str) -> (Tokenizer, blstm.BLSTM):
+    dic = WordTokenDict.load(saved_model + ".token")
+    tokenizer = Tokenizer(freq_gt=WORD_FREQ, token_dict=dic)
+    model = blstm.BLSTM(embedding_dim=EMBEDDING_DIM, hidden_dim=HIDDEN_DIM,
+                        vocab_size=len(tokenizer.dict), label_size=LABEL_NUM, use_gpu=HAS_GPU)
+    model.load_state_dict(torch.load(saved_model + ".pkl"))
+    return tokenizer, model
+
+
+def test(tokenizer: Tokenizer, model: blstm.BLSTM, slice_dir: str, label_dir: str):
+    dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+
+    loader = DataLoader(dataset,
+                        batch_size=100,
+                        shuffle=True,
+                        num_workers=4,
+                        collate_fn=tokenizer.tokenize_labeled_batch)
+    metric = MetricCalculator()
+    for iter, testdata in enumerate(loader):
+        test_inputs, lengths, test_labels = testdata
+        if len(test_labels.shape) > 1:
+            test_labels = torch.squeeze(test_labels)
+
+        if HAS_GPU:
+            test_inputs, lengths, test_labels = test_inputs.cuda(), lengths.cuda(), test_labels.cuda()
+            model = model.cuda()
+
+        # 清空梯度
+        model.zero_grad()
+        #
+        # 转置，否则需要batchfirst=True
+        output = model(test_inputs, lengths)
+        output = F.softmax(output)
+
+        # calc testing acc
+        _, predicted = torch.max(output, 1)
+        output = output[:, 1] / (output[:, 0] + output[:, 1])  # 0:误报 1:正报
+        predicted2 = output > 0.4  # 谨慎的判断误报，可以减小这个值
+
+        if HAS_GPU:
+            metric.update(predicted2.cpu(), test_labels.cpu())
+        else:
+            metric.update(predicted2, test_labels)
+
+    m = metric.compute(["matrix"])
+    print(m)
+
+
+def predict(dic, model, slice):
+    pass
 
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(filename)s : %(funcName)s : %(message)s',
                         level=logging.INFO)
-    train()
-    pass
+
+    current_time = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
+    model_file = 'model/pytorch-lstm-{}'.format(current_time)
+    train("data/slice/multi", "data/label/multi", train_precent=0.9, saveto=model_file)
+    # tokenizer, nn = load("model/pytorch-lstm-2020-01-03-15-05")
+    # test(tokenizer, nn, "data/slice/juliet_test_suite_v1.3", "data/label/juliet_test_suite_v1.3")
+    # pass

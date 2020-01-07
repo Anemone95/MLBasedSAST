@@ -36,9 +36,15 @@ class TextDataset(Dataset):
         for label_file in pathlib.Path(label_dir).glob('**/*.json'):
             with open(str(label_file), 'r') as f:
                 labels_json = json.load(f)
-                for label in labels_json:
-                    is_real = 1 if label["isReal"] else 0
-                    self.data.append((label["flowHash"], is_real))
+                if type(labels_json) is list:
+                    for label in labels_json:
+                        is_real = 1 if label["isReal"] else 0
+                        self.data.append((label["flowHash"], is_real))
+                elif type(labels_json) is dict:
+                    is_real = 1 if labels_json["isReal"] else 0
+                    self.data.append((labels_json["flowHash"], is_real))
+                else:
+                    raise AttributeError("Need dict or list type")
 
     def divide(self, train_per: float):
         train_num = int(len(self.data) * train_per)
@@ -60,13 +66,13 @@ class TextDataset(Dataset):
 
 class WordTokenDict:
     def __init__(self, unk_token: str = "<unk>"):
-        self._idx2word = [""]  # 0常用做padding
+        self._idx2word = ["<pad>"]  # 0常用做padding, <pad>永不使用
         self._word2idx = {}
         self.unk_token = unk_token
         self.add_word(unk_token)
 
     def add_word(self, word: str):
-        if word not in self._word2idx:
+        if word not in self._idx2word:
             self._idx2word.append(word)
             self._word2idx[word] = len(self._idx2word) - 1
 
@@ -75,6 +81,23 @@ class WordTokenDict:
 
     def itow(self, idx: int) -> str:
         return self._idx2word[idx] if idx < len(self._idx2word) else self.unk_token
+
+    def save(self, filename: str):
+        with open(filename, 'w') as f:
+            for idx, word in enumerate(self._idx2word):
+                print("{0},{1}".format(idx, word), file=f)
+
+    @staticmethod
+    def load(filename: str):
+        with open(filename, 'r') as f:
+            dic = WordTokenDict(unk_token='<unk>')
+            line="nonce"
+            while line:
+                line = f.readline()
+                if len(line):
+                    idx, word = line.strip().split(',')
+                    dic.add_word(word)
+        return dic
 
     def __str__(self):
         return self._word2idx.__str__()

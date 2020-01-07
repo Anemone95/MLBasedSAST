@@ -26,8 +26,14 @@ class MetricCalculator:
             self.target_labels = torch.cat((self.target_labels, target_labels), dim=0)
 
     def compute(self, choosed_metrics: [str]):
-        predict_labels, target_labels=self.predict_labels.numpy(), self.target_labels.numpy()
-        metrics = {"accuracy": accuracy_score, "recall": recall_score, "precision": precision_score}
+        predict_labels, target_labels = self.predict_labels.numpy(), self.target_labels.numpy()
+        metrics = {"accuracy": accuracy_score,
+                   "matrix": confusion_matrix,
+                   "fp_recall": lambda t, p: recall_score(t, p, pos_label=1),
+                   "fp_precision": lambda t, p: precision_score(t, p, pos_label=1),
+                   "tp_recall": lambda t, p: recall_score(t, p, pos_label=0),
+                   "tp_precision": lambda t, p: precision_score(t, p, pos_label=0)
+                   }
         ret = []
         for metric in choosed_metrics:
             ret.append(metrics[metric](target_labels, predict_labels))

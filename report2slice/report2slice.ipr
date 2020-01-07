@@ -413,17 +413,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/jgraph/jgraph/5.13.0.0/jgraph-5.13.0.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: joana:joana.wala.core:1.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/joana/joana.wala.core/1.0/joana.wala.core-1.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/joana/joana.wala.core/1.0/joana.wala.core-1.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/joana/joana.wala.core/1.0/joana.wala.core-1.0-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: junit:junit:4.12">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/" />

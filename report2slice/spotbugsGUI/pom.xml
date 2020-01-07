@@ -17,10 +17,10 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>joana</groupId>
-            <artifactId>joana.wala.core</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>joana</groupId>-->
+<!--            <artifactId>joana.wala.core</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
