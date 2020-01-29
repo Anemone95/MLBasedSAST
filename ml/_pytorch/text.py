@@ -16,7 +16,10 @@ import random
 import torch
 
 import torch.nn.utils.rnn as rnn_utils
+from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
+
+import preprocessing
 
 PADDING_VALUE = 0
 
@@ -91,7 +94,7 @@ class WordTokenDict:
     def load(filename: str):
         with open(filename, 'r') as f:
             dic = WordTokenDict(unk_token='<unk>')
-            line="nonce"
+            line = "nonce"
             while line:
                 line = f.readline()
                 if len(line):
@@ -160,7 +163,15 @@ class Tokenizer:
 
 
 if __name__ == '__main__':
-    pass
-    # for i in DataIterator('./data/train.txt'):
-    #     print(i)
+    dataset = TextDataset('./data/slice/juliet_test_suite_xss', './data/label/juliet_test_suite_xss',
+                          preprocessing.preprocessing)
+    tokenizer = Tokenizer(freq_gt=0)
+    tokenizer.build_dict(dataset)
+    dataloader=DataLoader(dataset,
+               batch_size=1,
+               shuffle=True,
+               num_workers=4,
+               collate_fn=tokenizer.tokenize_labeled_batch)
     # pass
+    for i in dataset:
+        print(i)

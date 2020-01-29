@@ -2,7 +2,7 @@
 
 <BugCollection version="4.0.0-SNAPSHOT" sequence="0" timestamp="1576411858090" analysisTimestamp="1576565811663" release="">
   <Project projectName="java-sec-code-1.0.0">
-    <Jar>D:\bishe\MLBasedSAST\report2slice\core\src\test\resources\java-sec-code-1.0.0.jar</Jar>
+    <Jar>D:\bishe\spotbugs-wizard\tests\resources\java-sec-code-1.0.0.jar</Jar>
   </Project>
   <BugInstance type="MS_EXPOSE_REP" priority="2" rank="18" abbrev="MS" category="MALICIOUS_CODE">
     <Class classname="org.joychou.config.WebConfig">

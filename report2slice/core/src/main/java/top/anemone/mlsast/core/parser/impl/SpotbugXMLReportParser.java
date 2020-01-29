@@ -15,7 +15,6 @@ import top.anemone.mlsast.core.exception.ParserException;
 import top.anemone.mlsast.core.exception.SourceNotFoundExcetion;
 import top.anemone.mlsast.core.parser.ReportParser;
 import top.anemone.mlsast.core.utils.BCELParser;
-import top.anemone.mlsast.core.utils.ExceptionUtil;
 import top.anemone.mlsast.core.utils.JarUtil;
 
 import java.io.File;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 
 
 public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
-    private static String findsecbugsPluginPath = JarUtil.getPath() + "/contrib/findsecbugs-plugin-1.10.1.jar";
+    private static String findsecbugsPluginPath = JarUtil.getPath() + "/contrib/findsecbugs-plugin.jar";
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugXMLReportParser.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(

@@ -28,9 +28,9 @@ BATCH_SIZE = 16
 HAS_GPU = torch.cuda.is_available()
 BASE_LEARNING_RATE = 0.01
 EMBEDDING_DIM = 16  # embedding
-HIDDEN_DIM = 16  # hidden dim
+HIDDEN_DIM = 32  # hidden dim
 LABEL_NUM = 2  # number of labels
-WORD_FREQ = 3
+WORD_FREQ = 5
 early_stop_patience = 3
 
 
@@ -42,6 +42,8 @@ def adjust_learning_rate(optimizer, epoch):
 
 
 def train(slice_dir: str, label_dir: str, train_precent: float = 1, saveto: str = None) -> (WordTokenDict, blstm.BLSTM):
+    if not HAS_GPU:
+        logging.warning("GPU not found!")
     dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
     train_data, test_data = dataset.divide(train_precent)
     tokenizer = Tokenizer(freq_gt=WORD_FREQ)
@@ -134,7 +136,7 @@ def train(slice_dir: str, label_dir: str, train_precent: float = 1, saveto: str 
             # calc testing acc
             output = F.softmax(output)
             output = output[:, 1] / (output[:, 0] + output[:, 1])  # 0:误报 1:正报
-            predicted2 = output > 0.4  # 谨慎的判断误报，可以减小这个值
+            predicted2 = output > 0.5  # 谨慎的判断误报，可以减小这个值
 
             if HAS_GPU:
                 metric.update(predicted2.cpu(), test_labels.cpu())
@@ -151,7 +153,7 @@ def train(slice_dir: str, label_dir: str, train_precent: float = 1, saveto: str 
         t.append(time.time())
         epoch_time = t[-1] - t[-2]
         eta = (t[-1] - t[0]) / (epoch + 1) * (EPOCH - epoch - 1)
-        print("Epoch Time: {0:.3}s, ETA: {1:.3}s".format(epoch_time, eta))
+        print("Epoch Time: {0:.3}s, ETA: {1:4.3}s".format(epoch_time, eta))
 
     if saveto:
         tokenizer.dict.save(saveto + ".token")
@@ -196,7 +198,7 @@ def test(tokenizer: Tokenizer, model: blstm.BLSTM, slice_dir: str, label_dir: st
         # calc testing acc
         _, predicted = torch.max(output, 1)
         output = output[:, 1] / (output[:, 0] + output[:, 1])  # 0:误报 1:正报
-        predicted2 = output > 0.4  # 谨慎的判断误报，可以减小这个值
+        predicted2 = output > 0.5  # 谨慎的判断误报，可以减小这个值
 
         if HAS_GPU:
             metric.update(predicted2.cpu(), test_labels.cpu())
@@ -217,7 +219,7 @@ if __name__ == '__main__':
 
     current_time = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
     model_file = 'model/pytorch-lstm-{}'.format(current_time)
-    train("data/slice/multi", "data/label/multi", train_precent=0.9, saveto=model_file)
+    train("data/slice/benchmark1.1", "data/label/benchmark1.1", train_precent=0.9, saveto=model_file)
     # tokenizer, nn = load("model/pytorch-lstm-2020-01-03-15-05")
     # test(tokenizer, nn, "data/slice/juliet_test_suite_v1.3", "data/label/juliet_test_suite_v1.3")
     # pass

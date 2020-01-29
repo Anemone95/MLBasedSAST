@@ -15,7 +15,7 @@ import java.util.Objects;
 public class MyGUI extends LaunchGUI{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MyGUI.class);
-    private static String findsecbugsPluginPath = JarUtil.getPath()+ "/contrib/findsecbugs-plugin-1.10.1.jar";
+    private static String findsecbugsPluginPath = JarUtil.getPath()+ "/contrib/findsecbugs-plugin.jar";
     public static void main(String[] args) {
         launchGUI(null);
     }

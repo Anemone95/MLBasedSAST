@@ -42,11 +42,11 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
         else:
             not_real_num += 1
     print("Get records:", len(res), ",true records:", is_real_num, ",false records:", not_real_num)
-    with open(output_json, 'w') as f:
-        json.dump(res, f, indent=4)
+    # with open(output_json, 'w') as f:
+    #     json.dump(res, f, indent=4)
 
 
 if __name__ == '__main__':
-    owasplabel2json('../data/expectedresults-1.1.csv',
-                    '../data/slice/benchmark1.1',
-                    '../data/label/benchmark1.1/label.json')
+    owasplabel2json('../data/expectedresults-1.2.csv',
+                    '../data/slice/benchmark1.2',
+                    '../data/label/benchmark1.2/label.json')
