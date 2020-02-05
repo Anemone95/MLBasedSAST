@@ -77,7 +77,7 @@ public class JoanaLineSlicer {
 			if (!successorNodes.isEmpty()){
 			    nodes=successorNodes;
 			} else {
-				throw new NotFoundException("No node " + line);
+				throw new NotFoundException(line, sdg);
 			}
 		}
 		return nodes;

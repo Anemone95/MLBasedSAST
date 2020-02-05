@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="4.0.0-SNAPSHOT" sequence="0" timestamp="1580351944000" analysisTimestamp="1580376276529" release="">
+  <Project projectName="java-vuln-sample">
+    <Jar>D:\bishe\java-vuln-sample\target\java-vuln-sample-1.0-SNAPSHOT.jar</Jar>
+    <SrcDir>D:\bishe\java-vuln-sample\src\main\java</SrcDir>
+  </Project>
+  <BugInstance type="NP_LOAD_OF_KNOWN_NULL_VALUE" priority="2" rank="16" abbrev="NP" category="STYLE">
+    <Class classname="top.anemone.samples.XSS">
+      <SourceLine classname="top.anemone.samples.XSS" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    </Class>
+    <Method classname="top.anemone.samples.XSS" name="passthrough0" signature="(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;" isStatic="true">
+      <SourceLine classname="top.anemone.samples.XSS" start="23" end="30" startBytecode="0" endBytecode="24" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    </Method>
+    <LocalVariable name="s1" register="0" pc="30" role="LOCAL_VARIABLE_VALUE_OF"/>
+    <SourceLine classname="top.anemone.samples.XSS" start="28" end="28" startBytecode="33" endBytecode="33" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+  </BugInstance>
+  <BugInstance type="SERVLET_PARAMETER" priority="3" rank="15" abbrev="SECSP" category="SECURITY">
+    <Class classname="top.anemone.samples.XSS">
+      <SourceLine classname="top.anemone.samples.XSS" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    </Class>
+    <Method classname="top.anemone.samples.XSS" name="doGet" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="top.anemone.samples.XSS" start="12" end="21" startBytecode="0" endBytecode="168" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    </Method>
+    <SourceLine classname="top.anemone.samples.XSS" start="12" end="12" startBytecode="3" endBytecode="3" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    <String value="getParameter"/>
+  </BugInstance>
+  <BugInstance type="XSS_SERVLET" priority="1" rank="10" abbrev="SECXSS2" category="SECURITY">
+    <Class classname="top.anemone.samples.XSS">
+      <SourceLine classname="top.anemone.samples.XSS" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    </Class>
+    <Method classname="top.anemone.samples.XSS" name="sink" signature="(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V" isStatic="true">
+      <SourceLine classname="top.anemone.samples.XSS" start="44" end="45" startBytecode="0" endBytecode="66" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    </Method>
+    <SourceLine classname="top.anemone.samples.XSS" start="44" end="44" startBytecode="7" endBytecode="7" sourcefile="XSS.java" sourcepath="top/anemone/samples/XSS.java"/>
+    <String value="java.io.PrintWriter.print(Ljava/lang/String;)V" role="Sink method"/>
+    <String value="0" role="Sink parameter"/>
+    <String value="static top.anemone.samples.XSS.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V parameter 0" role="Unknown source"/>
+    <String value="2 entries with tainted arguments detected" role="Method usage"/>
+    <String value="1" role="Taintflow"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS" methodName="doGet" methodSig="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false" id="0" depth="0" type="CALL" firstId="1" role="" hasSrc="false"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="javax.servlet.http.HttpServletRequest" methodName="getParameter" methodSig="(Ljava/lang/String;)Ljava/lang/String;" isStatic="false" id="1" depth="1" type="CALL" nextId="2" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="12" srcEndLine="12" srcStartBytecode="3" srcEndBytecode="3"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS" methodName="passthrough1" methodSig="(Ljava/lang/String;)Ljava/lang/String;" isStatic="false" id="2" depth="1" type="CALL" firstId="3" nextId="5" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="16" srcEndLine="16" srcStartBytecode="20" srcEndBytecode="20"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="java.lang.String" methodName="replace" methodSig="(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" isStatic="false" id="3" depth="2" type="CALL" nextId="4" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="35" srcEndLine="35" srcStartBytecode="5" srcEndBytecode="5"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.LocationNodeAnnotation inst="areturn" id="4" type="RETURN" depth="2" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="35" srcEndLine="35" srcStartBytecode="8" srcEndBytecode="8"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS" methodName="passthrough2" methodSig="(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)Ljava/lang/String;" isStatic="false" id="5" depth="1" type="CALL" firstId="6" nextId="10" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="18" srcEndLine="18" srcStartBytecode="31" srcEndBytecode="31"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS" methodName="sink" methodSig="(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V" isStatic="true" id="6" depth="2" type="CALL" firstId="7" nextId="8" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="39" srcEndLine="39" srcStartBytecode="2" srcEndBytecode="2"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="java.io.PrintWriter" methodName="print" methodSig="(Ljava/lang/String;)V" isStatic="false" id="7" depth="3" type="SINK" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="44" srcEndLine="44" srcStartBytecode="7" srcEndBytecode="7"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="java.lang.String" methodName="replace" methodSig="(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" isStatic="false" id="8" depth="2" type="CALL" nextId="9" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="40" srcEndLine="40" srcStartBytecode="10" srcEndBytecode="10"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.LocationNodeAnnotation inst="areturn" id="9" type="RETURN" depth="2" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="41" srcEndLine="41" srcStartBytecode="15" srcEndBytecode="15"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS" methodName="sink" methodSig="(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V" isStatic="true" id="10" depth="1" type="CALL" firstId="7" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="20" srcEndLine="20" srcStartBytecode="39" srcEndBytecode="39"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="java.io.PrintWriter" methodName="print" methodSig="(Ljava/lang/String;)V" isStatic="false" id="7" depth="2" type="SINK" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="44" srcEndLine="44" srcStartBytecode="7" srcEndBytecode="7"/>
+    <String value="2" role="Taintflow"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS2" methodName="doGet" methodSig="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false" id="11" depth="0" type="CALL" firstId="12" role="" hasSrc="false"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="javax.servlet.http.HttpServletRequest" methodName="getParameter" methodSig="(Ljava/lang/String;)Ljava/lang/String;" isStatic="false" id="12" depth="1" type="CALL" nextId="13" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS2" srcSourceFile="XSS2.java" srcStartLine="13" srcEndLine="13" srcStartBytecode="3" srcEndBytecode="3"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS2" methodName="passthrough3" methodSig="(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V" isStatic="false" id="13" depth="1" type="CALL" firstId="14" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS2" srcSourceFile="XSS2.java" srcStartLine="14" srcEndLine="14" srcStartBytecode="12" srcEndBytecode="12"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="top.anemone.samples.XSS" methodName="sink" methodSig="(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V" isStatic="true" id="14" depth="2" type="CALL" firstId="7" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS2" srcSourceFile="XSS2.java" srcStartLine="17" srcEndLine="17" srcStartBytecode="2" srcEndBytecode="2"/>
+    <com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation className="java.io.PrintWriter" methodName="print" methodSig="(Ljava/lang/String;)V" isStatic="false" id="7" depth="3" type="SINK" role="" hasSrc="true" srcDescription="SOURCE_LINE_DEFAULT" srcClassName="top.anemone.samples.XSS" srcSourceFile="XSS.java" srcStartLine="44" srcEndLine="44" srcStartBytecode="7" srcEndBytecode="7"/>
+  </BugInstance>
+  <BugInstance type="SERVLET_PARAMETER" priority="3" rank="15" abbrev="SECSP" category="SECURITY">
+    <Class classname="top.anemone.samples.XSS2">
+      <SourceLine classname="top.anemone.samples.XSS2" sourcefile="XSS2.java" sourcepath="top/anemone/samples/XSS2.java"/>
+    </Class>
+    <Method classname="top.anemone.samples.XSS2" name="doGet" signature="(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V" isStatic="false">
+      <SourceLine classname="top.anemone.samples.XSS2" start="13" end="15" startBytecode="0" endBytecode="95" sourcefile="XSS2.java" sourcepath="top/anemone/samples/XSS2.java"/>
+    </Method>
+    <SourceLine classname="top.anemone.samples.XSS2" start="13" end="13" startBytecode="3" endBytecode="3" sourcefile="XSS2.java" sourcepath="top/anemone/samples/XSS2.java"/>
+    <String value="getParameter"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="3">
+    <MissingClass>javax.servlet.http.HttpServlet</MissingClass>
+    <MissingClass>javax.servlet.http.HttpServletRequest</MissingClass>
+    <MissingClass>javax.servlet.http.HttpServletResponse</MissingClass>
+  </Errors>
+  <FindBugsSummary timestamp="Thu, 30 Jan 2020 10:39:04 +0800" total_classes="2" referenced_classes="8" total_bugs="4" total_size="38" num_packages="1" java_version="1.8.0_211" vm_version="25.211-b12" cpu_seconds="24.06" clock_seconds="47.75" peak_mbytes="251.47" alloc_mbytes="4530.00" gc_seconds="0.14" priority_3="2" priority_2="1" priority_1="1">
+    <PackageStats package="top.anemone.samples" total_bugs="4" total_types="2" total_size="38" priority_3="2" priority_2="1" priority_1="1">
+      <ClassStats class="top.anemone.samples.XSS" sourceFile="XSS.java" interface="false" size="28" bugs="3" priority_3="1" priority_2="1" priority_1="1"/>
+      <ClassStats class="top.anemone.samples.XSS2" sourceFile="XSS2.java" interface="false" size="10" bugs="1" priority_3="1"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="825" invocations="2" avgMicrosecondsPerInvocation="412982" maxMicrosecondsPerInvocation="457833" standardDeviationMicrosecondsPerInvocation="44851"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="178" invocations="235" avgMicrosecondsPerInvocation="757" maxMicrosecondsPerInvocation="17623" standardDeviationMicrosecondsPerInvocation="1656"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue" totalMilliseconds="96" invocations="2" avgMicrosecondsPerInvocation="48431" maxMicrosecondsPerInvocation="96587" standardDeviationMicrosecondsPerInvocation="48156"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="68" invocations="9" avgMicrosecondsPerInvocation="7589" maxMicrosecondsPerInvocation="60695" standardDeviationMicrosecondsPerInvocation="18833"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="42" invocations="33" avgMicrosecondsPerInvocation="1299" maxMicrosecondsPerInvocation="6612" standardDeviationMicrosecondsPerInvocation="1643"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="38" invocations="8" avgMicrosecondsPerInvocation="4862" maxMicrosecondsPerInvocation="17199" standardDeviationMicrosecondsPerInvocation="5742"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="38" invocations="203" avgMicrosecondsPerInvocation="191" maxMicrosecondsPerInvocation="1998" standardDeviationMicrosecondsPerInvocation="328"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="35" invocations="29" avgMicrosecondsPerInvocation="1236" maxMicrosecondsPerInvocation="23869" standardDeviationMicrosecondsPerInvocation="4357"/>
+      <ClassProfile name="com.h3xstream.findsecbugs.taintanalysis.TaintDataflowEngine" totalMilliseconds="26" invocations="9" avgMicrosecondsPerInvocation="2904" maxMicrosecondsPerInvocation="22812" standardDeviationMicrosecondsPerInvocation="7042"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="23" invocations="9" avgMicrosecondsPerInvocation="2658" maxMicrosecondsPerInvocation="16231" standardDeviationMicrosecondsPerInvocation="4868"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="23" invocations="9" avgMicrosecondsPerInvocation="2604" maxMicrosecondsPerInvocation="17693" standardDeviationMicrosecondsPerInvocation="5366"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="22" invocations="238" avgMicrosecondsPerInvocation="96" maxMicrosecondsPerInvocation="969" standardDeviationMicrosecondsPerInvocation="77"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="22" invocations="19" avgMicrosecondsPerInvocation="1183" maxMicrosecondsPerInvocation="16012" standardDeviationMicrosecondsPerInvocation="3495"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="22" invocations="8" avgMicrosecondsPerInvocation="2802" maxMicrosecondsPerInvocation="9767" standardDeviationMicrosecondsPerInvocation="3141"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="21" invocations="8" avgMicrosecondsPerInvocation="2740" maxMicrosecondsPerInvocation="10323" standardDeviationMicrosecondsPerInvocation="3030"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="21" invocations="9" avgMicrosecondsPerInvocation="2356" maxMicrosecondsPerInvocation="15389" standardDeviationMicrosecondsPerInvocation="4639"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

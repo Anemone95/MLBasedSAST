@@ -8,10 +8,13 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.TaintFlow;
 import top.anemone.mlsast.core.data.VO.Slice;
+import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintTreeNode;
 import top.anemone.mlsast.core.exception.*;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.core.predict.PredictProject;
 import top.anemone.mlsast.core.predict.PredictRunner;
+import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
 import top.anemone.mlsast.core.slice.SliceProject;
 import top.anemone.mlsast.core.slice.SliceRunner;
@@ -26,7 +29,7 @@ import java.io.IOException;
 public class AiConsole {
     private static final Logger LOGGER = LoggerFactory.getLogger(AiConsole.class);
 
-    public static void main(String[] args) throws ParserException, NotFoundException, SliceRunnerException, PredictorRunnerException, IOException {
+    public static void main(String[] args) throws ParserException, NotFoundException, SliceRunnerException, PredictorRunnerException, IOException, PredictorException {
         ArgumentParser parser = ArgumentParsers.newFor("AiConsole").build()
                 .defaultHelp(true);
         Subparsers subparsers = parser.addSubparsers().title("command").dest("command");
@@ -94,13 +97,11 @@ public class AiConsole {
                 outputDir.mkdirs();
             }
             for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
-                if (sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i))!=null){
-                    TaintFlow flow = sliceProject.getTaintFlow(sliceProject.getBugInstances().get(i)).get(0);
-                    String sliceStr = sliceProject.getBugInstance2slice().get(sliceProject.getBugInstances().get(i));
-                    if (sliceStr!=null){
-                        Slice slice = new Slice(flow, sliceStr, flow.getHash(), sliceProject.getTaintProject().getProjectName());
-                        JsonUtil.dumpToFile(slice, outputDir+"/slice-"+flow.getHash()+".json");
-                    }
+                BugInstance bugInstance=sliceProject.getBugInstances().get(i);
+                for (TaintEdge edge: sliceProject.getTaintEdge2slice().keySet()) {
+                    Slice slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
+                            sliceProject.getTaintProject().getProjectName());
+                    JsonUtil.dumpToFile(slice, outputDir+"/slice-"+edge.sha1()+".json");
                 }
             }
         } else if (ns.getString("command").equals("predict")) {

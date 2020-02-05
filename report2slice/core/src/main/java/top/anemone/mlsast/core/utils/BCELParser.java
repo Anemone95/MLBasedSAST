@@ -9,13 +9,14 @@ import top.anemone.mlsast.core.data.Func;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.Deprecated;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-// TODO singleton
+@Deprecated
 public class BCELParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(BCELParser.class);
     public static void main(String[] args) throws IOException, NotFoundException, BCELParserException {
@@ -39,7 +40,7 @@ public class BCELParser {
             }
         }
         if (fileName==null){
-            throw new NotFoundException(String.format("Not found %s in %s", clazz, jars));
+            throw new NotFoundException(clazz, jars);
         }
         ClassParser classParser = new ClassParser(successorJar.getAbsolutePath(), fileName);
         JavaClass javaClass=classParser.parse();
@@ -58,7 +59,7 @@ public class BCELParser {
             }
         }
         if (successorMethod==null){
-            throw new NotFoundException(String.format("Not found line %s in %s", lineNumber, fileName ));
+            throw new NotFoundException(lineNumber, fileName);
         }
         Func f=new Func(clazz,successorMethod.getName(), successorMethod.getSignature());
         return f;
@@ -70,7 +71,7 @@ public class BCELParser {
         String filepath=clazz.replace('.','/')+".class";
         List<? extends ZipEntry> entries= zip.stream().filter(e-> e.getName().endsWith(filepath)).collect(Collectors.toList());
         if(entries.size()<1){
-            throw new NotFoundException("Expect 1 class file but got "+entries.size()+".");
+            throw new NotFoundException(clazz, jar);
         }
         if(entries.size()!=1){
             throw new BCELParserException("Expect 1 class file but got "+entries.size()+".");

@@ -1,31 +1,42 @@
 package top.anemone.mlsast.core.predict;
 
+import top.anemone.mlsast.core.data.taintTree.TaintEdge;
 import top.anemone.mlsast.core.slice.SliceProject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PredictProject<T> {
-    protected Map<T, PredictEnum> bugInstance2prediction;
+    protected Map<T, Boolean> bugInstance2isSafe;
+    protected Map<TaintEdge, Boolean> edge2isSafe;
     protected Map<T, Boolean> labelMap;
     protected SliceProject<T> sliceProject;
     public PredictProject(){
-        this.bugInstance2prediction=new HashMap<>();
+        this.bugInstance2isSafe =new HashMap<>();
+        this.edge2isSafe =new HashMap<>();
         this.labelMap=new HashMap<>();
     }
     public PredictProject(SliceProject<T> sliceProject){
-        this.bugInstance2prediction=new HashMap<>();
+        this.bugInstance2isSafe =new HashMap<>();
+        this.edge2isSafe =new HashMap<>();
         this.labelMap=new HashMap<>();
         this.sliceProject=sliceProject;
     }
-    public void putPrediction(T bugInstance, PredictEnum result){
-        bugInstance2prediction.put(bugInstance, result);
+    public void putPrediction(T bugInstance, boolean result){
+        bugInstance2isSafe.put(bugInstance, result);
     }
-    public PredictEnum getPrediction(T bugInstance){
-        return bugInstance2prediction.getOrDefault(bugInstance, null);
+    public void putPrediction(TaintEdge edge, Boolean result){
+        edge2isSafe.put(edge, result);
     }
-    public Map<T, PredictEnum> getPredictions(){
-        return bugInstance2prediction;
+
+    public Boolean getPrediction(T bugInstance){
+        return bugInstance2isSafe.get(bugInstance);
+    }
+    public Boolean getPrediction(TaintEdge edge){
+        return edge2isSafe.get(edge);
+    }
+    public Map<T, Boolean> getPredictions(){
+        return bugInstance2isSafe;
     }
     public String getProjectName(){
         return sliceProject.getProjectName();

@@ -226,26 +226,26 @@
         <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.0.0-RC.1/javaparser-core-3.0.0-RC.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.github.spotbugs:spotbugs-annotations:4.0.0-beta4">
+    <library name="Maven: com.github.spotbugs:spotbugs-annotations:4.0.0-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/4.0.0-beta4/spotbugs-annotations-4.0.0-beta4.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/4.0.0-SNAPSHOT/spotbugs-annotations-4.0.0-SNAPSHOT.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/4.0.0-beta4/spotbugs-annotations-4.0.0-beta4-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/4.0.0-SNAPSHOT/spotbugs-annotations-4.0.0-SNAPSHOT-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/4.0.0-beta4/spotbugs-annotations-4.0.0-beta4-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/4.0.0-SNAPSHOT/spotbugs-annotations-4.0.0-SNAPSHOT-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.github.spotbugs:spotbugs:4.0.0-beta4">
+    <library name="Maven: com.github.spotbugs:spotbugs:4.0.0-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs/4.0.0-beta4/spotbugs-4.0.0-beta4.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs/4.0.0-SNAPSHOT/spotbugs-4.0.0-SNAPSHOT.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs/4.0.0-beta4/spotbugs-4.0.0-beta4-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs/4.0.0-SNAPSHOT/spotbugs-4.0.0-SNAPSHOT-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs/4.0.0-beta4/spotbugs-4.0.0-beta4-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs/4.0.0-SNAPSHOT/spotbugs-4.0.0-SNAPSHOT-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: com.google.code.findbugs:jsr305:3.0.2">
@@ -301,6 +301,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0-SNAPSHOT">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-SNAPSHOT/findsecbugs-plugin-1.11.0-SNAPSHOT.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-SNAPSHOT/findsecbugs-plugin-1.11.0-SNAPSHOT-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-SNAPSHOT/findsecbugs-plugin-1.11.0-SNAPSHOT-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: com.ibm.icu:icu4j:63.1">
@@ -633,59 +644,59 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-ext/0.9.2/jgrapht-ext-0.9.2-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-analysis:7.1">
+    <library name="Maven: org.ow2.asm:asm-analysis:7.3.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/7.1/asm-analysis-7.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/7.3.1/asm-analysis-7.3.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/7.1/asm-analysis-7.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/7.3.1/asm-analysis-7.3.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/7.1/asm-analysis-7.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/7.3.1/asm-analysis-7.3.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-commons:7.1">
+    <library name="Maven: org.ow2.asm:asm-commons:7.3.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/7.1/asm-commons-7.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/7.3.1/asm-commons-7.3.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/7.1/asm-commons-7.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/7.3.1/asm-commons-7.3.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/7.1/asm-commons-7.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/7.3.1/asm-commons-7.3.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-tree:7.1">
+    <library name="Maven: org.ow2.asm:asm-tree:7.3.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/7.1/asm-tree-7.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/7.3.1/asm-tree-7.3.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/7.1/asm-tree-7.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/7.3.1/asm-tree-7.3.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/7.1/asm-tree-7.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/7.3.1/asm-tree-7.3.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm-util:7.1">
+    <library name="Maven: org.ow2.asm:asm-util:7.3.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/7.1/asm-util-7.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/7.3.1/asm-util-7.3.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/7.1/asm-util-7.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/7.3.1/asm-util-7.3.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/7.1/asm-util-7.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/7.3.1/asm-util-7.3.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ow2.asm:asm:7.1">
+    <library name="Maven: org.ow2.asm:asm:7.3.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/7.1/asm-7.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/7.3.1/asm-7.3.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/7.1/asm-7.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/7.3.1/asm-7.3.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/7.1/asm-7.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/ow2/asm/asm/7.3.1/asm-7.3.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.projectlombok:lombok:1.18.4">

@@ -28,8 +28,8 @@ import edu.kit.joana.wala.core.prune.NodeLimitPruner;
 import lombok.Data;
 import top.anemone.mlsast.core.classloader.AppClassloader;
 import top.anemone.mlsast.core.classloader.AppWalaClassLoaderFactory;
-import top.anemone.mlsast.core.data.PassThrough;
-import top.anemone.mlsast.core.data.TaintFlow;
+import top.anemone.mlsast.core.data.Func;
+import top.anemone.mlsast.core.data.taintTree.Location;
 import top.anemone.mlsast.core.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,32 +50,58 @@ import static top.anemone.mlsast.core.joana.LoggingOutputStream.LogLevel.INFO;
 public class JoanaSlicer implements Slicer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
     private SDGBuilder.SDGBuilderConfig config;
+    private Map<Func, SDG> sdgCache;
 
     public void config(List<File> appJars, List<URL> libJars, String exclusionsFile) throws ClassHierarchyException, IOException {
         SDGBuilder.SDGBuilderConfig config = getSDGBuilderConfig(appJars, libJars, exclusionsFile);
         config.doParallel = false;
         this.config = config;
+        this.sdgCache=new HashMap<>();
     }
 
-    public String computeSlice(TaintFlow trace) throws SlicerException {
-        PassThrough lastPassThrough = trace.getPassThroughs().get(trace.getPassThroughs().size() - 1);
-        String entryClass = "L" + lastPassThrough.getClazz().replace('.', '/');
-        String entryMethod = lastPassThrough.getMethod();
-        String entryRef = lastPassThrough.getSig();
-        String[] tmp = lastPassThrough.getClazz().split("\\.");
-        tmp[tmp.length - 1] = lastPassThrough.getFileName();
-        String joanaFilename = String.join("/", tmp);
-        JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line(joanaFilename, lastPassThrough.getCalledStartLine());
-        String slice = null;
+    public String computeSlice(Func func, Location line) throws SlicerException {
+        String entryClass = "L" + func.getClazz().replace('.', '/');
+        String entryMethod = func.getMethod();
+        String entryRef = func.getSig();
+        String joanaFilename = line.sourceFile;
+        JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line(joanaFilename, line.startLine);
+        SDG sdg=null;
+        if (sdgCache.containsKey(func)){
+            sdg=sdgCache.get(func);
+        } else{
+            try {
+                sdg = this.computeSlice(entryClass, entryMethod, entryRef, sink, null);
+                LOGGER.info("Computing Slice...");
+                // 利用SDG切片
+            } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException|ClassCastException e) {
+                throw new SlicerException(e.getMessage(), e);
+            }
+            sdgCache.put(func,sdg);
+        }
+
+        JoanaLineSlicer jSlicer = new JoanaLineSlicer(sdg);
+        LOGGER.info("Done...");
+        // 根据sink点查找sinknodes
+        HashSet<SDGNode> sinkNodes = null;
         try {
-            slice = this.computeSlice(entryClass, entryMethod, entryRef, sink, null);
-        } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException|ClassCastException e) {
+            sinkNodes = jSlicer.getNodesAtLine(sink);
+        } catch (NotFoundException e) {
             throw new SlicerException(e.getMessage(), e);
         }
-        return slice;
+        Collection<SDGNode> slice = jSlicer.slice(sinkNodes);
+        // 这里relatedNodesStr没搞懂是啥
+//            String relatedNodesStr = "[";
+//            for (SDGNode sdgNode : sinkNodes) {
+//                if (!jSlicer.toAbstract.contains(sdgNode) && !JoanaLineSlicer.isRemoveNode(sdgNode)) {
+//                    relatedNodesStr += sdgNode.getId() + ", ";
+//
+//            }
+//            relatedNodesStr = relatedNodesStr.substring(0, relatedNodesStr.lastIndexOf(",")) + "]\n";
+        String result = Formater.prepareSliceForEncoding(sdg, slice, jSlicer.toAbstract);
+        return result;
     }
 
-    public String computeSlice(String entryClass, String entryMethod, String entryRef,
+    public SDG computeSlice(String entryClass, String entryMethod, String entryRef,
                                JoanaLineSlicer.Line sink, String pdgFile)
             throws IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
         SDG localSdg = null;
@@ -89,7 +115,7 @@ public class JoanaSlicer implements Slicer {
             StackTraceElement stackTraceElement = e.getStackTrace()[2];
             if (stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
                     && stackTraceElement.getMethodName().equals("<init>")) {
-                throw new RootNodeNotFoundException("Entry class not found in call-graph (or it was in primordial jar)");
+                throw new RootNodeNotFoundException(entryClass+"."+entryMethod+entryRef,"call-graph (or it was in primordial jar)");
             }
         }
         LOGGER.info("SDG build done! Optimizing...");
@@ -102,24 +128,7 @@ public class JoanaSlicer implements Slicer {
         } else {
             LOGGER.info("Done!");
         }
-
-        LOGGER.info("Computing Slice...");
-        // 利用SDG切片
-        JoanaLineSlicer jSlicer = new JoanaLineSlicer(localSdg);
-        LOGGER.info("Done...");
-        // 根据sink点查找sinknodes
-        HashSet<SDGNode> sinkNodes = jSlicer.getNodesAtLine(sink);
-        Collection<SDGNode> slice = jSlicer.slice(sinkNodes);
-        // 这里relatedNodesStr没搞懂是啥
-//        String relatedNodesStr = "[";
-//        for (SDGNode sdgNode : sinkNodes) {
-//            if (!jSlicer.toAbstract.contains(sdgNode) && !JoanaLineSlicer.isRemoveNode(sdgNode)) {
-//                relatedNodesStr += sdgNode.getId() + ", ";
-
-//        }
-//        relatedNodesStr = relatedNodesStr.substring(0, relatedNodesStr.lastIndexOf(",")) + "]\n";
-        String result = Formater.prepareSliceForEncoding(localSdg, slice, jSlicer.toAbstract);
-        return result;
+        return localSdg;
     }
 
     private static AnalysisScope makeMinimalScope(List<File> appJars, List<URL> libJars,
@@ -132,15 +141,17 @@ public class JoanaSlicer implements Slicer {
         for (File appJar : appJars) {
             scope.addToScope(ClassLoaderReference.Application, new JarStreamModule(new FileInputStream(appJar)));
         }
-        for (URL lib : libJars) {
-            if (appJars.contains(new File(lib.getFile()))) {
-                LOGGER.warn(lib + "in app scope.");
-                continue;
-            }
-            if (lib.getProtocol().equals("file")) {
-                scope.addToScope(ClassLoaderReference.Primordial, new JarStreamModule(new FileInputStream(lib.getFile())));
-            } else {
-                scope.addToScope(ClassLoaderReference.Primordial, new JarStreamModule(JoanaSlicer.class.getResourceAsStream(String.valueOf(lib))));
+        if (libJars!=null){
+            for (URL lib : libJars) {
+                if (appJars.contains(new File(lib.getFile()))) {
+                    LOGGER.warn(lib + "in app scope.");
+                    continue;
+                }
+                if (lib.getProtocol().equals("file")) {
+                    scope.addToScope(ClassLoaderReference.Primordial, new JarStreamModule(new FileInputStream(lib.getFile())));
+                } else {
+                    scope.addToScope(ClassLoaderReference.Primordial, new JarStreamModule(JoanaSlicer.class.getResourceAsStream(String.valueOf(lib))));
+                }
             }
         }
 
@@ -198,13 +209,13 @@ public class JoanaSlicer implements Slicer {
         // debugPrint(scfg.cha);
         final IClass cl = scfg.cha.lookupClass(TypeReference.findOrCreate(ClassLoaderReference.Application, entryClazz));
         if (cl == null) {
-            throw new NotFoundException("Class not found: " + entryClazz);
+            throw new NotFoundException(entryClazz, scfg.cha);
         }
         // final IMethod m = cl.getMethod(Selector.make(entryMethod));
         final IMethod m = cl.getMethod(new Selector(Atom.findOrCreateUnicodeAtom(entryMethod),
                 Descriptor.findOrCreateUTF8(Language.JAVA, methodRef)));
         if (m == null) {
-            throw new NotFoundException("Func not found:" + cl + "." + entryMethod);
+            throw new NotFoundException( cl + "." + entryMethod, cl);
         }
         return m;
     }

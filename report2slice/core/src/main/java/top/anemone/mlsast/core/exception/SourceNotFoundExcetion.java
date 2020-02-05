@@ -1,7 +1,8 @@
 package top.anemone.mlsast.core.exception;
 
+@Deprecated
 public class SourceNotFoundExcetion extends NotFoundException {
-    public SourceNotFoundExcetion(String s) {
-        super(s);
+    public SourceNotFoundExcetion(Object source) {
+        super(source, "code");
     }
 }

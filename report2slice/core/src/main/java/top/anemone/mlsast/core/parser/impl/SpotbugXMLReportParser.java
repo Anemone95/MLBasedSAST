@@ -4,11 +4,11 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import org.dom4j.DocumentException;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.*;
+import top.anemone.mlsast.core.data.taintTree.TaintTreeNode;
 import top.anemone.mlsast.core.exception.BCELParserException;
 import top.anemone.mlsast.core.exception.NotFoundException;
 import top.anemone.mlsast.core.exception.ParserException;
@@ -18,13 +18,14 @@ import top.anemone.mlsast.core.utils.BCELParser;
 import top.anemone.mlsast.core.utils.JarUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
-    private static String findsecbugsPluginPath = JarUtil.getPath() + "/contrib/findsecbugs-plugin.jar";
+    private static File findsecbugsPluginFile = new File(JarUtil.getPath() + "/contrib/findsecbugs-plugin.jar");
     private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugXMLReportParser.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
@@ -48,17 +49,12 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
 
     private File xmlReport;
     private List<File> appJars;
-    public SpotbugXMLReportParser(File report, List<File> appJars){
-        this.xmlReport=report;
-        this.appJars=appJars;
+
+    public SpotbugXMLReportParser(File report, List<File> appJars) {
+        this.xmlReport = report;
+        this.appJars = appJars;
     }
 
-    public static void main(String[] args) throws NotFoundException, ParserException {
-//        System.out.println(JarUtil.getPath());
-        SpotbugXMLReportParser spotbugXMLParser = new SpotbugXMLReportParser(new File("bugreports/spotbugs.xml"), null);
-        TaintProject taintProject = spotbugXMLParser.report2taintProject(null);
-        System.out.println(taintProject);
-    }
 
     /**
      * @param bugCollection 过滤使用污点传播模型，并且未被修复，并且有source点的问题，
@@ -68,7 +64,7 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         Collection<BugInstance> c = bugCollection.getCollection();
 
         List<BugInstance> bugInstances = c.stream()
-                .filter(e -> caredVulns.contains(e.getType()) && !e.isDead() && e.getPriority()!=3) //过滤问题类型，优先级超低问题和未被修复的问题
+                .filter(e -> caredVulns.contains(e.getType()) && !e.isDead() && e.getPriority() != 3) //过滤问题类型，优先级超低问题和未被修复的问题
                 .filter(e -> {
                     // 过滤掉没有source点的问题
                     for (BugAnnotation annotation : e.getAnnotations()) {
@@ -85,7 +81,10 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
     public SortedBugCollection loadBugs(File source) throws PluginException, IOException, DocumentException {
         Project project = new Project();
         // 加载插件
-        Plugin.loadCustomPlugin(new File(findsecbugsPluginPath), project);
+        if (!findsecbugsPluginFile.exists()) {
+            throw new FileNotFoundException(findsecbugsPluginFile + " not found");
+        }
+        Plugin.loadCustomPlugin(findsecbugsPluginFile, project);
         SortedBugCollection col = new SortedBugCollection(project);
         col.readXML(source);
         if (col.hasDeadBugs()) {
@@ -109,8 +108,9 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         try {
             sortedBugCollection = this.loadBugs(this.xmlReport);
         } catch (IOException | DocumentException e) {
-            throw new NotFoundException(this.xmlReport + " not found");
+            throw new NotFoundException(this.xmlReport, System.getProperty("user.dir"));
         } catch (PluginException e) {
+            e.printStackTrace();
             throw new ParserException(e.toString(), e);
         }
 //        List<File> libJarsinReport = sortedBugCollection.getProject().getAuxClasspathEntryList().stream().map(File::new).filter(File::exists).collect(Collectors.toList());
@@ -122,26 +122,30 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         List<String> analysisTargets = bugCollection.getProject().getFileList();
         List<File> appJarsinReport = analysisTargets.stream().map(File::new).filter(File::exists).collect(Collectors.toList());
         // 获取报告中的jar包地址，但是如果分析过程与报告产生过程不在一起，地址会很找不到，这时只能从appJars中获取
-        if(appJars==null){
+        if (appJars == null) {
             appJars = appJarsinReport;
         }
-        if (monitor!=null) monitor.init("Parse to taint project", bugInstances.size());
-        Map<BugInstance, List<TaintFlow>> traces = new HashMap<>();
+        if (monitor != null) monitor.init("Parse to taint project", bugInstances.size());
+        Map<BugInstance, List<TaintTreeNode>> traces = new HashMap<>();
         for (int i = 0; i < bugInstances.size(); i++) {
             BugInstance bugInstance = bugInstances.get(i);
-            Exception err=null;
+            Exception err = null;
             try {
-                traces.put(bugInstance, bugInstance2Flow(bugInstance, appJars));
-            } catch (BCELParserException | IOException | NotFoundException e) {
-                err=e;
+
+                SpotbugsBugInstanceParser parser = new SpotbugsBugInstanceParser(bugInstance);
+                traces.put(bugInstance, parser.parse());
+//            } catch (BCELParserException | IOException | NotFoundException e) {
+//                err=e;
             } finally {
-                if (monitor!=null) monitor.process(i, bugInstances.size(), bugInstance, traces.get(i), err);
+                if (monitor != null) monitor.process(i, bugInstances.size(), bugInstance, traces.get(i), err);
             }
         }
+//        return new TaintProject<>(bugCollection.getProject().getProjectName(), appJars, bugInstances, traces);
         return new TaintProject<>(bugCollection.getProject().getProjectName(), appJars, bugInstances, traces);
     }
 
 
+    @Deprecated
     public static List<TaintFlow> bugInstance2Flow(BugInstance bugInstance, List<File> appJars) throws NotFoundException, BCELParserException, IOException {
         LinkedList<TaintFlow> traces = new LinkedList<>();
         List<? extends BugAnnotation> annotations = bugInstance.getAnnotations();
@@ -178,7 +182,7 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
             }
         }
         if (sourceLineAnnotation == null) {
-            throw new SourceNotFoundExcetion(bugInstance.toString() + " can't find source");
+            throw new SourceNotFoundExcetion(bugInstance);
         }
         source.setClazz(sourceLineAnnotation.getClassName());
         source.setFileName(sourceLineAnnotation.getSourceFile());
