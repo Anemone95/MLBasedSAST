@@ -36,9 +36,8 @@ public class MyGUI extends LaunchGUI{
             Plugin plugin = Plugin.loadCustomPlugin(Objects.requireNonNull(findsecbugsURL),
                     instance.getCurProject());
             GUISaveState guiSaveState = GUISaveState.getInstance();
-            URL url = findsecbugsURL;
             // add to FBGUI custom plugins list
-            guiSaveState.addCustomPlugin(url);
+            guiSaveState.addCustomPlugin(findsecbugsURL);
             // add to list of enabled plugins
             guiSaveState.setPluginEnabled(plugin.getPluginId());
             plugin.setGloballyEnabled(true);

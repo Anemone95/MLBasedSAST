@@ -22,14 +22,19 @@ package top.anemone.mlsast.gui2;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.log.LogSync;
 import top.anemone.mlsast.core.utils.ExceptionUtil;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static top.anemone.mlsast.gui2.MainFrame.GUI2_DEBUG;
 
 
 @SuppressWarnings("serial")
@@ -38,7 +43,7 @@ import java.util.logging.Logger;
 /**
  *Creating an instance of this class runs a FindBugs analysis, and pops up a nice progress window
  */
-public final class AiAnalyzingDialog extends FBDialog implements FindBugsProgress {
+public final class AiAnalyzingDialog extends FBDialog implements FindBugsProgress, LogSync {
     private volatile boolean analysisFinished = false;
 
     @Nonnull
@@ -236,16 +241,24 @@ public final class AiAnalyzingDialog extends FBDialog implements FindBugsProgres
             if (project == null) {
                 throw new NullPointerException("null project");
             }
-
+            List<Exception> exceptions = null;
             try {
-                AiListeners.doSliceAndPredict(project, AiAnalyzingDialog.this);
+                exceptions = AiListeners.doSliceAndPredict(project, AiAnalyzingDialog.this);
             } catch (Throwable e) {
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
                 scheduleErrorDialog("Analysis failed", ExceptionUtil.getStackTrace(e));
                 return;
             }
-
+            StringBuilder sb = new StringBuilder();
+            if (exceptions != null) {
+                for (Exception e : exceptions) {
+                    sb.append(ExceptionUtil.getStackTrace(e));
+                }
+            }
+            if (sb.length()!=0){
+                scheduleErrorDialog("Analysis failed", sb.toString());
+            }
             // Analysis succeeded
             analysisFinished = true;
             scheduleDialogCleanup();
@@ -258,7 +271,15 @@ public final class AiAnalyzingDialog extends FBDialog implements FindBugsProgres
         }
 
         private void scheduleErrorDialog(final String title, final String message) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainFrame.getInstance(), message, title, JOptionPane.ERROR_MESSAGE));
+            SwingUtilities.invokeLater(() -> {
+                        JTextArea tp = new JTextArea(message);
+                        tp.setEditable(false);
+                        JScrollPane pane = new JScrollPane(tp);
+                        pane.setPreferredSize(new Dimension(600, 400));
+                        JOptionPane.showMessageDialog(MainFrame.getInstance(),
+                                pane, title,
+                                JOptionPane.WARNING_MESSAGE);
+                    });
         }
     }
 
@@ -278,5 +299,24 @@ public final class AiAnalyzingDialog extends FBDialog implements FindBugsProgres
     @Override
     public void startArchive(String name) {
         // noop
+    }
+
+
+    /**
+     * Show an error dialog.
+     */
+    @Override
+    public void error(String message) {
+        JOptionPane.showMessageDialog(MainFrame.getInstance(), message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Write a message to stdout.
+     */
+    @Override
+    public void writeToLog(String message) {
+        if (GUI2_DEBUG) {
+            System.out.println(message);
+        }
     }
 }

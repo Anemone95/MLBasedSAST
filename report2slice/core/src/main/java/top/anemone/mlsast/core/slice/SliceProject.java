@@ -5,9 +5,7 @@ import top.anemone.mlsast.core.data.Func;
 import top.anemone.mlsast.core.data.TaintProject;
 import top.anemone.mlsast.core.data.taintTree.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 public class SliceProject<T> {
@@ -30,6 +28,16 @@ public class SliceProject<T> {
 
     public List<TaintFlow> getTaintFlows(TaintTreeNode source) {
         return source2taintFlow.get(source);
+    }
+
+    public Set<TaintEdge> getTaintEdges(T buginstance){
+        Set<TaintEdge> edges=new HashSet<>();
+        for (TaintTreeNode taintTreeNode: getTaintTrees(buginstance)) {
+            for (TaintFlow taintFlow:getTaintFlows(taintTreeNode)){
+                edges.addAll(taintFlow);
+            }
+        }
+        return edges;
     }
     public void putSlice(Func func, Location point, String slice){
         TaintEdge edge=new TaintEdge(func, point);

@@ -45,7 +45,7 @@ public class JoanaSlicerTest {
         JoanaSlicer slicer=new JoanaSlicer();
         slicer.config(jarFiles, libJars, exclusionsFile);
 
-        SDG sdg=slicer.computeSlice(entryClass, entryMethod, entryRef, sink, pdgFile);
+        SDG sdg=slicer.computeSlice(entryClass, entryMethod, entryRef,  pdgFile);
 //        System.out.println(result);
     }
     @Test

@@ -17,15 +17,18 @@ import top.anemone.mlsast.core.parser.ReportParser;
 import top.anemone.mlsast.core.slice.SliceRunner;
 import top.anemone.mlsast.core.slice.Slicer;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class PredictRunner<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictRunner.class);
     private Predictor predictor;
     final private SliceRunner<T> sliceRunner;
     private SliceProject<T> sliceProject;
-    private PredictProject<T> predictProject;
+    final private PredictProject<T> predictProject;
+    public static String STAGE = "Prediction";
 
     public PredictRunner() {
         sliceRunner = new SliceRunner<>();
@@ -36,6 +39,7 @@ public class PredictRunner<T> {
         this.sliceRunner = new SliceRunner<>();
         this.predictProject = predictProject;
     }
+
     public PredictRunner(SliceProject<T> sliceProject) {
         this.sliceRunner = new SliceRunner<>();
         predictProject = new PredictProject<>();
@@ -57,7 +61,7 @@ public class PredictRunner<T> {
         return this;
     }
 
-    public PredictProject<T> run(Monitor monitor) throws ParserException, SliceRunnerException, PredictorRunnerException, NotFoundException {
+    public PredictProject<T> run(Monitor monitor) throws ParserException, SliceRunnerException, NotFoundException, PredictorRunnerException {
         if (predictor == null) {
             throw new PredictorRunnerException("Predictor not set", new LinkedList<>());
         }
@@ -67,14 +71,16 @@ public class PredictRunner<T> {
             predictProject.setSliceProject(sliceProject);
         } else {
         }
-        monitor.init("Prediction", sliceProject.getBugInstances().size());
+        monitor.init(STAGE, sliceProject.getBugInstances().size());
         // 对于每一个漏洞
         for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
             List<Exception> causedExceptions = new LinkedList<>();
             T buginstance = sliceProject.getBugInstance(i);
             List<TaintTreeNode> taintTrees = sliceProject.getTaintProject().getTaintTrees(buginstance);
             // 对于每一个入口
-            boolean instanceIsSafe = false;
+            boolean instanceIsSafe = true;
+            Set<TaintEdge> safeEdges=new HashSet<>();
+            predictProject.putProofs(buginstance, safeEdges);
             for (TaintTreeNode source : taintTrees) {
                 List<TaintFlow> flows = sliceProject.getTaintFlows(source);
                 PredictEnum isTP = PredictEnum.ERROR;
@@ -87,22 +93,31 @@ public class PredictRunner<T> {
                 for (TaintFlow flow : flows) {
                     boolean flowIsSafe = false;
                     for (TaintEdge edge : flow) {
+                        boolean edgeIsSafe = false;
                         try {
-                            flowIsSafe = flowIsSafe | edgeIsSafe(edge);
+                            edgeIsSafe = edgeIsSafe(edge);
                         } catch (PredictorException e) {
                             causedExceptions.add(e);
-                            flowIsSafe = false;
+                        }
+                        if (edgeIsSafe){
+                            flowIsSafe=true;
+                            safeEdges.add(edge);
+                            break;
                         }
                     }
-                    treeIsSafe = treeIsSafe | flowIsSafe;
+                    if (flowIsSafe) {
+                        treeIsSafe = true;
+                        break;
+                    }
                 }
-                instanceIsSafe = instanceIsSafe | treeIsSafe;
+                instanceIsSafe = instanceIsSafe & treeIsSafe;
             }
             predictProject.putPrediction(sliceProject.getBugInstances().get(i), instanceIsSafe);
             if (causedExceptions.isEmpty()) {
                 monitor.process(i + 1, sliceProject.getBugInstances().size(), buginstance, instanceIsSafe, null);
             } else {
                 monitor.process(i + 1, sliceProject.getBugInstances().size(), buginstance, instanceIsSafe, new PredictorRunnerException("Dozens of Exceptions", causedExceptions));
+                predictProject.putExceptions(buginstance, causedExceptions);
             }
         }
         return predictProject;
@@ -110,7 +125,7 @@ public class PredictRunner<T> {
 
     public boolean edgeIsSafe(TaintEdge edge) throws PredictorException {
         // 曾经计算过则直接返回
-        Boolean result = predictProject.getPrediction(edge);
+        Boolean result = predictProject.bugIsSafe(edge);
         if (result != null) {
             return result;
         }
@@ -122,11 +137,7 @@ public class PredictRunner<T> {
         Slice slice = new Slice(edge, sliceStr, sliceProject.getTaintProject().getProjectName());
         boolean edgeIsClean;
         // 预测漏洞存在则该路径是不安全的
-        if (predictor.predict(slice)) {
-            edgeIsClean = false;
-        } else {
-            edgeIsClean = true;
-        }
+        edgeIsClean = predictor.predictIsSafe(slice);
         predictProject.putPrediction(edge, edgeIsClean);
         return edgeIsClean;
     }

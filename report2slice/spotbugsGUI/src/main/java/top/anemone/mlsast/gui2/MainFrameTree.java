@@ -51,10 +51,26 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.log.ConsoleLogger;
+import edu.umd.cs.findbugs.log.LogSync;
+import edu.umd.cs.findbugs.log.Logger;
+import org.slf4j.LoggerFactory;
+import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Label;
+import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.exception.NotFoundException;
+import top.anemone.mlsast.core.exception.ParserException;
+import top.anemone.mlsast.core.exception.PredictorRunnerException;
+import top.anemone.mlsast.core.exception.SliceRunnerException;
+import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
+import top.anemone.mlsast.core.predict.PredictRunner;
+import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.gui2.FilterActivity.FilterActivityNotifier;
 
-public class MainFrameTree {
+public class MainFrameTree implements LogSync {
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MainFrameTree.class);
+    private final Logger logger = new ConsoleLogger(this);
+
     private final MainFrame mainFrame;
 
     JTree tree;
@@ -198,46 +214,83 @@ public class MainFrameTree {
         });
 
         popupMenu.add(filterMenuItem);
+        // @Anemone, if caredVulns, pop label function
+        AiProject project = AiProject.getInstance();
+        if (currentSelectedBugLeaf!=null && project.getPredictProject() != null && project.getPredictProject().getSliceProject() != null
+                && SpotbugXMLReportParser.caredVulns.contains(currentSelectedBugLeaf.getBug().getType())){
+            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labeledAsTruePositive", "Labeled As True Positive");
+            labeledAsTP.addActionListener(evt -> {
+                setTrueLabel();
+            });
+            popupMenu.add(labeledAsTP);
 
-        JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labeledAsTruePositive", "Labeled As True Positive");
-        labeledAsTP.addActionListener(evt -> {
-            setLabel(currentSelectedBugLeaf.getBug(), true);
-        });
-        popupMenu.add(labeledAsTP);
-
-        JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labeledAsFalsePositive", "Labeled As False Positive");
-        labeledAsFP.addActionListener(evt -> {
-            setLabel(currentSelectedBugLeaf.getBug(), false);
-        });
-        popupMenu.add(labeledAsFP);
-
+            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labeledSafeFlow", "Label Safe Flow");
+            labeledAsFP.addActionListener(evt -> {
+                setFalseLabel();
+            });
+            popupMenu.add(labeledAsFP);
+        }
         return popupMenu;
     }
 
-    private void setLabel(BugInstance bugInstance, boolean isTP) {
-        AiProject project=AiProject.getInstance();
-        if (project.getPredictProject() == null ||project.getPredictProject().getSliceProject()==null){
+    private void setTrueLabel() {
+        AiProject project = AiProject.getInstance();
+        if (project.getPredictProject() == null || project.getPredictProject().getSliceProject() == null) {
             JOptionPane.showMessageDialog(
                     mainFrame,
                     "Need slice before label",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
+        for (TaintEdge edge : AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug())) {
+            Label label = new Label(MainFrame.getInstance().getProject().toString(), edge.sha1(), false);
+            label.setTaintEdge(edge);
+            try {
+                AiProject.getInstance().labelPredictor.label(label);
+            } catch (PredictorException e) {
+                e.printStackTrace();
+            }
+            try {
+                AiProject.getInstance().getRemotePredictor().label(label);
+            } catch (PredictorException e) {
+                e.printStackTrace();
+            }
+        }
         try {
-            Label label=new Label(MainFrame.getInstance().getProject().toString(), project.getPredictProject().getSliceProject().getTaintFlow(bugInstance).get(0).getHash(),isTP);
-            project.getServer().postLabel(label);
-            AiProject.getInstance().getPredictProject().putLabel(currentSelectedBugLeaf.getBug(), isTP);
-            mainFrame.setProjectChanged(true);
-            mainFrame.getTree().setSelectionRow(0); // Selects the top of the Jtree so the CommentsArea syncs up.
-        } catch (IOException e) {
-            StringWriter errors = new StringWriter();
-            e.printStackTrace(new PrintWriter(errors));
-            JOptionPane.showMessageDialog(
-                    mainFrame,
-                    errors.toString(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            AiProject.getInstance().setLabelProject(
+                    new PredictRunner<>(AiProject.getInstance().getSliceProject())
+                            .setPredictor(AiProject.getInstance().labelPredictor)
+                            .run(new Monitor() {
+                                @Override
+                                public void init(String stageName, int totalWork) {
+                                    ;
+                                }
+
+                                @Override
+                                public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
+                                }
+                            })
+            );
+        } catch (ParserException | PredictorRunnerException | NotFoundException | SliceRunnerException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setFalseLabel() {
+        AiProject project = AiProject.getInstance();
+        if (project.getPredictProject() == null || project.getPredictProject().getSliceProject() == null) {
+            JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "Need slice before label",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
+        AiLabelDialog dialog = new AiLabelDialog(MainFrame.getInstance(), logger, true, AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug()));
+        dialog.setLocationRelativeTo(MainFrame.getInstance());
+        dialog.setVisible(true);
+        MainFrame.getInstance().syncBugInformation();
     }
 
     /**
@@ -292,8 +345,8 @@ public class MainFrameTree {
                  */
                 BugTreeModel model = MainFrame.getInstance().getBugTreeModel();
                 TreeModelEvent event = new TreeModelEvent(mainFrame, deletePath.getParentPath(),
-                        new int[] { model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),
-                                deletePath.getLastPathComponent()) }, new Object[] { deletePath.getLastPathComponent() });
+                        new int[]{model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),
+                                deletePath.getLastPathComponent())}, new Object[]{deletePath.getLastPathComponent()});
                 Matcher m2 = mainFrame.getCurrentSelectedBugAspects().getMatcher();
                 Filter suppressionFilter2 = MainFrame.getInstance().getProject().getSuppressionFilter();
                 suppressionFilter2.addChild(m2);
@@ -551,7 +604,7 @@ public class MainFrameTree {
     }
 
     private JPanel makeNavigationPanel(String packageSelectorLabel, JComponent packageSelector, JComponent treeHeader,
-            JComponent tree) {
+                                       JComponent tree) {
         JPanel topPanel = new JPanel();
         topPanel.setMinimumSize(new Dimension(150, 150));
 
@@ -612,7 +665,8 @@ public class MainFrameTree {
 
                 if (tree.getModel().isLeaf(path.getLastPathComponent())) {
                     tree.setSelectionPath(path);
-                    bugPopupMenu.show(tree, e.getX(), e.getY());
+                    mainFrame.mainFrameTree.createBugPopupMenu().show(tree, e.getX(), e.getY());
+//                    bugPopupMenu.show(tree, e.getX(), e.getY());
                 } else {
                     tree.setSelectionPath(path);
                     if (!(path.getParentPath() == null)) {
@@ -670,5 +724,21 @@ public class MainFrameTree {
                 }
             }
         }
+    }
+
+    /**
+     * Show an error dialog.
+     */
+    @Override
+    public void error(String message) {
+        JOptionPane.showMessageDialog(MainFrame.getInstance(), message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Write a message to stdout.
+     */
+    @Override
+    public void writeToLog(String message) {
+        LOGGER.info(message);
     }
 }

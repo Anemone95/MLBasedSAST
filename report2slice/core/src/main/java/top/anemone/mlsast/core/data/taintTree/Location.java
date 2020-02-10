@@ -34,7 +34,7 @@ public class Location {
 
     @Override
     public String toString() {
-        return "Location{" + "sourceFile='" + sourceFile + '\'' + ", [" + startLine + ", " + endLine + "]}";
+        return "Location{sourceFile='" + sourceFile + '\'' + ", [" + startLine + ", " + endLine + "]}";
     }
 
 }

@@ -44,13 +44,10 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
+import com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation;
+import edu.umd.cs.findbugs.*;
+import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.predict.PredictProject;
 
 public class MainFrameComponentFactory implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(MainFrameComponentFactory.class.getName());
@@ -60,6 +57,7 @@ public class MainFrameComponentFactory implements Serializable {
     private URL sourceLink;
 
     private boolean listenerAdded = false;
+
 
     public MainFrameComponentFactory(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -214,7 +212,7 @@ public class MainFrameComponentFactory implements Serializable {
         SwingUtilities.invokeLater(new InitializeGUI(mainFrame));
     }
 
-    Component bugSummaryComponent(BugAnnotation value, BugInstance bug) {
+    Component bugSummaryComponent(BugAnnotation value, BugInstance bug, boolean isClean) {
         JLabel label = new JLabel();
         label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
         label.setFont(label.getFont().deriveFont(Font.PLAIN));
@@ -271,6 +269,9 @@ public class MainFrameComponentFactory implements Serializable {
             } else {
                 noteText = note.toString(primaryClass);
             }
+            if (isClean){
+                noteText=addCleanTag(noteText, AiProject.getInstance().isLabeled(bug));
+            }
             if (!srcStr.equals(sourceCodeLabel)) {
                 label.setText(noteText + srcStr);
             } else {
@@ -282,6 +283,25 @@ public class MainFrameComponentFactory implements Serializable {
 
         return label;
     }
+
+    public String addCleanTag(String noteText, boolean isLabel) {
+        String pattern;
+        if (isLabel){
+            pattern="[✨]";
+        } else {
+            pattern="(✨)";
+        }
+        if (noteText.contains("←")) {
+            noteText = noteText.replace("←", "←"+pattern);
+        } else if (noteText.contains("→")) {
+            noteText = noteText.replace("→", "→"+pattern);
+        } else {
+            noteText = noteText.replace(" ", pattern);
+        }
+        return noteText;
+    }
+
+
 
     /**
      * Creates bug summary component. If obj is a string will create a JLabel
@@ -440,7 +460,6 @@ public class MainFrameComponentFactory implements Serializable {
      * and to the lines of code connected to the SourceLineAnnotation.
      *
      * @author Kristin Stephens
-     *
      */
     private class BugSummaryMouseListener extends MouseAdapter {
         private final BugInstance bugInstance;

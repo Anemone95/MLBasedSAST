@@ -37,7 +37,7 @@ public class SliceRunner<T> {
 
     public SliceProject<T> run(Monitor monitor) throws NotFoundException, ParserException, SliceRunnerException {
         if (reportParser == null) {
-            throw new SliceRunnerException("Report parser set");
+            throw new SliceRunnerException("Report parser not set");
         }
         if (slicer == null) {
             throw new SliceRunnerException("Slicer not set");

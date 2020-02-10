@@ -4,23 +4,31 @@ import top.anemone.mlsast.core.data.taintTree.TaintEdge;
 import top.anemone.mlsast.core.slice.SliceProject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PredictProject<T> {
     protected Map<T, Boolean> bugInstance2isSafe;
+    protected Map<T, Set<TaintEdge>> bug2proof; //证明bug是误报，需要列举清洁的边
     protected Map<TaintEdge, Boolean> edge2isSafe;
-    protected Map<T, Boolean> labelMap;
     protected SliceProject<T> sliceProject;
+    private Map<T, List<Exception>> errorBugsExceptions;
     public PredictProject(){
         this.bugInstance2isSafe =new HashMap<>();
         this.edge2isSafe =new HashMap<>();
-        this.labelMap=new HashMap<>();
+        this.errorBugsExceptions=new HashMap<>();
+        this.bug2proof=new HashMap<>();
     }
     public PredictProject(SliceProject<T> sliceProject){
-        this.bugInstance2isSafe =new HashMap<>();
-        this.edge2isSafe =new HashMap<>();
-        this.labelMap=new HashMap<>();
+        this();
         this.sliceProject=sliceProject;
+    }
+    public void putExceptions(T bugInstance, List<Exception> exceptions){
+        errorBugsExceptions.put(bugInstance, exceptions);
+    }
+    public List<Exception> getExceptions(T bug){
+        return errorBugsExceptions.get(bug);
     }
     public void putPrediction(T bugInstance, boolean result){
         bugInstance2isSafe.put(bugInstance, result);
@@ -29,10 +37,10 @@ public class PredictProject<T> {
         edge2isSafe.put(edge, result);
     }
 
-    public Boolean getPrediction(T bugInstance){
+    public Boolean bugIsSafe(T bugInstance){
         return bugInstance2isSafe.get(bugInstance);
     }
-    public Boolean getPrediction(TaintEdge edge){
+    public Boolean bugIsSafe(TaintEdge edge){
         return edge2isSafe.get(edge);
     }
     public Map<T, Boolean> getPredictions(){
@@ -41,20 +49,18 @@ public class PredictProject<T> {
     public String getProjectName(){
         return sliceProject.getProjectName();
     }
-    public Boolean getLabel(T bugInstance){
-        return labelMap.getOrDefault(bugInstance, null);
-    }
-    public Map<T, Boolean> getLabelMap(){
-        return labelMap;
-    }
-    public void putLabel(T bugInstance, Boolean label){
-        labelMap.put(bugInstance, label);
-    }
 
     public void setSliceProject(SliceProject<T> sliceProject) {
         this.sliceProject = sliceProject;
     }
     public SliceProject<T> getSliceProject(){
         return sliceProject;
+    }
+
+    public void putProofs(T bug, Set<TaintEdge> proofs){
+        bug2proof.put(bug, proofs);
+    }
+    public Set<TaintEdge> getProofs(T bug){
+        return bug2proof.get(bug);
     }
 }

@@ -46,7 +46,7 @@ public class LSTMRemotePredictor implements Predictor {
     }
 
     @Override
-    public boolean predict(Slice slice) throws PredictorException {
+    public boolean predictIsSafe(Slice slice) throws PredictorException {
         Response response = null;
         try {
             response = OkHttp.post(this.remoteServer + "/predict", slice, Response.class);
@@ -56,17 +56,17 @@ public class LSTMRemotePredictor implements Predictor {
         if (response == null) {
             throw new PredictorException("Remote return null", null);
         }
-        return response.getMsg().equals("True");
+        // FIXME 更新模型端将取反取消
+        return !response.getMsg().equals("True");
     }
 
     @Override
-    public void label(Label label) {
+    public void label(Label label) throws PredictorException {
         Response response;
         try {
             response = OkHttp.post(this.remoteServer + "/label", label, Response.class);
         } catch (IOException e) {
-            e.printStackTrace();
-//            throw new PredictorException(e.getMessage(), e);
+            throw new PredictorException(e.getMessage(), e);
         }
     }
 

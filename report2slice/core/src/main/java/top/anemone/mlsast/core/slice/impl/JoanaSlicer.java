@@ -63,14 +63,12 @@ public class JoanaSlicer implements Slicer {
         String entryClass = "L" + func.getClazz().replace('.', '/');
         String entryMethod = func.getMethod();
         String entryRef = func.getSig();
-        String joanaFilename = line.sourceFile;
-        JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line(joanaFilename, line.startLine);
         SDG sdg=null;
         if (sdgCache.containsKey(func)){
             sdg=sdgCache.get(func);
         } else{
             try {
-                sdg = this.computeSlice(entryClass, entryMethod, entryRef, sink, null);
+                sdg = this.computeSlice(entryClass, entryMethod, entryRef, null);
                 LOGGER.info("Computing Slice...");
                 // 利用SDG切片
             } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException|ClassCastException e) {
@@ -84,7 +82,7 @@ public class JoanaSlicer implements Slicer {
         // 根据sink点查找sinknodes
         HashSet<SDGNode> sinkNodes = null;
         try {
-            sinkNodes = jSlicer.getNodesAtLine(sink);
+            sinkNodes = jSlicer.getNodesAtLine(line);
         } catch (NotFoundException e) {
             throw new SlicerException(e.getMessage(), e);
         }
@@ -101,8 +99,7 @@ public class JoanaSlicer implements Slicer {
         return result;
     }
 
-    public SDG computeSlice(String entryClass, String entryMethod, String entryRef,
-                               JoanaLineSlicer.Line sink, String pdgFile)
+    public SDG computeSlice(String entryClass, String entryMethod, String entryRef, String pdgFile)
             throws IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
         SDG localSdg = null;
         LOGGER.info("Building SDG... ");
@@ -201,7 +198,7 @@ public class JoanaSlicer implements Slicer {
         scfg.debugAccessPath = false;
         scfg.debugStaticInitializers = false;
         scfg.entrypointFactory=new AppEntrypointFactory();
-        scfg.cgPruner=new NodeLimitPruner(400);
+        scfg.cgPruner=new NodeLimitPruner(300);
         return scfg;
     }
 

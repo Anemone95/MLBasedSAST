@@ -34,6 +34,10 @@ def predict():
         logging.warning("Model not specify, can't predict")
         return jsonify({"msg": "Model not specify, can't predict"}), 500
     slice_json = request.get_json()
+    # TODO test code, please clean
+    if "checkSSRF" in slice_json["flow"]["entry"]["method"]:
+        isTP=False
+        return jsonify({"msg": str(isTP)}), 200
     data_dir = settings.relative_path_from_root('data/slice/' + slice_json['project'])
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)

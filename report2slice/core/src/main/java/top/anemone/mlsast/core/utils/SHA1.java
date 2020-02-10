@@ -6,17 +6,15 @@ import java.security.MessageDigest;
 public class SHA1 {
 
     public static String shaEncode(String inStr) {
-        MessageDigest sha = null;
+        MessageDigest sha;
         try {
             sha = MessageDigest.getInstance("SHA");
         } catch (Exception e) {
-            System.out.println(e.toString());
             e.printStackTrace();
             return "";
         }
 
-        byte[] byteArray = new byte[0];
-        byteArray = inStr.getBytes();
+        byte[] byteArray = inStr.getBytes();
         byte[] md5Bytes = sha.digest(byteArray);
         StringBuffer hexValue = new StringBuffer();
         for (int i = 0; i < md5Bytes.length; i++) {

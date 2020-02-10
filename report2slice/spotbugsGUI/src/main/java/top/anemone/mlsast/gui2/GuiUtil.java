@@ -19,10 +19,15 @@
 
 package top.anemone.mlsast.gui2;
 
+import top.anemone.mlsast.core.exception.PredictorRunnerException;
+import top.anemone.mlsast.core.exception.SlicerException;
+import top.anemone.mlsast.core.predict.exception.PredictorException;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import java.util.List;
 
 /**
  * @author pugh
@@ -46,4 +51,21 @@ public class GuiUtil {
         }
     }
 
+
+    public static void addExceptions(Exception exception, List<Exception> exceptions){
+        if (exception instanceof PredictorRunnerException) {
+            for (Exception e : ((PredictorRunnerException) exception).getExceptions()) {
+                addExceptions(e, exceptions);
+            }
+        } else if (exception instanceof PredictorException) {
+            if (!exception.getMessage().equals(LabelPredictor.EXCEPTION_MESSAGE)){
+                exceptions.add(((PredictorException) exception).getRawException());
+            }
+        } else if (exception instanceof SlicerException) {
+            exceptions.add(((SlicerException) exception).getRawException());
+        } else {
+            exceptions.add(exception);
+        }
+
+    }
 }

@@ -32,7 +32,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
-import top.anemone.mlsast.core.predict.PredictEnum;
 
 @SuppressWarnings("serial")
 /**
@@ -75,13 +74,13 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                     c1 = Color.BLUE;
                     break;
             }
-            if (AiProject.getInstance().getBugInstanceLabel(bug) != null) {
-                if (!AiProject.getInstance().getBugInstanceLabel(bug)) {
+            if (AiProject.getInstance().bugInstanceIsLabeled.contains(bug) && AiProject.getInstance().getLabeledIsSafe(bug) != null) {
+                if (AiProject.getInstance().getLabeledIsSafe(bug)) {
                     c1 = Color.GRAY;
                 }
             } else {
-                if (AiProject.getInstance().getBugInstancePrediction(bug) != null &&
-                        (AiProject.getInstance().getBugInstancePrediction(bug).equals(PredictEnum.FALSE))) {
+                if (AiProject.getInstance().getBugInstanceIsSafe(bug) != null &&
+                        (AiProject.getInstance().getBugInstanceIsSafe(bug))) {
                     c1 = Color.GRAY;
                 }
             }
@@ -110,30 +109,36 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                 };
                 ((BugRenderer) toReturn).setIcon(icon);
                 if (SpotbugXMLReportParser.caredVulns.contains(bug.getType())) {
-                    String rawText = ((BugRenderer) toReturn).getText();
                     // show prediction
                     String prediction = null;
-                    PredictEnum predict = AiProject.getInstance().getBugInstancePrediction(bug);
-                    if (predict == null) {
-                        prediction = "[P:UNK]";
-                    } else if (predict.equals(PredictEnum.TRUE)) {
-                        prediction = "[P:TP]";
-                    } else if (predict.equals(PredictEnum.FALSE)) {
-                        prediction = "[P:FP]";
-                    } else if (predict.equals(PredictEnum.ERROR)) {
+                    String rawText = ((BugRenderer) toReturn).getText();
+                    if (AiProject.getInstance().getPredictProject() != null && AiProject.getInstance().getPredictProject().getExceptions(bug) != null) {
                         prediction = "[P:ERR]";
-                    }
-                    String label = null;
-                    Boolean isTP = AiProject.getInstance().getBugInstanceLabel(bug);
-                    if (isTP == null) {
-                        label = "[L:ULB]";
-                    } else if (isTP) {
-                        label = "[L:TP]";
                     } else {
-                        label = "[L:FP]";
+                        Boolean bugIsSafe = AiProject.getInstance().getBugInstanceIsSafe(bug);
+                        if (bugIsSafe == null) {
+                            prediction = "[P:UNK]";
+                        } else if (!bugIsSafe) {
+                            prediction = "[P:TP]";
+                        } else {
+                            prediction = "[P:FP]";
+                        }
+                    }
+                    String label;
+                    if (AiProject.getInstance().getLabelProject() != null && (!AiProject.getInstance().bugInstanceIsLabeled.contains(bug))) {
+                        label = "[L:ULB]";
+                    } else {
+                        Boolean isSafe = AiProject.getInstance().getLabeledIsSafe(bug);
+                        if (isSafe == null) {
+                            label = "[L:ULB]";
+                        } else if (isSafe) {
+                            label = "[L:FP]";
+                        } else {
+                            label = "[L:TP]";
+                        }
                     }
 
-                    ((BugRenderer) toReturn).setTextNonSelectionColor(new Color(88, 88, 88));
+//                    ((BugRenderer) toReturn).setTextNonSelectionColor(new Color(88, 88, 88));
                     ((BugRenderer) toReturn).setText(prediction + label + rawText);
                 }
             }

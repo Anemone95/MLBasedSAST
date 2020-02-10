@@ -46,7 +46,7 @@ public class PredictRunnerTest {
 
                     @Override
                     public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
-                        ;
+                        assertNull(exception);
                     }
                 });
         assertEquals(predictProject.edge2isSafe.size(),8);

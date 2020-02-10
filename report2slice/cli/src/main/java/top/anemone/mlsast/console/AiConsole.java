@@ -40,13 +40,13 @@ public class AiConsole {
         sliceParser.addArgument("-o", "--output-dir")
                 .help("Specify slice output dir");
 
-        Subparser predictParser = subparsers.addParser("predict").defaultHelp(true)
-                .help("Slice and then predict whether the bug is true positive");
+        Subparser predictParser = subparsers.addParser("predictIsSafe").defaultHelp(true)
+                .help("Slice and then predictIsSafe whether the bug is true positive");
         predictParser.addArgument("-f", "--report-file").required(true)
                 .help("Specify SpotBugs analysis results(.xml)");
         predictParser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8888")
                 .help("Specify prediction remote server");
-        predictParser.addArgument("-o", "--output").setDefault("predict.json")
+        predictParser.addArgument("-o", "--output").setDefault("predictIsSafe.json")
                 .help("Specify prediction output file");
 
         Namespace ns = null;
@@ -104,7 +104,7 @@ public class AiConsole {
                     JsonUtil.dumpToFile(slice, outputDir+"/slice-"+edge.sha1()+".json");
                 }
             }
-        } else if (ns.getString("command").equals("predict")) {
+        } else if (ns.getString("command").equals("predictIsSafe")) {
             LSTMRemotePredictor remotePredictor=new LSTMRemotePredictor(ns.getString("server"));
             if(!remotePredictor.isAlive()){
                 LOGGER.error("Remote predictor not alive");

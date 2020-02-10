@@ -44,24 +44,17 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
-import edu.umd.cs.findbugs.IGuiCallback;
-import edu.umd.cs.findbugs.L10N;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.ProjectPackagePrefixes;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SystemProperties;
+import com.h3xstream.findsecbugs.injection.taintdata.Edge;
+import com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.util.Multiset;
+import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.predict.PredictProject;
 
 @SuppressWarnings("serial")
 /*
@@ -235,7 +228,8 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameTree.getBugTreeModel();
     }
 
-    public synchronized @Nonnull Project getProject() {
+    public synchronized @Nonnull
+    Project getProject() {
         if (curProject == null) {
             curProject = new Project();
         }
@@ -345,9 +339,9 @@ public class MainFrame extends FBFrame implements LogSync {
     void callOnClose() {
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
             Object[] options = {
-                L10N.getLocalString("dlg.save_btn", "Save"),
-                L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
-                L10N.getLocalString("dlg.cancel_btn", "Cancel"),
+                    L10N.getLocalString("dlg.save_btn", "Save"),
+                    L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
+                    L10N.getLocalString("dlg.cancel_btn", "Cancel"),
             };
             int value = JOptionPane.showOptionDialog(this, getActionWithoutSavingMsg("closing"),
                     L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
@@ -538,7 +532,6 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
 
-
     void preferences() {
         PreferencesFrame.getInstance().setLocationRelativeTo(this);
         PreferencesFrame.getInstance().setVisible(true);
@@ -722,8 +715,44 @@ public class MainFrame extends FBFrame implements LogSync {
 
             summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
 
+            boolean flowIsClean = false;
+            boolean flowCleaned = false;
             for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
-                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
+                PredictProject<BugInstance> predictProject;
+                if (AiProject.getInstance().isLabeled(bug)){
+                    predictProject = AiProject.getInstance().getLabelProject();
+                } else {
+                    predictProject = AiProject.getInstance().getPredictProject();
+                }
+                if (predictProject != null && predictProject.getProofs(bug) != null && b instanceof BugAnnotationWithSourceLines) {
+                    // @Anemone, 打印有清洁函数的污点传播树
+                    for (TaintEdge edge : predictProject.getProofs(bug)) {
+                        if (b instanceof MethodNodeAnnotation) {
+                            MethodNodeAnnotation annotation = (MethodNodeAnnotation) b;
+                            if (edge.entry.getClazz().equals(annotation.getClassName()) &&
+                                    edge.entry.getMethod().equals(annotation.getMethodName()) &&
+                                    edge.entry.getSig().equals(annotation.getMethodSignature())) {
+                                flowIsClean = true;
+                            }
+                            if(!annotation.type.equals(Edge.SINK_EDGE)){
+                                continue;
+                            }
+                        }
+                        BugAnnotationWithSourceLines annotation = (BugAnnotationWithSourceLines) b;
+                        if (annotation.getSourceLines() != null &&
+                                annotation.getSourceLines().getSourcePath().equals(edge.point.sourceFile) &&
+                                annotation.getSourceLines().getStartLine() == edge.point.startLine &&
+                                annotation.getSourceLines().getEndLine() == edge.point.endLine) {
+                            flowCleaned = true;
+                        }
+                    }
+                }
+
+                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug, flowIsClean));
+                if (flowCleaned) {
+                    flowIsClean = false;
+                    flowCleaned = false;
+                }
             }
 
 
@@ -753,24 +782,24 @@ public class MainFrame extends FBFrame implements LogSync {
         int targetLineNum = -1;
         String targetString = sourceSearchTextField.getText();
         switch (type) {
-        case 0:
-            targetLineNum = displayer.find(targetString);
-            break;
-        case 1:
-            targetLineNum = displayer.findNext(targetString);
-            break;
-        case 2:
-            targetLineNum = displayer.findPrevious(targetString);
-            break;
-        default:
-            break;
+            case 0:
+                targetLineNum = displayer.find(targetString);
+                break;
+            case 1:
+                targetLineNum = displayer.findNext(targetString);
+                break;
+            case 2:
+                targetLineNum = displayer.findPrevious(targetString);
+                break;
+            default:
+                break;
         }
         if (targetLineNum != -1) {
             displayer.foundItem(targetLineNum);
         }
     }
 
-    @SuppressWarnings({ "deprecation" })
+    @SuppressWarnings({"deprecation"})
     public void createProjectSettings() {
         ProjectSettings.newInstance();
     }

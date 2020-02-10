@@ -1,6 +1,7 @@
 package top.anemone.mlsast.core.utils;
 
 import com.google.gson.Gson;
+import edu.umd.cs.findbugs.io.IO;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -18,13 +19,20 @@ public class OkHttp {
     private static MediaType jsonType = MediaType.parse("application/json");
     private static <T> T request(Request request, Class<T> clazz) throws IOException {
         Response response = null;
-        response = client.newCall(request).execute();
-        if (response.isSuccessful() && response.body() != null) {
-            T obj = new Gson().fromJson(response.body().string(), clazz);
-            response.body().close();
-            return obj;
-        } else {
-            return null;
+        try {
+            response = client.newCall(request).execute();
+            if (response.isSuccessful() && response.body() != null) {
+                T obj = new Gson().fromJson(response.body().string(), clazz);
+                return obj;
+            } else {
+                throw new IOException(response.message());
+            }
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (response!=null && response.body()!=null){
+                response.body().close();
+            }
         }
     }
 

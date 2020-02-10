@@ -410,7 +410,8 @@ def train_lstm(
     logging.info("model options: {}".format(model_options))
 
     logging.info('Loading data')
-    train, valid, test = dataloader.load_data(data_dir, label_dir, tokenizer=tokenizer, valid_portion=0, test_portion=0.2)
+    train, valid, test = dataloader.load_data(data_dir, label_dir, tokenizer=tokenizer, valid_portion=0,
+                                              test_portion=0.2)
     model_options['n_words'] = len(tokenizer.get_token_dict()) + 10
     if test_size > 0:
         # The test set is sorted by size, but we want to keep random
@@ -596,7 +597,7 @@ def test_lstm(model, data_dir, label_dir):
     print('TestAcc\n%.2f' % ((1 - test_err) * 100.0))
 
 
-def predict(model: [object, Tokenizer], _slice):
+def predict(model: [object, Tokenizer], _slice) -> bool:
     f_pred, tokenizer = model
     # TODO padding
     test = [[tokenizer.encode(_slice)], [-1]]
