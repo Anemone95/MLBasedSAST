@@ -1,4 +1,8 @@
+import os
+
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 
 class ClientToken(models.Model):
@@ -123,3 +127,18 @@ class MLModel(models.Model):
     recall = models.FloatField()
     f1 = models.FloatField()
     create_time = models.DateTimeField(auto_now_add=True)
+
+
+@receiver(post_delete, sender=TaintFlow)
+def delete_slice_files(sender, instance: TaintFlow, **kwargs):
+    file = getattr(instance, 'slice_file')
+    if os.path.isfile(file):
+        os.remove(file)
+
+
+@receiver(post_delete, sender=Label)
+def delete_label_files(sender, instance: Label, **kwargs):
+    file = instance.taint_flow.slice_file.replace("slice", "label")
+    if os.path.isfile(file):
+        os.remove(file)
+

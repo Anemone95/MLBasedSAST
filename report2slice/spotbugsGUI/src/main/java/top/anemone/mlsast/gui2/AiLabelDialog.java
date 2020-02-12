@@ -41,7 +41,7 @@ public class AiLabelDialog extends JDialog {
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel,BoxLayout.Y_AXIS));
         JLabel label = new JLabel(
-                "<html>Choose the shortest subflow where the taint is cleaned:<br/>Program will automatically judge if there is a FP)<br/></html>"
+                "<html>Choose the shortest subflow where the taint is cleaned:<br/>(Program will automatically judge if there is a FP)<br/></html>"
                 );
         label.setSize(700, 20);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -53,8 +53,8 @@ public class AiLabelDialog extends JDialog {
         labelPanel.add(jcombo);
 
 
-        JLabel nonce = new JLabel("");
-        nonce.setSize(700, 10);
+        JLabel nonce = new JLabel("<html><br/></html>");
+        nonce.setSize(700, 5);
         nonce.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(nonce);
 
@@ -65,7 +65,7 @@ public class AiLabelDialog extends JDialog {
         labelPanel.add(sliceScroll);
         TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
         sliceText.setText(
-                "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n"+
+                "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n\n"+
                 "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge));
 
         jcombo.addItemListener(new ItemListener() {
@@ -73,8 +73,11 @@ public class AiLabelDialog extends JDialog {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
-                    sliceText.setText("Hash: " + AiProject.getInstance().getSliceProject().getSliceHash(edge) +
-                            "Slice: " + AiProject.getInstance().getSliceProject().getSlice(edge)
+
+                    ;
+                    sliceText.setText(
+                            "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n\n"+
+                            "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge)
                     );
                 }
 

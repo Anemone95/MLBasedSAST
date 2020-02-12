@@ -146,7 +146,7 @@ public class AppWalaClassLoader extends ClassLoaderImpl {
         return result;
     }
 
-    // FIXME @Anemone support for springboot
+    // @Anemone support for springboot，该类会根据jar包下的文件名装载所有的类，因此遇到classes/开头的文件需要replace
     private void loadAllClasses(
             Collection<ModuleEntry> moduleEntries, Map<String, Object> fileContents, boolean isJMODType) {
         for (ModuleEntry entry : moduleEntries) {
@@ -187,6 +187,7 @@ public class AppWalaClassLoader extends ClassLoaderImpl {
                 System.err.println("Load class " + className);
             }
             try {
+                // 使用classloader装载该类
                 TypeName T = TypeName.string2TypeName(className);
                 if (loadedClasses.get(T) != null) {
                     Warnings.add(MultipleImplementationsWarning.create(className));

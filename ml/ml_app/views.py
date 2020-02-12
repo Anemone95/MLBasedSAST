@@ -122,3 +122,4 @@ def label(request):
         json.dump(label_json, f)
 
     return JsonResponse({"msg": "ok"})
+
