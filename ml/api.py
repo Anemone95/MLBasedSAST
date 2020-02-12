@@ -9,7 +9,7 @@
 import fire
 from flask import Flask, jsonify, request
 import os
-import settings
+import _settings
 import json
 import _theano.theanoLSTM as lstm
 import logging
@@ -38,7 +38,7 @@ def predict():
     if "checkSSRF" in slice_json["flow"]["entry"]["method"]:
         isTP=False
         return jsonify({"msg": str(isTP)}), 200
-    data_dir = settings.relative_path_from_root('data/slice/' + slice_json['project'])
+    data_dir = _settings.relative_path_from_root('data/slice/' + slice_json['project'])
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     with open(data_dir + '/slice-' + slice_json["flowHash"] + ".json", 'w') as f:
@@ -55,7 +55,7 @@ def label():
     :return:
     """
     label_json = request.get_json()
-    data_dir = settings.relative_path_from_root('data/label/' + label_json['project'])
+    data_dir = _settings.relative_path_from_root('data/label/' + label_json['project'])
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
@@ -68,7 +68,7 @@ def label():
 def server(model_npz=None, host='127.0.0.1', port=8888, debug=False):
     global MODEL
     if model_npz:
-        MODEL = lstm.load_model(settings.relative_path_from_root(model_npz))
+        MODEL = lstm.load_model(_settings.relative_path_from_root(model_npz))
     else:
         logging.warning("Model not specify, can't predict")
     app.run(host=host, port=port, debug=debug)

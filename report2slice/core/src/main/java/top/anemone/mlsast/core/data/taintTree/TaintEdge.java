@@ -12,19 +12,6 @@ public class TaintEdge {
     @NonNull
     public Location point;
 
-    public String sha1() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(entry.getClass());
-        sb.append(entry.getMethod());
-        sb.append(entry.getSig());
-        sb.append(getPoint().sourceFile);
-        sb.append("S");
-        sb.append(getPoint().startLine);
-        sb.append("E");
-        sb.append(getPoint().endLine);
-        return SHA1.shaEncode(sb.toString());
-    }
-
     @Override
     public String toString() {
         if (point.startLine.equals(point.endLine)) {

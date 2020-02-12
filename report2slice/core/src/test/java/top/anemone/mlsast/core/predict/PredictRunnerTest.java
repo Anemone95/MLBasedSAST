@@ -33,7 +33,7 @@ public class PredictRunnerTest {
                 new File(SliceRunnerTest.class.getClassLoader().getResource("java-vuln-sample.xml").toURI()),
                 fileList);
 
-        Predictor remotePredictor=new LSTMRemotePredictor("http://127.0.0.1:8888");
+        Predictor remotePredictor=new LSTMRemotePredictor("http://127.0.0.1:8000");
         PredictProject<BugInstance> predictProject = new PredictRunner<BugInstance>()
                 .setReportParser(spotbugXMLParser)
                 .setSlicer(new JoanaSlicer())

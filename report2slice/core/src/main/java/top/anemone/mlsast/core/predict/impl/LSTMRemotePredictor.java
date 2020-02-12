@@ -15,6 +15,11 @@ import java.io.IOException;
 @Data
 public class LSTMRemotePredictor implements Predictor {
     private String remoteServer;
+    private String token = "testtest";
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public LSTMRemotePredictor(String serverURL) {
         if (!serverURL.startsWith("http")) {
@@ -26,10 +31,21 @@ public class LSTMRemotePredictor implements Predictor {
         this.remoteServer = serverURL;
     }
 
+    public LSTMRemotePredictor(String serverURL, String token) {
+        if (!serverURL.startsWith("http")) {
+            serverURL = "http://" + serverURL;
+        }
+        if (serverURL.endsWith("/")) {
+            serverURL = serverURL.substring(0, serverURL.length() - 1);
+        }
+        this.remoteServer = serverURL;
+        this.token=token;
+    }
+
     public boolean isAlive() {
         Response serverStatus = null;
         try {
-            serverStatus = OkHttp.get(this.remoteServer + "/alive", Response.class);
+            serverStatus = OkHttp.get(this.remoteServer + "/alive/?token=" + token, Response.class);
         } catch (IOException e) {
             return false;
         }
@@ -41,7 +57,7 @@ public class LSTMRemotePredictor implements Predictor {
     }
 
     public Response postLabel(Label label) throws IOException {
-        Response response = OkHttp.post(this.remoteServer + "/label", label, Response.class);
+        Response response = OkHttp.post(this.remoteServer + "/label/?token=" + token, label, Response.class);
         return response;
     }
 
@@ -49,7 +65,7 @@ public class LSTMRemotePredictor implements Predictor {
     public boolean predictIsSafe(Slice slice) throws PredictorException {
         Response response = null;
         try {
-            response = OkHttp.post(this.remoteServer + "/predict", slice, Response.class);
+            response = OkHttp.post(this.remoteServer + "/predict/?token=" + token, slice, Response.class);
         } catch (IOException e) {
             throw new PredictorException(e.getMessage(), e);
         }
@@ -64,7 +80,7 @@ public class LSTMRemotePredictor implements Predictor {
     public void label(Label label) throws PredictorException {
         Response response;
         try {
-            response = OkHttp.post(this.remoteServer + "/label", label, Response.class);
+            response = OkHttp.post(this.remoteServer + "/label/?token=" + token, label, Response.class);
         } catch (IOException e) {
             throw new PredictorException(e.getMessage(), e);
         }

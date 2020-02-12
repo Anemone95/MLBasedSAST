@@ -14,14 +14,14 @@ import fire
 import time
 from _theano.theanoLSTM import train_lstm, predict, test_lstm, load_model
 from _theano.tokenizer import Tokenizer
-import settings
+import _settings
 
 
 class TheanoCommand:
     def train(self, slice_dir: str, label_dir: str, dim: int = 128, epochs: int = 20, timeout: float = 5):
         tokenizer = Tokenizer()
         current_time = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
-        model_file = settings.relative_path_from_root('model/theano-lstm-{}.npz'.format(current_time))
+        model_file = _settings.relative_path_from_root('model/theano-lstm-{}.npz'.format(current_time))
         train_lstm(data_dir=slice_dir,
                    label_dir=label_dir,
                    tokenizer=tokenizer,

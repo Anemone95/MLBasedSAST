@@ -1,7 +1,9 @@
 package top.anemone.mlsast.gui2;
 
 
+import com.sun.deploy.panel.JSmartTextArea;
 import edu.umd.cs.findbugs.log.Logger;
+import org.apache.log4j.chainsaw.Main;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Label;
 import top.anemone.mlsast.core.data.taintTree.TaintEdge;
@@ -11,10 +13,14 @@ import top.anemone.mlsast.core.exception.PredictorRunnerException;
 import top.anemone.mlsast.core.exception.SliceRunnerException;
 import top.anemone.mlsast.core.predict.PredictRunner;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
+import top.anemone.mlsast.core.utils.ExceptionUtil;
+import top.anemone.mlsast.core.utils.SHA1;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.util.Set;
 
@@ -32,25 +38,56 @@ public class AiLabelDialog extends JDialog {
         super(parent, modal);
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.label_dialog", "Labeling"));
         JPanel contentPanel = new JPanel(new BorderLayout());
-        JPanel labelPanel = new JPanel(new FlowLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.ipadx = c.ipady = 5;
-
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel,BoxLayout.Y_AXIS));
         JLabel label = new JLabel(
-                "<html>Choose the shortest subflow where the taint is cleaned.<br/>Program will automatically judge if there is a FP)</html>",
-                SwingConstants.TRAILING);
-        label.setSize(500, 0);
-        JComboBox<TaintEdge> jcombo = new JComboBox<TaintEdge>(flowEdges.toArray(new TaintEdge[]{}));
-        jcombo.setSize(500, 0);
+                "<html>Choose the shortest subflow where the taint is cleaned:<br/>Program will automatically judge if there is a FP)<br/></html>"
+                );
+        label.setSize(700, 20);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(label);
+
+        JComboBox<TaintEdge> jcombo = new JComboBox<TaintEdge>(flowEdges.toArray(new TaintEdge[]{}));
+        jcombo.setSize(700, 40);
+        jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(jcombo);
+
+
+        JLabel nonce = new JLabel("");
+        nonce.setSize(700, 10);
+        nonce.setAlignmentX(Component.CENTER_ALIGNMENT);
+        labelPanel.add(nonce);
+
+        JTextArea sliceText = new JTextArea();
+        sliceText.setEditable(false);
+        sliceText.setSize(700,400);
+        JScrollPane sliceScroll=new JScrollPane(sliceText);
+        labelPanel.add(sliceScroll);
+        TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
+        sliceText.setText(
+                "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n"+
+                "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge));
+
+        jcombo.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
+                    sliceText.setText("Hash: " + AiProject.getInstance().getSliceProject().getSliceHash(edge) +
+                            "Slice: " + AiProject.getInstance().getSliceProject().getSlice(edge)
+                    );
+                }
+
+            }
+
+        });
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(new JButton(new AbstractAction("Submit") {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
-                Label label = new Label(MainFrame.getInstance().getProject().toString(), edge.sha1(), true);
+                Label label = new Label(MainFrame.getInstance().getProject().toString(), AiProject.getInstance().getSliceProject().getSliceHash(edge), true);
                 label.setTaintEdge(edge);
                 try {
                     AiProject.getInstance().labelPredictor.label(label);
@@ -61,6 +98,10 @@ public class AiLabelDialog extends JDialog {
                     AiProject.getInstance().getRemotePredictor().label(label);
                 } catch (PredictorException e) {
                     e.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                            MainFrame.getInstance(),
+                            ExceptionUtil.getStackTrace(e).substring(0, 3000),
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 try {
                     AiProject.getInstance().setLabelProject(
@@ -73,7 +114,8 @@ public class AiLabelDialog extends JDialog {
                                         }
 
                                         @Override
-                                        public void process(int idx, int totalWork, Object input, Object output, Exception exception) { }
+                                        public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
+                                        }
                                     })
                     );
                 } catch (ParserException | PredictorRunnerException | NotFoundException | SliceRunnerException e) {
@@ -86,7 +128,7 @@ public class AiLabelDialog extends JDialog {
         contentPanel.add(labelPanel);
         contentPanel.add(bottomPanel, BorderLayout.SOUTH);
         getContentPane().add(contentPanel);
-        this.setSize(500, 150);
+        this.setSize(500, 450);
     }
 
     private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {

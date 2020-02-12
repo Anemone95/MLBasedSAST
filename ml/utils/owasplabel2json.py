@@ -23,7 +23,7 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
             test_name, category, real, cwe = e.replace('\n', '').split(',')[:4]
             table[test_name] = True if real.lower() == 'true' else False
     for each_file in pathlib.Path(slice_dir).glob('*.json'):
-        label = {"flowHash": None, "isReal": None, "flow": None}
+        label = {"flowHash": None, "isSafe": None, "flow": None}
         try:
             with open(each_file, 'r') as f:
                 slice = json.load(f)
@@ -32,21 +32,21 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
             continue
         label["flowHash"] = each_file.name.split("-")[-1].split(".")[0]
         label["flow"] = slice["flow"]
-        test_name = slice["flow"]["source"]["clazz"].split(".")[-1]
+        test_name = slice["flow"]["entry"]["clazz"].split(".")[-1]
         if test_name not in table:
             continue
-        label["isReal"] = table[test_name]
+        label["isSafe"] = (not table[test_name])
         res.append(label)
         if table[test_name]:
             is_real_num += 1
         else:
             not_real_num += 1
     print("Get records:", len(res), ",true records:", is_real_num, ",false records:", not_real_num)
-    # with open(output_json, 'w') as f:
-    #     json.dump(res, f, indent=4)
+    with open(output_json, 'w') as f:
+        json.dump(res, f, indent=4)
 
 
 if __name__ == '__main__':
-    owasplabel2json('../data/expectedresults-1.2.csv',
-                    '../data/slice/benchmark1.2',
-                    '../data/label/benchmark1.2/label.json')
+    owasplabel2json('../data/expectedresults-1.1.csv',
+                    '../data/slice/benchmark1.1',
+                    '../data/label/benchmark1.1/label.json')

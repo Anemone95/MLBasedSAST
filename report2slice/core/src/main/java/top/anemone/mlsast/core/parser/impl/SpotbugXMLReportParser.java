@@ -45,6 +45,8 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
             "UNVALIDATED_REDIRECT",
             "LDAP_INJECTION",
             "XPATH_INJECTION"
+//            "PATH_TRAVERSAL_IN",
+//            "PATH_TRAVERSAL_OUT"
     );
 
     private File xmlReport;

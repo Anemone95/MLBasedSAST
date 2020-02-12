@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.StringAnnotation;
 import lombok.Data;
 import lombok.NonNull;
 import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.utils.SHA1;
 
 @Data
 public class Slice {
@@ -19,7 +20,7 @@ public class Slice {
     public Slice(TaintEdge flow, String slice, String project){
         this.flow=flow;
         this.slice=slice;
-        this.flowHash=flow.sha1();
+        this.flowHash= SHA1.shaEncode(slice);
         this.project=project;
     }
 }

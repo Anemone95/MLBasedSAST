@@ -13,7 +13,7 @@ import theano.tensor as tensor
 from theano import config
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 import _theano.dataloader as dataloader
-import settings
+import _settings
 from _theano.tokenizer import *
 
 # Set the random number generators' seeds for consistency
@@ -560,7 +560,7 @@ def train_lstm(
         valid_err = test_err
 
     if saveto:
-        with open(settings.relative_path_from_root(saveto + '.tokenizer'), 'wb') as f:
+        with open(_settings.relative_path_from_root(saveto + '.tokenizer'), 'wb') as f:
             pickle.dump(tokenizer, f)
         with open(saveto + '.args', 'wb') as f:
             pickle.dump(model_options, f)
@@ -619,7 +619,7 @@ if __name__ == '__main__':
     time_out_h = int(sys.argv[5])
     vocab = {}
 
-    model_file = settings.relative_path_from_root('model/theano-lstm.npz')
+    model_file = _settings.relative_path_from_root('model/theano-lstm.npz')
     if len(sys.argv) > 6 and sys.argv[6] == 'test':
         modelFile = sys.argv[7]
         # TODO

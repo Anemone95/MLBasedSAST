@@ -113,15 +113,15 @@ public class BugRenderer extends DefaultTreeCellRenderer {
                     String prediction = null;
                     String rawText = ((BugRenderer) toReturn).getText();
                     if (AiProject.getInstance().getPredictProject() != null && AiProject.getInstance().getPredictProject().getExceptions(bug) != null) {
-                        prediction = "[P:ERR]";
+                        prediction = "(P:ERR)";
                     } else {
                         Boolean bugIsSafe = AiProject.getInstance().getBugInstanceIsSafe(bug);
                         if (bugIsSafe == null) {
-                            prediction = "[P:UNK]";
+                            prediction = "(P:UNK)";
                         } else if (!bugIsSafe) {
-                            prediction = "[P:TP]";
+                            prediction = "(P:TP)";
                         } else {
-                            prediction = "[P:FP]";
+                            prediction = "(P:FP)";
                         }
                     }
                     String label;

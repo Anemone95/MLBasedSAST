@@ -244,7 +244,7 @@ public class MainFrameTree implements LogSync {
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
         for (TaintEdge edge : AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug())) {
-            Label label = new Label(MainFrame.getInstance().getProject().toString(), edge.sha1(), false);
+            Label label = new Label(MainFrame.getInstance().getProject().toString(), AiProject.getInstance().getSliceProject().getSliceHash(edge), false);
             label.setTaintEdge(edge);
             try {
                 AiProject.getInstance().labelPredictor.label(label);

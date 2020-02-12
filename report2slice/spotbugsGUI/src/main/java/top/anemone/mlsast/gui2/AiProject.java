@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class AiProject {
     private static AiProject instance = new AiProject();
-    private LSTMRemotePredictor remotePredictor = new LSTMRemotePredictor("http://127.0.0.1:8888/");
+    private LSTMRemotePredictor remotePredictor = new LSTMRemotePredictor("http://127.0.0.1:8000/", "testtest");
     private SliceProject<BugInstance> sliceProject;
     private PredictProject<BugInstance> predictProject;
     private PredictProject<BugInstance> labelProject;

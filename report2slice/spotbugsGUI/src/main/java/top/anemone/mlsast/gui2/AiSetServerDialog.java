@@ -34,13 +34,17 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         tabTextField.setPreferredSize(new Dimension((int) (currFS * 14), (int) (currFS * 2)));
         addField(mainPanel, c, 0, "Input Server URL: ", tabTextField);
 
+        JTextField tokenTextField = new JTextField();
+        tokenTextField.setPreferredSize(new Dimension((int) (currFS * 14), (int) (currFS * 2)));
+        addField(mainPanel, c, (int) (currFS * 2.5), "Input token: ", tokenTextField);
+
         contentPanel.add(mainPanel, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(new JButton(new AbstractAction("Verify") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                boolean isAlive = new LSTMRemotePredictor(tabTextField.getText()).isAlive();
+                boolean isAlive = new LSTMRemotePredictor(tabTextField.getText(), tokenTextField.getText()).isAlive();
                 if (isAlive) {
                     JOptionPane.showMessageDialog(MainFrame.getInstance(), "Remote is alive!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -52,7 +56,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Apply") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                AiProject.getInstance().setRemotePredictor(new LSTMRemotePredictor(tabTextField.getText()));
+                AiProject.getInstance().setRemotePredictor(new LSTMRemotePredictor(tabTextField.getText(), tokenTextField.getText()));
                 closeDialog();
             }
         }));

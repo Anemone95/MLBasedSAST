@@ -11,7 +11,7 @@ import pathlib
 import re
 import logging
 
-import settings
+import _settings
 
 STRING_PATTERN = re.compile(r'(#\([^);]+\))')
 ABSTRACT_LIST = ['BenchmarkTest\d+', 'testcode', 'moresafe', 'safe', 'Safe']
@@ -170,8 +170,8 @@ def get_magrove_generator(text_processing_func, data_dir: str, label_dict: dict)
     owasp_train_file = r'D:\Store\document\all_my_work\CZY\bishe\mangrove_old\lstm\data\extraction\owasp-slice-train-2.txt'
     owasp_test_file = r'D:\Store\document\all_my_work\CZY\bishe\mangrove_old\lstm\data\extraction\owasp-slice-test-2.txt'
 
-    owasp_train_file = settings.relative_path_from_root('data/mangrove/t-train.txt')
-    owasp_test_file = settings.relative_path_from_root('data/mangrove/t-test.txt')
+    owasp_train_file = _settings.relative_path_from_root('data/mangrove/t-train.txt')
+    owasp_test_file = _settings.relative_path_from_root('data/mangrove/t-test.txt')
     train_x, train_y = parseDataFile(owasp_train_file)
     test_x, test_y = parseDataFile(owasp_test_file)
 

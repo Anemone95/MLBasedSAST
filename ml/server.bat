@@ -1,1 +1,3 @@
-conda run -n ml python api.py --model-npz=model\theano-lstm-2019-11-19-12-22.npz
+@echo off
+call conda activate torch
+python manage.py runserver

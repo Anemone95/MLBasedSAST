@@ -44,7 +44,7 @@ public class AiConsole {
                 .help("Slice and then predictIsSafe whether the bug is true positive");
         predictParser.addArgument("-f", "--report-file").required(true)
                 .help("Specify SpotBugs analysis results(.xml)");
-        predictParser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8888")
+        predictParser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8000")
                 .help("Specify prediction remote server");
         predictParser.addArgument("-o", "--output").setDefault("predictIsSafe.json")
                 .help("Specify prediction output file");
@@ -101,7 +101,7 @@ public class AiConsole {
                 for (TaintEdge edge: sliceProject.getTaintEdge2slice().keySet()) {
                     Slice slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
                             sliceProject.getTaintProject().getProjectName());
-                    JsonUtil.dumpToFile(slice, outputDir+"/slice-"+edge.sha1()+".json");
+                    JsonUtil.dumpToFile(slice, outputDir+"/slice-"+sliceProject.getSliceHash(edge)+".json");
                 }
             }
         } else if (ns.getString("command").equals("predictIsSafe")) {

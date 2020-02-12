@@ -7,7 +7,7 @@
 :license: Apache 2.0, see LICENSE for more details.
 """
 import preprocessing
-import settings
+import _settings
 import numpy
 
 from _theano.tokenizer import *
@@ -67,5 +67,5 @@ def load_data(data_dir: str, label_dir: str,
 
 
 if __name__ == '__main__':
-    load_data(settings.relative_path_from_root('data/slice/benchmark'),
-              settings.relative_path_from_root('data/label/benchmark'))
+    load_data(_settings.relative_path_from_root('data/slice/benchmark'),
+              _settings.relative_path_from_root('data/label/benchmark'))
