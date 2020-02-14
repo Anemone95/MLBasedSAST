@@ -89,6 +89,7 @@ public class AppEntrypoint extends SubtypesEntrypoint {
             if (nc == null) {
                 return new TypeReference[] { nominal };
             }
+            // 否则返回非抽象非子类的集合
             Collection<IClass> subcs = nc.isInterface() ? getCha().getImplementors(nominal) : getCha().computeSubClasses(nominal);
             Set<TypeReference> subs = HashSetFactory.make();
             for (IClass cs : subcs) {

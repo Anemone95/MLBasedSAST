@@ -107,7 +107,7 @@ public class JoanaSlicer implements Slicer {
         config.entry = findMethod(this.config, entryClass, entryMethod, entryRef);
         // 构造SDG
         try {
-            localSdg = SDGBuilder.build(this.config, new JoanaMonitor());
+            localSdg = SDGBuilder.build(this.config, new SliceMonitor());
         } catch (NoSuchElementException e) {
             StackTraceElement stackTraceElement = e.getStackTrace()[2];
             if (stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")

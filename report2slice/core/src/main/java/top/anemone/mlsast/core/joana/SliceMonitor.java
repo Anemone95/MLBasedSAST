@@ -4,8 +4,8 @@ import com.ibm.wala.util.MonitorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JoanaMonitor implements MonitorUtil.IProgressMonitor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JoanaMonitor.class);
+public class SliceMonitor implements MonitorUtil.IProgressMonitor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SliceMonitor.class);
     private boolean isCancel=false;
     @Override
     public void beginTask(String task, int totalWork) {

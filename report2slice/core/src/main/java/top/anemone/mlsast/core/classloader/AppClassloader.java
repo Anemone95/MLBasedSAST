@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Enumeration;
 
+//论文中的AppJavaClassLoader
 public class AppClassloader extends ClassLoader {
     private File[] classpaths;
 
