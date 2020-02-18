@@ -11,21 +11,21 @@ import java.net.MalformedURLException;
 import java.util.Enumeration;
 
 //论文中的AppJavaClassLoader
-public class AppClassloader extends ClassLoader {
+public class SliceJavaClassloader extends ClassLoader {
     private File[] classpaths;
 
-    public AppClassloader(File[] classpaths, ClassLoader parent) {
+    public SliceJavaClassloader(File[] classpaths, ClassLoader parent) {
         super(parent);
         this.classpaths = classpaths;
     }
 
-    public AppClassloader(File[] classpaths) {
+    public SliceJavaClassloader(File[] classpaths) {
         super();
         this.classpaths = classpaths;
     }
 
     public static void main(String[] args) throws MalformedURLException, ClassNotFoundException {
-        ClassLoader classLoader = new AppClassloader(
+        ClassLoader classLoader = new SliceJavaClassloader(
                 new File[]{
                         new File("C:\\Users\\x5651\\Documents\\bishe\\mvn_case\\joana.api-1.0.jar")});
         Class clz=classLoader.loadClass("com.ibm.wala.viz.PDFViewLauncher");
