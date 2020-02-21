@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Slice;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.exception.*;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.core.predict.PredictProject;
@@ -97,7 +97,7 @@ public class AiConsole {
             Slice slice;
             for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
                 BugInstance bugInstance=sliceProject.getBugInstances().get(i);
-                for (TaintEdge edge: sliceProject.getTaintEdge2slice().keySet()) {
+                for (TaintFlow edge: sliceProject.getTaintEdge2slice().keySet()) {
                     slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
                             sliceProject.getTaintProject().getProjectName());
                     JsonUtil.dumpToFile(slice, outputDir+"/slice-"+sliceProject.getSliceHash(edge)+".json");

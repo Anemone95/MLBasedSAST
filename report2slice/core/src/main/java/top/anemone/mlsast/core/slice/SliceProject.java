@@ -12,9 +12,9 @@ import java.util.*;
 public class SliceProject<T> {
     @Deprecated
     protected Map<T, String> bugInstance2slice;
-    protected Map<TaintEdge, String> taintEdge2slice;
+    protected Map<TaintFlow, String> taintEdge2slice;
     // 一个taintflowtree包含多条flow
-    protected Map<TaintTreeNode, List<TaintFlow>> source2taintFlow;
+    protected Map<TaintTreeNode, Set<TaintFlow>> source2taintFlow;
     protected TaintProject<T> taintProject;
 
     public SliceProject(TaintProject<T> taintProject) {
@@ -28,29 +28,29 @@ public class SliceProject<T> {
         return taintProject.getProjectName();
     }
 
-    public List<TaintFlow> getTaintFlows(TaintTreeNode source) {
+    public Set<TaintFlow> getTaintFlows(TaintTreeNode source) {
         return source2taintFlow.get(source);
     }
 
-    public Set<TaintEdge> getTaintEdges(T buginstance) {
-        Set<TaintEdge> edges = new HashSet<>();
+    public Set<TaintFlow> getTaintEdges(T buginstance) {
+        Set<TaintFlow> edges = new HashSet<>();
         for (TaintTreeNode taintTreeNode : getTaintTrees(buginstance)) {
             for (TaintFlow taintFlow : getTaintFlows(taintTreeNode)) {
-                edges.addAll(taintFlow);
+                edges.add(taintFlow);
             }
         }
         return edges;
     }
 
     public void putSlice(Func func, Location point, String slice) {
-        TaintEdge edge = new TaintEdge(func, point);
+        TaintFlow edge = new TaintFlow(func, point);
         taintEdge2slice.put(edge, slice);
     }
 
-    public String getSlice(TaintEdge edge) {
+    public String getSlice(TaintFlow edge) {
         return taintEdge2slice.get(edge);
     }
-    public String getSliceHash(TaintEdge edge){
+    public String getSliceHash(TaintFlow edge){
         if (getSlice(edge)!=null){
             return SHA1.shaEncode(getSlice(edge));
         } else {
@@ -59,7 +59,7 @@ public class SliceProject<T> {
     }
 
     public String getSlice(Func func, Location point) {
-        TaintEdge edge = new TaintEdge(func, point);
+        TaintFlow edge = new TaintFlow(func, point);
         return taintEdge2slice.get(edge);
     }
 

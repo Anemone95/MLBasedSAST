@@ -303,15 +303,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0-SNAPSHOT">
+    <library name="Maven: com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0-prettytaint-SNAPSHOT">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-SNAPSHOT/findsecbugs-plugin-1.11.0-SNAPSHOT.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-prettytaint-SNAPSHOT/findsecbugs-plugin-1.11.0-prettytaint-SNAPSHOT.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-SNAPSHOT/findsecbugs-plugin-1.11.0-SNAPSHOT-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-prettytaint-SNAPSHOT/findsecbugs-plugin-1.11.0-prettytaint-SNAPSHOT-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-SNAPSHOT/findsecbugs-plugin-1.11.0-SNAPSHOT-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/h3xstream/findsecbugs/findsecbugs-plugin/1.11.0-prettytaint-SNAPSHOT/findsecbugs-plugin-1.11.0-prettytaint-SNAPSHOT-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: com.ibm.icu:icu4j:63.1">

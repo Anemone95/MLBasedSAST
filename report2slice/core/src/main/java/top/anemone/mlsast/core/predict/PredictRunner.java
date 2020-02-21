@@ -3,7 +3,6 @@ package top.anemone.mlsast.core.predict;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.core.data.VO.Slice;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
 import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.data.taintTree.TaintTreeNode;
 import top.anemone.mlsast.core.exception.PredictorRunnerException;
@@ -79,34 +78,31 @@ public class PredictRunner<T> {
             List<TaintTreeNode> taintTrees = sliceProject.getTaintProject().getTaintTrees(buginstance);
             // 对于每一个入口
             boolean instanceIsSafe = true;
-            Set<TaintEdge> safeEdges=new HashSet<>();
+            Set<TaintFlow> safeEdges=new HashSet<>();
             predictProject.putProofs(buginstance, safeEdges);
             for (TaintTreeNode source : taintTrees) {
-                List<TaintFlow> flows = sliceProject.getTaintFlows(source);
-                if (flows == null) {
+                boolean treeIsSafe = false;
+                Set<TaintFlow> flow = sliceProject.getTaintFlows(source);
+                if (flow == null) {
                     causedExceptions.add(new NotFoundException(source, sliceProject));
                     continue;
                 }
-                boolean treeIsSafe = false;
-                // 对于每一个污染流， 需要每一条边都不是清洁函数
-                for (TaintFlow flow : flows) {
-                    boolean flowIsSafe = false;
-                    for (TaintEdge edge : flow) {
+                if (flow.isEmpty()){
+                    treeIsSafe=true;
+                } else {
+                    // 对于每一个污染流， 需要每一条边都不是清洁函数
+                    for (TaintFlow subFlow : flow) {
                         boolean edgeIsSafe = false;
                         try {
-                            edgeIsSafe = edgeIsSafe(edge);
+                            edgeIsSafe = edgeIsSafe(subFlow);
                         } catch (PredictorException e) {
                             causedExceptions.add(e);
                         }
                         if (edgeIsSafe){
-                            flowIsSafe=true;
-                            safeEdges.add(edge);
+                            treeIsSafe=true;
+                            safeEdges.add(subFlow);
                             break;
                         }
-                    }
-                    if (flowIsSafe) {
-                        treeIsSafe = true;
-                        break;
                     }
                 }
                 instanceIsSafe = instanceIsSafe & treeIsSafe;
@@ -122,7 +118,7 @@ public class PredictRunner<T> {
         return predictProject;
     }
 
-    public boolean edgeIsSafe(TaintEdge edge) throws PredictorException {
+    public boolean edgeIsSafe(TaintFlow edge) throws PredictorException {
         // 曾经计算过则直接返回
         Boolean result = predictProject.bugIsSafe(edge);
         if (result != null) {

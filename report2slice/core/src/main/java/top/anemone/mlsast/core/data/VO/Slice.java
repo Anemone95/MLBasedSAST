@@ -1,15 +1,14 @@
 package top.anemone.mlsast.core.data.VO;
 
-import edu.umd.cs.findbugs.StringAnnotation;
 import lombok.Data;
 import lombok.NonNull;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.utils.SHA1;
 
 @Data
 public class Slice {
 
-    private TaintEdge flow;
+    private TaintFlow flow;
     @NonNull
     private String slice;
     @NonNull
@@ -17,7 +16,7 @@ public class Slice {
     @NonNull
     private String project;
 
-    public Slice(TaintEdge flow, String slice, String project) {
+    public Slice(TaintFlow flow, String slice, String project) {
         this.flow = flow;
         this.slice = slice;
         if (slice != null) {

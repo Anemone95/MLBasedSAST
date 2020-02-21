@@ -2,7 +2,7 @@ package top.anemone.mlsast.core.data.VO;
 
 import lombok.Data;
 import lombok.NonNull;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 
 @Data
 public class Label {
@@ -10,7 +10,7 @@ public class Label {
     private String project;
     @NonNull
     private String flowHash;
-    private TaintEdge taintEdge;
+    private TaintFlow taintFlow;
     @NonNull
     private boolean isSafe;
 }

@@ -5,7 +5,7 @@ import lombok.NonNull;
 import top.anemone.mlsast.core.data.Func;
 
 @Data
-public class TaintEdge {
+public class TaintFlow {
     @NonNull
     public Func entry;
     @NonNull

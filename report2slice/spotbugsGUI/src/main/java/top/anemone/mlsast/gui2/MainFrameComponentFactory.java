@@ -44,10 +44,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
-import com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation;
 import edu.umd.cs.findbugs.*;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
-import top.anemone.mlsast.core.predict.PredictProject;
 
 public class MainFrameComponentFactory implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(MainFrameComponentFactory.class.getName());

@@ -1,10 +1,8 @@
 package top.anemone.mlsast.core.slice;
 
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.anemone.mlsast.core.data.Func;
 import top.anemone.mlsast.core.data.TaintProject;
 import top.anemone.mlsast.core.data.taintTree.*;
 import top.anemone.mlsast.core.exception.NotFoundException;
@@ -19,8 +17,7 @@ import top.anemone.mlsast.core.utils.ExceptionUtil;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
 
 public class SliceRunner<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SliceRunner.class);
@@ -105,16 +102,14 @@ public class SliceRunner<T> {
      * @throws SlicerException
      */
     public void sliceTaintTree(TaintTreeNode source) throws SlicerException {
-        List<TaintFlow> flows = new DFSTaintTree().getTaintFlows(source);
+        Set<TaintFlow> flows = new DFSTaintTree().getTaintFlows(source);
         project.source2taintFlow.put(source, flows);
-        for (TaintFlow taintFlow : flows) {
-            for (TaintEdge edge : taintFlow) {
-                sliceFlow(edge);
-            }
+        for (TaintFlow edge : flows) {
+            sliceFlow(edge);
         }
     }
 
-    public String sliceFlow(TaintEdge edge) throws SlicerException {
+    public String sliceFlow(TaintFlow edge) throws SlicerException {
         String slice = project.getSlice(edge.entry, edge.point);
         // slice in cache
         if (slice != null) {

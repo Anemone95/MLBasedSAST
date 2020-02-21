@@ -13,15 +13,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -47,7 +42,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -57,7 +51,7 @@ import edu.umd.cs.findbugs.log.Logger;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Label;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.exception.NotFoundException;
 import top.anemone.mlsast.core.exception.ParserException;
 import top.anemone.mlsast.core.exception.PredictorRunnerException;
@@ -243,9 +237,9 @@ public class MainFrameTree implements LogSync {
             return;
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        for (TaintEdge edge : AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug())) {
+        for (TaintFlow edge : AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug())) {
             Label label = new Label(MainFrame.getInstance().getProject().toString(), AiProject.getInstance().getSliceProject().getSliceHash(edge), false);
-            label.setTaintEdge(edge);
+            label.setTaintFlow(edge);
             try {
                 AiProject.getInstance().labelPredictor.label(label);
             } catch (PredictorException e) {

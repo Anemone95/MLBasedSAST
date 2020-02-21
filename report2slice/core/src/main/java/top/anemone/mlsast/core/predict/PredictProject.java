@@ -1,6 +1,6 @@
 package top.anemone.mlsast.core.predict;
 
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.slice.SliceProject;
 
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import java.util.Set;
 
 public class PredictProject<T> {
     protected Map<T, Boolean> bugInstance2isSafe;
-    protected Map<T, Set<TaintEdge>> bug2proof; //证明bug是误报，需要列举清洁的边
-    protected Map<TaintEdge, Boolean> edge2isSafe;
+    protected Map<T, Set<TaintFlow>> bug2proof; //证明bug是误报，需要列举清洁的边
+    protected Map<TaintFlow, Boolean> edge2isSafe;
     protected SliceProject<T> sliceProject;
     private Map<T, List<Exception>> errorBugsExceptions;
     public PredictProject(){
@@ -33,14 +33,14 @@ public class PredictProject<T> {
     public void putPrediction(T bugInstance, boolean result){
         bugInstance2isSafe.put(bugInstance, result);
     }
-    public void putPrediction(TaintEdge edge, Boolean result){
+    public void putPrediction(TaintFlow edge, Boolean result){
         edge2isSafe.put(edge, result);
     }
 
     public Boolean bugIsSafe(T bugInstance){
         return bugInstance2isSafe.get(bugInstance);
     }
-    public Boolean bugIsSafe(TaintEdge edge){
+    public Boolean bugIsSafe(TaintFlow edge){
         return edge2isSafe.get(edge);
     }
     public Map<T, Boolean> getPredictions(){
@@ -57,10 +57,10 @@ public class PredictProject<T> {
         return sliceProject;
     }
 
-    public void putProofs(T bug, Set<TaintEdge> proofs){
+    public void putProofs(T bug, Set<TaintFlow> proofs){
         bug2proof.put(bug, proofs);
     }
-    public Set<TaintEdge> getProofs(T bug){
+    public Set<TaintFlow> getProofs(T bug){
         return bug2proof.get(bug);
     }
 }

@@ -15,6 +15,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +31,7 @@ public class DFSTaintTreeTest {
                 fileList);
         TaintProject<BugInstance> taintProject = spotbugXMLParser.report2taintProject(null);
         TaintTreeNode firstNode= taintProject.getTaintTreeMap().get(taintProject.getBugInstances().get(0)).get(0);
-        TaintFlow taintFlows= new DFSTaintTree().getTaintFlows(firstNode);
-        assertEquals(taintFlows.size(),2);
+        Set<TaintFlow> taintFlows= new DFSTaintTree().getTaintFlows(firstNode);
+        assertEquals(taintFlows.size(),4);
     }
 }

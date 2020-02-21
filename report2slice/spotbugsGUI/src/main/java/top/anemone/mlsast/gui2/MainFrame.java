@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.util.Multiset;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.predict.PredictProject;
 
 @SuppressWarnings("serial")
@@ -726,7 +726,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 }
                 if (predictProject != null && predictProject.getProofs(bug) != null && b instanceof BugAnnotationWithSourceLines) {
                     // @Anemone, 打印有清洁函数的污点传播树
-                    for (TaintEdge edge : predictProject.getProofs(bug)) {
+                    for (TaintFlow edge : predictProject.getProofs(bug)) {
                         if (b instanceof MethodNodeAnnotation) {
                             MethodNodeAnnotation annotation = (MethodNodeAnnotation) b;
                             if (edge.entry.getClazz().equals(annotation.getClassName()) &&

@@ -5,7 +5,7 @@ import org.junit.Test;
 import top.anemone.mlsast.core.data.Func;
 import top.anemone.mlsast.core.data.VO.Slice;
 import top.anemone.mlsast.core.data.taintTree.Location;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.predict.Predictor;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
 
@@ -15,7 +15,7 @@ public class LSTMRemotePredictorTest {
     @Test
     public void predict() throws PredictorException {
         Predictor lstmPredictor=new BLSTMRemotePredictor("http://localhost:8000/");
-        boolean isTrue=lstmPredictor.predictIsSafe(new Slice(new TaintEdge(new Func("A","B","C"),new Location("A",0,0))
+        boolean isTrue=lstmPredictor.predictIsSafe(new Slice(new TaintFlow(new Func("A","B","C"),new Location("A",0,0))
                 ,"asd efg","test"));
         System.out.println(isTrue);
     }

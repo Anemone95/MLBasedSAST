@@ -4,7 +4,7 @@ package top.anemone.mlsast.gui2;
 import edu.umd.cs.findbugs.log.Logger;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Label;
-import top.anemone.mlsast.core.data.taintTree.TaintEdge;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.exception.NotFoundException;
 import top.anemone.mlsast.core.exception.ParserException;
 import top.anemone.mlsast.core.exception.PredictorRunnerException;
@@ -12,7 +12,6 @@ import top.anemone.mlsast.core.exception.SliceRunnerException;
 import top.anemone.mlsast.core.predict.PredictRunner;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.core.utils.ExceptionUtil;
-import top.anemone.mlsast.core.utils.SHA1;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +31,7 @@ public class AiLabelDialog extends JDialog {
         dispose();
     }
 
-    public AiLabelDialog(JFrame parent, Logger l, boolean modal, Set<TaintEdge> flowEdges) {
+    public AiLabelDialog(JFrame parent, Logger l, boolean modal, Set<TaintFlow> flowEdges) {
         super(parent, modal);
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.label_dialog", "Labeling"));
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -45,7 +44,7 @@ public class AiLabelDialog extends JDialog {
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(label);
 
-        JComboBox<TaintEdge> jcombo = new JComboBox<TaintEdge>(flowEdges.toArray(new TaintEdge[]{}));
+        JComboBox<TaintFlow> jcombo = new JComboBox<TaintFlow>(flowEdges.toArray(new TaintFlow[]{}));
         jcombo.setSize(700, 40);
         jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(jcombo);
@@ -61,7 +60,7 @@ public class AiLabelDialog extends JDialog {
         sliceText.setSize(700,400);
         JScrollPane sliceScroll=new JScrollPane(sliceText);
         labelPanel.add(sliceScroll);
-        TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
+        TaintFlow edge = (TaintFlow) jcombo.getSelectedItem();
         sliceText.setText(
                 "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n\n"+
                 "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge));
@@ -70,7 +69,7 @@ public class AiLabelDialog extends JDialog {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
+                    TaintFlow edge = (TaintFlow) jcombo.getSelectedItem();
 
                     ;
                     sliceText.setText(
@@ -87,9 +86,9 @@ public class AiLabelDialog extends JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Submit") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                TaintEdge edge = (TaintEdge) jcombo.getSelectedItem();
+                TaintFlow edge = (TaintFlow) jcombo.getSelectedItem();
                 Label label = new Label(MainFrame.getInstance().getProject().toString(), AiProject.getInstance().getSliceProject().getSliceHash(edge), true);
-                label.setTaintEdge(edge);
+                label.setTaintFlow(edge);
                 try {
                     AiProject.getInstance().labelPredictor.label(label);
                 } catch (PredictorException e) {
