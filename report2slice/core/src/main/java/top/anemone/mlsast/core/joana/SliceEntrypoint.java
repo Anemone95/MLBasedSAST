@@ -17,12 +17,12 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import java.util.Collection;
 import java.util.Set;
 
-public class AppEntrypoint extends SubtypesEntrypoint {
-    public AppEntrypoint(MethodReference method, IClassHierarchy cha) {
+public class SliceEntrypoint extends SubtypesEntrypoint {
+    public SliceEntrypoint(MethodReference method, IClassHierarchy cha) {
         super(method, cha);
     }
 
-    public AppEntrypoint(IMethod method, IClassHierarchy cha) {
+    public SliceEntrypoint(IMethod method, IClassHierarchy cha) {
         super(method, cha);
     }
 

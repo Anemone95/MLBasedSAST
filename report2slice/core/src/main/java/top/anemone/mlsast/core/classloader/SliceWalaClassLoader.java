@@ -18,7 +18,7 @@ import java.io.*;
 import java.util.*;
 import java.util.jar.JarFile;
 
-public class AppWalaClassLoader extends ClassLoaderImpl {
+public class SliceWalaClassLoader extends ClassLoaderImpl {
 
     private static final boolean OPTIMIZE_JAR_FILE_IO = true;
     /**
@@ -29,7 +29,7 @@ public class AppWalaClassLoader extends ClassLoaderImpl {
      * @param cha
      */
     private SetOfClasses myExclusions;
-    public AppWalaClassLoader(ClassLoaderReference loader, ArrayClassLoader arrayClassLoader, IClassLoader parent, SetOfClasses exclusions, IClassHierarchy cha) {
+    public SliceWalaClassLoader(ClassLoaderReference loader, ArrayClassLoader arrayClassLoader, IClassLoader parent, SetOfClasses exclusions, IClassHierarchy cha) {
         super(loader, arrayClassLoader, parent, exclusions, cha);
         this.myExclusions=exclusions;
     }

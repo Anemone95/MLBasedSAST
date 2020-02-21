@@ -1,7 +1,7 @@
 package top.anemone.mlsast.gui2;
 
 import edu.umd.cs.findbugs.log.Logger;
-import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
+import top.anemone.mlsast.core.predict.impl.BLSTMRemotePredictor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +44,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Verify") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                boolean isAlive = new LSTMRemotePredictor(tabTextField.getText(), tokenTextField.getText()).isAlive();
+                boolean isAlive = new BLSTMRemotePredictor(tabTextField.getText(), tokenTextField.getText()).isAlive();
                 if (isAlive) {
                     JOptionPane.showMessageDialog(MainFrame.getInstance(), "Remote is alive!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -56,7 +56,7 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         bottomPanel.add(new JButton(new AbstractAction("Apply") {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                AiProject.getInstance().setRemotePredictor(new LSTMRemotePredictor(tabTextField.getText(), tokenTextField.getText()));
+                AiProject.getInstance().setRemotePredictor(new BLSTMRemotePredictor(tabTextField.getText(), tokenTextField.getText()));
                 closeDialog();
             }
         }));

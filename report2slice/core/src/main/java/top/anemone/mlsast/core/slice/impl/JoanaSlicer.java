@@ -26,8 +26,8 @@ import edu.kit.joana.wala.core.Main;
 import edu.kit.joana.wala.core.SDGBuilder;
 import edu.kit.joana.wala.core.prune.NodeLimitPruner;
 import lombok.Data;
-import top.anemone.mlsast.core.classloader.AppClassloader;
-import top.anemone.mlsast.core.classloader.AppWalaClassLoaderFactory;
+import top.anemone.mlsast.core.classloader.SliceJavaClassloader;
+import top.anemone.mlsast.core.classloader.SliceClassLoaderFactory;
 import top.anemone.mlsast.core.data.Func;
 import top.anemone.mlsast.core.data.taintTree.Location;
 import top.anemone.mlsast.core.exception.NotFoundException;
@@ -50,56 +50,61 @@ import static top.anemone.mlsast.core.joana.LoggingOutputStream.LogLevel.INFO;
 public class JoanaSlicer implements Slicer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JoanaSlicer.class);
     private SDGBuilder.SDGBuilderConfig config;
-    private Map<Func, SDG> sdgCache;
+    private Map<Func, SDG> sdgCache = new HashMap<>();
 
-    public void config(List<File> appJars, List<URL> libJars, String exclusionsFile) throws ClassHierarchyException, IOException {
-        SDGBuilder.SDGBuilderConfig config = getSDGBuilderConfig(appJars, libJars, exclusionsFile);
-        config.doParallel = false;
-        this.config = config;
-        this.sdgCache=new HashMap<>();
+    public void clearCache() {
+        sdgCache = new HashMap<>();
+        config.cache = new AnalysisCacheImpl();
     }
 
     public String computeSlice(Func func, Location line) throws SlicerException {
-        String entryClass = "L" + func.getClazz().replace('.', '/');
-        String entryMethod = func.getMethod();
-        String entryRef = func.getSig();
-        SDG sdg=null;
-        if (sdgCache.containsKey(func)){
-            sdg=sdgCache.get(func);
-        } else{
+        SDG sdg = null;
+        if (sdgCache.containsKey(func)) {
+            sdg = sdgCache.get(func);
+        } else {
             try {
-                sdg = this.computeSlice(entryClass, entryMethod, entryRef, null);
+                sdg = this.buildSDG(func);
                 LOGGER.info("Computing Slice...");
-                // 利用SDG切片
-            } catch (IOException|GraphIntegrity.UnsoundGraphException|CancelException|NotFoundException|ClassCastException e) {
+            } catch (IOException | GraphIntegrity.UnsoundGraphException | CancelException | NotFoundException | ClassCastException e) {
                 throw new SlicerException(e.getMessage(), e);
             }
-            sdgCache.put(func,sdg);
         }
-
-        JoanaLineSlicer jSlicer = new JoanaLineSlicer(sdg);
+        // 利用SDG切片
+        JoanaSDGSlicer jSlicer = new JoanaSDGSlicer(sdg);
         LOGGER.info("Done...");
         // 根据sink点查找sinknodes
-        HashSet<SDGNode> sinkNodes = null;
+        HashSet<SDGNode> sinkNodes;
         try {
-            sinkNodes = jSlicer.getNodesAtLine(line);
+            sinkNodes = jSlicer.getNodesAtLocation(line);
         } catch (NotFoundException e) {
             throw new SlicerException(e.getMessage(), e);
         }
         Collection<SDGNode> slice = jSlicer.slice(sinkNodes);
-        // 这里relatedNodesStr没搞懂是啥
-//            String relatedNodesStr = "[";
-//            for (SDGNode sdgNode : sinkNodes) {
-//                if (!jSlicer.toAbstract.contains(sdgNode) && !JoanaLineSlicer.isRemoveNode(sdgNode)) {
-//                    relatedNodesStr += sdgNode.getId() + ", ";
-//
-//            }
-//            relatedNodesStr = relatedNodesStr.substring(0, relatedNodesStr.lastIndexOf(",")) + "]\n";
-        String result = Formater.prepareSliceForEncoding(sdg, slice, jSlicer.toAbstract);
+        String result = Formatter.prepareSliceForEncoding(slice);
         return result;
     }
 
-    public SDG computeSlice(String entryClass, String entryMethod, String entryRef, String pdgFile)
+    public SDG buildSDG(Func func)
+            throws IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
+        String entryClass = "L" + func.getClazz().replace('.', '/');
+        String entryMethod = func.getMethod();
+        String entryRef = func.getSig();
+        SDG sdg = buildSDG(entryClass, entryMethod, entryRef, null);
+        sdgCache.put(func, sdg);
+        return sdg;
+    }
+
+    public SDG buildSDG(Func func, String pdgFile)
+            throws IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
+        String entryClass = "L" + func.getClazz().replace('.', '/');
+        String entryMethod = func.getMethod();
+        String entryRef = func.getSig();
+        SDG sdg = buildSDG(entryClass, entryMethod, entryRef, pdgFile);
+        sdgCache.put(func, sdg);
+        return sdg;
+    }
+
+    public SDG buildSDG(String entryClass, String entryMethod, String entryRef, String pdgFile)
             throws IOException, GraphIntegrity.UnsoundGraphException, CancelException, NotFoundException {
         SDG localSdg = null;
         LOGGER.info("Building SDG... ");
@@ -112,7 +117,7 @@ public class JoanaSlicer implements Slicer {
             StackTraceElement stackTraceElement = e.getStackTrace()[2];
             if (stackTraceElement.getClassName().equals("edu.kit.joana.wala.core.CallGraph")
                     && stackTraceElement.getMethodName().equals("<init>")) {
-                throw new RootNodeNotFoundException(entryClass+"."+entryMethod+entryRef,"call-graph (or it was in primordial jar)");
+                throw new RootNodeNotFoundException(entryClass + "." + entryMethod + entryRef, "call-graph (or it was in primordial jar)");
             }
         }
         LOGGER.info("SDG build done! Optimizing...");
@@ -129,7 +134,7 @@ public class JoanaSlicer implements Slicer {
     }
 
     private static AnalysisScope makeMinimalScope(List<File> appJars, List<URL> libJars,
-                                                  String exclusionsFile, ClassLoader classLoader) throws IOException {
+                                                  List<String> exclusions, ClassLoader classLoader) throws IOException {
 
         String scopeFile = "RtScopeFile.txt";
         String exclusionFile = "Java60RegressionExclusions.txt";
@@ -138,7 +143,7 @@ public class JoanaSlicer implements Slicer {
         for (File appJar : appJars) {
             scope.addToScope(ClassLoaderReference.Application, new JarStreamModule(new FileInputStream(appJar)));
         }
-        if (libJars!=null){
+        if (libJars != null) {
             for (URL lib : libJars) {
                 if (appJars.contains(new File(lib.getFile()))) {
                     LOGGER.warn(lib + "in app scope.");
@@ -152,8 +157,7 @@ public class JoanaSlicer implements Slicer {
             }
         }
 
-        if (exclusionsFile != null) {
-            List<String> exclusions = Files.readAllLines(Paths.get(exclusionsFile));
+        if (exclusions != null) {
             for (String exc : exclusions) {
                 scope.getExclusions().add(exc);
             }
@@ -161,17 +165,14 @@ public class JoanaSlicer implements Slicer {
         return scope;
     }
 
-    public static SDGBuilder.SDGBuilderConfig getSDGBuilderConfig(List<File> appJars,
-                                                                  List<URL> libJars, String exclusionsFile)
+    public void config(List<File> appJars, List<URL> libJars, List<String> exclusions)
             throws ClassHierarchyException, IOException {
         SDGBuilder.SDGBuilderConfig scfg = new SDGBuilder.SDGBuilderConfig();
-
-
         scfg.out = new PrintStream(new LoggingOutputStream(LOGGER, INFO));
-        scfg.nativeSpecClassLoader = new AppClassloader(new File[]{});
-        scfg.scope = makeMinimalScope(appJars, libJars, exclusionsFile, scfg.nativeSpecClassLoader);
+        scfg.nativeSpecClassLoader = new SliceJavaClassloader(new File[]{});
+        scfg.scope = makeMinimalScope(appJars, libJars, exclusions, scfg.nativeSpecClassLoader);
         scfg.cache = new AnalysisCacheImpl();
-        scfg.cha = ClassHierarchyFactory.makeWithRoot(scfg.scope, new AppWalaClassLoaderFactory(scfg.scope.getExclusions()));
+        scfg.cha = ClassHierarchyFactory.makeWithRoot(scfg.scope, new SliceClassLoaderFactory(scfg.scope.getExclusions()));
         scfg.ext = ExternalCallCheck.EMPTY;
         scfg.immutableNoOut = Main.IMMUTABLE_NO_OUT;
         scfg.immutableStubs = Main.IMMUTABLE_STUBS;
@@ -197,9 +198,10 @@ public class JoanaSlicer implements Slicer {
         scfg.debugManyGraphsDotOutput = false;
         scfg.debugAccessPath = false;
         scfg.debugStaticInitializers = false;
-        scfg.entrypointFactory=new AppEntrypointFactory();
-        scfg.cgPruner=new NodeLimitPruner(300);
-        return scfg;
+        scfg.entrypointFactory = new SliceEntrypointFactory();
+        scfg.cgPruner = new SliceCGPruner(50);
+        scfg.doParallel = false;
+        this.config = scfg;
     }
 
     static IMethod findMethod(SDGBuilder.SDGBuilderConfig scfg, final String entryClazz, final String entryMethod, String methodRef) throws NotFoundException {
@@ -212,9 +214,8 @@ public class JoanaSlicer implements Slicer {
         final IMethod m = cl.getMethod(new Selector(Atom.findOrCreateUnicodeAtom(entryMethod),
                 Descriptor.findOrCreateUTF8(Language.JAVA, methodRef)));
         if (m == null) {
-            throw new NotFoundException( cl + "." + entryMethod, cl);
+            throw new NotFoundException(cl + "." + entryMethod, cl);
         }
         return m;
     }
-
 }

@@ -10,7 +10,7 @@ import top.anemone.mlsast.core.exception.SliceRunnerException;
 import top.anemone.mlsast.core.parser.ReportParser;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
-import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
+import top.anemone.mlsast.core.predict.impl.BLSTMRemotePredictor;
 import top.anemone.mlsast.core.slice.SliceProject;
 import top.anemone.mlsast.core.slice.SliceRunner;
 import top.anemone.mlsast.core.slice.SliceRunnerTest;
@@ -33,7 +33,7 @@ public class PredictRunnerTest {
                 new File(SliceRunnerTest.class.getClassLoader().getResource("java-vuln-sample.xml").toURI()),
                 fileList);
 
-        Predictor remotePredictor=new LSTMRemotePredictor("http://127.0.0.1:8000");
+        Predictor remotePredictor=new BLSTMRemotePredictor("http://127.0.0.1:8000");
         PredictProject<BugInstance> predictProject = new PredictRunner<BugInstance>()
                 .setReportParser(spotbugXMLParser)
                 .setSlicer(new JoanaSlicer())

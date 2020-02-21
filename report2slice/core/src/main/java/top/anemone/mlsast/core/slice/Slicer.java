@@ -12,6 +12,6 @@ import java.net.URL;
 import java.util.List;
 
 public interface Slicer {
-    void config(List<File> appJars, List<URL> libJars, String exclusionsFile) throws ClassHierarchyException, IOException;
+    void config(List<File> appJars, List<URL> libJars, List<String> exclusions) throws ClassHierarchyException, IOException;
     String computeSlice(Func func, Location line) throws SlicerException;
 }

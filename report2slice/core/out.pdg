@@ -1,0 +1,2441 @@
+SDG "top.anemone.samples.Benchmark.doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)" root 48 {
+ENTR 1 {
+O entry;
+V "top.anemone.samples.Benchmark.doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":-1;
+Z 0;
+C "Application";
+HE 2;
+HE 3;
+HE 4;
+HE 5;
+HE 6;
+HE 7;
+HE 12;
+HE 17;
+HE 30;
+HE 34;
+PS 3;
+PS 4;
+PS 5;
+PS 6;
+CF 4;
+CD 7;
+CD 12;
+CD 17;
+CD 29;
+CD 30;
+CD 34;
+CE 2;
+CE 3;
+CE 4;
+CE 5;
+CE 6;
+}
+EXIT 2 {
+O exit;
+V "top.anemone.samples.Benchmark.doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)";
+T "V";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exit>":-2;
+Z 0;
+RF 229;
+}
+FRMO 3 {
+O form-out;
+V "_exception_";
+T "Ljava/lang/Exception";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exception>":-2;
+CF 2: "exc";
+PO 65;
+}
+FRMI 4 {
+O form-in;
+V "this";
+T "Ltop/anemone/samples/Benchmark";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 0":-2;
+Z 0;
+LD ["this"];
+CF 5;
+DD 19;
+DD 25;
+}
+FRMI 5 {
+O form-in;
+V "param 1 $request ";
+T "Ljavax/servlet/http/HttpServletRequest";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 1":-2;
+Z 0;
+LD ["request"];
+CF 6;
+DD 8;
+}
+FRMI 6 {
+O form-in;
+V "param 2 $response ";
+T "Ljavax/servlet/http/HttpServletResponse";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 2":-2;
+Z 0;
+LD ["response"];
+CF 8;
+DD 31;
+}
+CALL 7 {
+O call;
+V "v7 = p1 $request .getParameter(#(p))";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":16,0-16,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":3;
+Z 0;
+U "javax.servlet.http.HttpServletRequest.getParameter(Ljava/lang/String;)Ljava/lang/String;";
+HE 8;
+HE 9;
+HE 10;
+HE 11;
+HE 210;
+PS 8;
+PS 9;
+PS 10;
+PS 11;
+CF 210;
+CE 8;
+CE 9;
+CE 10;
+CE 11;
+CE 210;
+}
+ACTI 8 {
+O act-in;
+V "this [p1 $request ]";
+T "Ljavax/servlet/http/HttpServletRequest";
+P 4;
+S "top/anemone/samples/Benchmark.java":16,0-16,0;
+B "<param> 0":-2;
+Z 0;
+LU ["request"];
+CF 9;
+DD 210;
+}
+ACTI 9 {
+O act-in;
+V "param 1 [#(p)]";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":16,0-16,0;
+B "<param> 1":-2;
+Z 0;
+CF 7;
+DD 210;
+}
+ACTO 10 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":16,0-16,0;
+B "<exit>":-2;
+Z 0;
+LD ["p"];
+CF 11;
+DD 13;
+DD 20;
+DD 26;
+}
+ACTO 11 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 4;
+S "top/anemone/samples/Benchmark.java":16,0-16,0;
+B "<exception>":-2;
+Z 0;
+CF 13;
+}
+CALL 12 {
+O call;
+V "v10 = v7.startsWith(#(safe))";
+T "Z";
+P 4;
+S "top/anemone/samples/Benchmark.java":18,0-18,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":12;
+Z 0;
+U "java.lang.String.startsWith(Ljava/lang/String;)Z";
+HE 13;
+HE 14;
+HE 15;
+HE 16;
+HE 211;
+PS 13;
+PS 14;
+PS 15;
+PS 16;
+CF 211;
+CE 13;
+CE 14;
+CE 15;
+CE 16;
+CE 211;
+}
+ACTI 13 {
+O act-in;
+V "this [v7]";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":18,0-18,0;
+B "<param> 0":-2;
+Z 0;
+LU ["p"];
+CF 14;
+DD 211;
+}
+ACTI 14 {
+O act-in;
+V "param 1 [#(safe)]";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":18,0-18,0;
+B "<param> 1":-2;
+Z 0;
+CF 12;
+DD 211;
+}
+ACTO 15 {
+O act-out;
+V "ret 0";
+T "Z";
+P 4;
+S "top/anemone/samples/Benchmark.java":18,0-18,0;
+B "<exit>":-2;
+Z 0;
+CF 16;
+DD 17;
+}
+ACTO 16 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 4;
+S "top/anemone/samples/Benchmark.java":18,0-18,0;
+B "<exception>":-2;
+Z 0;
+CF 17;
+}
+PRED 17 {
+O IF;
+V "if (v10 == #(0)) goto 20";
+T "Z";
+P 4;
+S "top/anemone/samples/Benchmark.java":18,0-18,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":15;
+Z 0;
+HE 18;
+HE 23;
+HE 24;
+HE 29;
+CF 19;
+CF 25;
+CD 18;
+CD 23;
+CD 24;
+CD 29;
+}
+CALL 18 {
+O call;
+V "v15 = p0 $this .ifBranch(v7)";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":20;
+Z 0;
+HE 19;
+HE 20;
+HE 21;
+HE 22;
+PS 19;
+PS 20;
+PS 21;
+PS 22;
+CF 226;
+CE 19;
+CE 20;
+CE 21;
+CE 22;
+CE 226;
+CL 66: "virtual";
+}
+ACTI 19 {
+O act-in;
+V "this [p0 $this ]";
+T "Ltop/anemone/samples/Benchmark";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "<param> 0":-2;
+Z 0;
+LU ["this"];
+CF 20;
+PI 69;
+}
+ACTI 20 {
+O act-in;
+V "param 1 [v7]";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "<param> 1":-2;
+Z 0;
+LU ["p"];
+CF 18;
+PI 70;
+}
+ACTO 21 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "<exit>":-2;
+Z 0;
+LD ["q"];
+CF 22;
+DD 29;
+}
+ACTO 22 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "<exception>":-2;
+Z 0;
+HE 226;
+CF 23;
+CE 226;
+}
+NORM 23 {
+O compound;
+V "goto 38";
+T "Ljava/lang/Object";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":25;
+Z 0;
+CF 29;
+}
+CALL 24 {
+O call;
+V "v13 = p0 $this .unsafe(v7)";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":21,0-21,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":30;
+Z 0;
+HE 25;
+HE 26;
+HE 27;
+HE 28;
+PS 25;
+PS 26;
+PS 27;
+PS 28;
+CF 227;
+CE 25;
+CE 26;
+CE 27;
+CE 28;
+CE 227;
+CL 119: "virtual";
+}
+ACTI 25 {
+O act-in;
+V "this [p0 $this ]";
+T "Ltop/anemone/samples/Benchmark";
+P 4;
+S "top/anemone/samples/Benchmark.java":21,0-21,0;
+B "<param> 0":-2;
+Z 0;
+LU ["this"];
+CF 26;
+PI 122;
+}
+ACTI 26 {
+O act-in;
+V "param 1 [v7]";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":21,0-21,0;
+B "<param> 1":-2;
+Z 0;
+LU ["p"];
+CF 24;
+PI 123;
+}
+ACTO 27 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":21,0-21,0;
+B "<exit>":-2;
+Z 0;
+CF 28;
+DD 29;
+}
+ACTO 28 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 4;
+S "top/anemone/samples/Benchmark.java":21,0-21,0;
+B "<exception>":-2;
+Z 0;
+HE 227;
+CF 29;
+CE 227;
+}
+EXPR 29 {
+O assign;
+V "PHI v16 = v15, v13";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<phi>":-8;
+Z 0;
+LD ["q"];
+CF 31;
+DD 32;
+}
+CALL 30 {
+O call;
+V "sink(p2 $response , v16)";
+T "V";
+P 4;
+S "top/anemone/samples/Benchmark.java":23,0-23,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":38;
+Z 0;
+HE 31;
+HE 32;
+HE 33;
+PS 31;
+PS 32;
+PS 33;
+CF 228;
+CE 31;
+CE 32;
+CE 33;
+CE 228;
+CL 137: "virtual";
+}
+ACTI 31 {
+O act-in;
+V "param 1 [p2 $response ]";
+T "Ljavax/servlet/http/HttpServletResponse";
+P 4;
+S "top/anemone/samples/Benchmark.java":23,0-23,0;
+B "<param> 1":-2;
+Z 0;
+LU ["response"];
+CF 32;
+PI 140;
+}
+ACTI 32 {
+O act-in;
+V "param 2 [v16]";
+T "Ljava/lang/String";
+P 4;
+S "top/anemone/samples/Benchmark.java":23,0-23,0;
+B "<param> 2":-2;
+Z 0;
+LU ["q"];
+CF 30;
+PI 141;
+}
+ACTO 33 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 4;
+S "top/anemone/samples/Benchmark.java":23,0-23,0;
+B "<exception>":-2;
+Z 0;
+HE 228;
+CF 34;
+CE 228;
+}
+NORM 34 {
+O compound;
+V "return";
+T "V";
+P 4;
+S "top/anemone/samples/Benchmark.java":24,0-24,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":41;
+Z 0;
+CF 2;
+}
+ENTR 48 {
+O entry;
+V "com.ibm.wala.FakeRootClass.fakeRootMethod()";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+C "Primordial";
+HE 49;
+HE 50;
+HE 51;
+HE 53;
+HE 54;
+HE 57;
+HE 58;
+HE 59;
+HE 60;
+HE 61;
+PS 50;
+CF 51;
+CD 51;
+CD 53;
+CD 54;
+CD 57;
+CD 58;
+CD 59;
+CD 60;
+CD 61;
+CE 49;
+CE 50;
+}
+EXIT 49 {
+O exit;
+V "com.ibm.wala.FakeRootClass.fakeRootMethod()";
+T "V";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<exit>":-2;
+Z 0;
+}
+FRMO 50 {
+O form-out;
+V "_exception_";
+T "Ljava/lang/Exception";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<exception>":-2;
+CF 49: "exc";
+}
+CALL 51 {
+O call;
+V "fakeWorldClinit()";
+T "V";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+U "com.ibm.wala.FakeRootClass.fakeWorldClinit()V";
+HE 52;
+HE 212;
+PS 52;
+CF 212;
+CE 52;
+CE 212;
+}
+ACTO 52 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<exception>":-2;
+Z 0;
+CF 53;
+}
+NORM 53 {
+O declaration;
+V "v3 = new top.anemone.samples.Benchmark";
+T "Ltop/anemone/samples/Benchmark";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+CF 55;
+DD 55;
+DD 62;
+}
+CALL 54 {
+O call;
+V "v3.<init>()";
+T "V";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+U "top.anemone.samples.Benchmark.<init>()V";
+HE 55;
+HE 56;
+HE 213;
+PS 55;
+PS 56;
+CF 213;
+CE 55;
+CE 56;
+CE 213;
+}
+ACTI 55 {
+O act-in;
+V "this [v3]";
+T "Ltop/anemone/samples/Benchmark";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<param> 0":-2;
+Z 0;
+CF 54;
+DD 213;
+}
+ACTO 56 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<exception>":-2;
+Z 0;
+CF 57;
+}
+NORM 57 {
+O declaration;
+V "v5 = new javax.servlet.http.HttpServletRequest";
+T "Ljavax/servlet/http/HttpServletRequest";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+CF 58;
+}
+EXPR 58 {
+O assign;
+V "PHI v6 = v4";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<phi>":-8;
+Z 0;
+CF 59;
+DD 60;
+DD 63;
+}
+NORM 59 {
+O declaration;
+V "v7 = new javax.servlet.http.HttpServletResponse";
+T "Ljavax/servlet/http/HttpServletResponse";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+CF 60;
+}
+EXPR 60 {
+O assign;
+V "PHI v8 = v6";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<phi>":-8;
+Z 0;
+CF 62;
+DD 64;
+}
+CALL 61 {
+O call;
+V "v3.doGet(v6, v8)";
+T "V";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+HE 62;
+HE 63;
+HE 64;
+HE 65;
+PS 62;
+PS 63;
+PS 64;
+PS 65;
+CF 229;
+CE 62;
+CE 63;
+CE 64;
+CE 65;
+CE 229;
+CL 1: "virtual";
+}
+ACTI 62 {
+O act-in;
+V "this [v3]";
+T "Ltop/anemone/samples/Benchmark";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<param> 0":-2;
+Z 0;
+CF 63;
+PI 4;
+}
+ACTI 63 {
+O act-in;
+V "param 1 [v6]";
+T "Ljavax/servlet/http/HttpServletRequest";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<param> 1":-2;
+Z 0;
+CF 64;
+PI 5;
+}
+ACTI 64 {
+O act-in;
+V "param 2 [v8]";
+T "Ljavax/servlet/http/HttpServletResponse";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<param> 2":-2;
+Z 0;
+CF 61;
+PI 6;
+}
+ACTO 65 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "<exception>":-2;
+Z 0;
+HE 229;
+CF 49;
+CE 229;
+}
+ENTR 66 {
+O entry;
+V "top.anemone.samples.Benchmark.ifBranch(java.lang.String)";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+C "Application";
+HE 67;
+HE 68;
+HE 69;
+HE 70;
+HE 71;
+HE 76;
+HE 102;
+PS 67;
+PS 68;
+PS 69;
+PS 70;
+CF 69;
+CD 71;
+CD 76;
+CD 101;
+CD 102;
+CE 67;
+CE 68;
+CE 69;
+CE 70;
+}
+EXIT 67 {
+O exit;
+V "top.anemone.samples.Benchmark.ifBranch(java.lang.String)";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exit>":-2;
+Z 0;
+RF 226;
+PO 21;
+}
+FRMO 68 {
+O form-out;
+V "_exception_";
+T "Ljava/lang/Exception";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exception>":-2;
+CF 67: "exc";
+PO 22;
+}
+FRMI 69 {
+O form-in;
+V "this";
+T "Ltop/anemone/samples/Benchmark";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 0":-2;
+Z 0;
+LD ["this"];
+CF 70;
+DD 78;
+DD 90;
+}
+FRMI 70 {
+O form-in;
+V "param 1 $p ";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 1":-2;
+Z 0;
+LD ["p"];
+CF 72;
+DD 72;
+DD 79;
+DD 84;
+DD 91;
+DD 96;
+}
+CALL 71 {
+O call;
+V "v6 = p1 $p .startsWith(#(safe))";
+T "Z";
+P 6;
+S "top/anemone/samples/Benchmark.java":27,0-27,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":3;
+Z 0;
+U "java.lang.String.startsWith(Ljava/lang/String;)Z";
+HE 72;
+HE 73;
+HE 74;
+HE 75;
+HE 214;
+PS 72;
+PS 73;
+PS 74;
+PS 75;
+CF 214;
+CE 72;
+CE 73;
+CE 74;
+CE 75;
+CE 214;
+}
+ACTI 72 {
+O act-in;
+V "this [p1 $p ]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":27,0-27,0;
+B "<param> 0":-2;
+Z 0;
+LU ["p"];
+CF 73;
+DD 214;
+}
+ACTI 73 {
+O act-in;
+V "param 1 [#(safe)]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":27,0-27,0;
+B "<param> 1":-2;
+Z 0;
+CF 71;
+DD 214;
+}
+ACTO 74 {
+O act-out;
+V "ret 0";
+T "Z";
+P 6;
+S "top/anemone/samples/Benchmark.java":27,0-27,0;
+B "<exit>":-2;
+Z 0;
+CF 75;
+DD 76;
+}
+ACTO 75 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 6;
+S "top/anemone/samples/Benchmark.java":27,0-27,0;
+B "<exception>":-2;
+Z 0;
+CF 76;
+}
+PRED 76 {
+O IF;
+V "if (v6 == #(0)) goto 11";
+T "Z";
+P 6;
+S "top/anemone/samples/Benchmark.java":27,0-27,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":6;
+Z 0;
+HE 77;
+HE 82;
+HE 83;
+HE 88;
+CF 78;
+CF 84;
+CD 77;
+CD 82;
+CD 83;
+CD 88;
+CD 101;
+}
+CALL 77 {
+O call;
+V "v18 = p0 $this .safe(p1 $p )";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":11;
+Z 0;
+HE 78;
+HE 79;
+HE 80;
+HE 81;
+PS 78;
+PS 79;
+PS 80;
+PS 81;
+CF 230;
+CE 78;
+CE 79;
+CE 80;
+CE 81;
+CE 230;
+CL 153: "virtual";
+}
+ACTI 78 {
+O act-in;
+V "this [p0 $this ]";
+T "Ltop/anemone/samples/Benchmark";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "<param> 0":-2;
+Z 0;
+LU ["this"];
+CF 79;
+PI 156;
+}
+ACTI 79 {
+O act-in;
+V "param 1 [p1 $p ]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "<param> 1":-2;
+Z 0;
+LU ["p"];
+CF 77;
+PI 157;
+}
+ACTO 80 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "<exit>":-2;
+Z 0;
+LD ["q"];
+CF 81;
+DD 101;
+}
+ACTO 81 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "<exception>":-2;
+Z 0;
+HE 230;
+CF 82;
+CE 230;
+}
+NORM 82 {
+O compound;
+V "goto 46";
+T "Ljava/lang/Object";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":15;
+Z 0;
+CF 101;
+}
+CALL 83 {
+O call;
+V "v10 = p1 $p .startsWith(#(unsafe))";
+T "Z";
+P 6;
+S "top/anemone/samples/Benchmark.java":29,0-29,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":21;
+Z 0;
+U "java.lang.String.startsWith(Ljava/lang/String;)Z";
+HE 84;
+HE 85;
+HE 86;
+HE 87;
+HE 215;
+PS 84;
+PS 85;
+PS 86;
+PS 87;
+CF 215;
+CE 84;
+CE 85;
+CE 86;
+CE 87;
+CE 215;
+}
+ACTI 84 {
+O act-in;
+V "this [p1 $p ]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":29,0-29,0;
+B "<param> 0":-2;
+Z 0;
+LU ["p"];
+CF 85;
+DD 215;
+}
+ACTI 85 {
+O act-in;
+V "param 1 [#(unsafe)]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":29,0-29,0;
+B "<param> 1":-2;
+Z 0;
+CF 83;
+DD 215;
+}
+ACTO 86 {
+O act-out;
+V "ret 0";
+T "Z";
+P 6;
+S "top/anemone/samples/Benchmark.java":29,0-29,0;
+B "<exit>":-2;
+Z 0;
+CF 87;
+DD 88;
+}
+ACTO 87 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 6;
+S "top/anemone/samples/Benchmark.java":29,0-29,0;
+B "<exception>":-2;
+Z 0;
+CF 88;
+}
+PRED 88 {
+O IF;
+V "if (v10 == #(0)) goto 29";
+T "Z";
+P 6;
+S "top/anemone/samples/Benchmark.java":29,0-29,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":24;
+Z 0;
+HE 89;
+HE 94;
+HE 95;
+HE 101;
+CF 90;
+CF 96;
+CD 89;
+CD 94;
+CD 95;
+CD 101;
+}
+CALL 89 {
+O call;
+V "v16 = p0 $this .unsafe(p1 $p )";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":29;
+Z 0;
+HE 90;
+HE 91;
+HE 92;
+HE 93;
+PS 90;
+PS 91;
+PS 92;
+PS 93;
+CF 231;
+CE 90;
+CE 91;
+CE 92;
+CE 93;
+CE 231;
+CL 119: "virtual";
+}
+ACTI 90 {
+O act-in;
+V "this [p0 $this ]";
+T "Ltop/anemone/samples/Benchmark";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "<param> 0":-2;
+Z 0;
+LU ["this"];
+CF 91;
+PI 122;
+}
+ACTI 91 {
+O act-in;
+V "param 1 [p1 $p ]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "<param> 1":-2;
+Z 0;
+LU ["p"];
+CF 89;
+PI 123;
+}
+ACTO 92 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "<exit>":-2;
+Z 0;
+LD ["q"];
+CF 93;
+DD 101;
+}
+ACTO 93 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "<exception>":-2;
+Z 0;
+HE 231;
+CF 94;
+CE 231;
+}
+NORM 94 {
+O compound;
+V "goto 46";
+T "Ljava/lang/Object";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":33;
+Z 0;
+CF 101;
+}
+CALL 95 {
+O call;
+V "v14 = p1 $p .replace(#(A), #(B))";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":32,0-32,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":41;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 96;
+HE 97;
+HE 98;
+HE 99;
+HE 100;
+HE 216;
+PS 96;
+PS 97;
+PS 98;
+PS 99;
+PS 100;
+CF 216;
+CE 96;
+CE 97;
+CE 98;
+CE 99;
+CE 100;
+CE 216;
+}
+ACTI 96 {
+O act-in;
+V "this [p1 $p ]";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":32,0-32,0;
+B "<param> 0":-2;
+Z 0;
+LU ["p"];
+CF 97;
+DD 216;
+}
+ACTI 97 {
+O act-in;
+V "param 1 [#(A)]";
+T "Ljava/lang/CharSequence";
+P 6;
+S "top/anemone/samples/Benchmark.java":32,0-32,0;
+B "<param> 1":-2;
+Z 0;
+CF 98;
+DD 216;
+}
+ACTI 98 {
+O act-in;
+V "param 2 [#(B)]";
+T "Ljava/lang/CharSequence";
+P 6;
+S "top/anemone/samples/Benchmark.java":32,0-32,0;
+B "<param> 2":-2;
+Z 0;
+CF 95;
+DD 216;
+}
+ACTO 99 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":32,0-32,0;
+B "<exit>":-2;
+Z 0;
+CF 100;
+DD 101;
+}
+ACTO 100 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 6;
+S "top/anemone/samples/Benchmark.java":32,0-32,0;
+B "<exception>":-2;
+Z 0;
+CF 101;
+}
+EXPR 101 {
+O assign;
+V "PHI v19 = v18, v16, v14";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<phi>":-8;
+Z 0;
+LD ["q"];
+CF 102;
+DD 102;
+}
+NORM 102 {
+O compound;
+V "return v19";
+T "Ljava/lang/String";
+P 6;
+S "top/anemone/samples/Benchmark.java":34,0-34,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":46;
+Z 0;
+LU ["q"];
+CF 67;
+DD 67;
+}
+ENTR 119 {
+O entry;
+V "top.anemone.samples.Benchmark.unsafe(java.lang.String)";
+P 7;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.unsafe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+C "Application";
+HE 120;
+HE 121;
+HE 122;
+HE 123;
+HE 124;
+HE 129;
+PS 120;
+PS 121;
+PS 122;
+PS 123;
+CF 122;
+CD 124;
+CD 129;
+CE 120;
+CE 121;
+CE 122;
+CE 123;
+}
+EXIT 120 {
+O exit;
+V "top.anemone.samples.Benchmark.unsafe(java.lang.String)";
+T "Ljava/lang/String";
+P 7;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exit>":-2;
+Z 0;
+RF 227;
+RF 231;
+PO 27;
+PO 92;
+}
+FRMO 121 {
+O form-out;
+V "_exception_";
+T "Ljava/lang/Exception";
+P 7;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exception>":-2;
+CF 120: "exc";
+PO 28;
+PO 93;
+}
+FRMI 122 {
+O form-in;
+V "this";
+T "Ltop/anemone/samples/Benchmark";
+P 7;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 0":-2;
+Z 0;
+LD ["this"];
+CF 123;
+}
+FRMI 123 {
+O form-in;
+V "param 1 $s ";
+T "Ljava/lang/String";
+P 7;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 1":-2;
+Z 0;
+LD ["s"];
+CF 125;
+DD 125;
+DD 131;
+}
+CALL 124 {
+O call;
+V "v6 = p1 $s .equals(#(clean))";
+T "Z";
+P 7;
+S "top/anemone/samples/Benchmark.java":43,0-43,0;
+B "top.anemone.samples.Benchmark.unsafe(Ljava/lang/String;)Ljava/lang/String;":3;
+Z 0;
+U "java.lang.String.equals(Ljava/lang/Object;)Z";
+HE 125;
+HE 126;
+HE 127;
+HE 128;
+HE 217;
+PS 125;
+PS 126;
+PS 127;
+PS 128;
+CF 217;
+CE 125;
+CE 126;
+CE 127;
+CE 128;
+CE 217;
+}
+ACTI 125 {
+O act-in;
+V "this [p1 $s ]";
+T "Ljava/lang/String";
+P 7;
+S "top/anemone/samples/Benchmark.java":43,0-43,0;
+B "<param> 0":-2;
+Z 0;
+LU ["s"];
+CF 126;
+DD 217;
+}
+ACTI 126 {
+O act-in;
+V "param 1 [#(clean)]";
+T "Ljava/lang/Object";
+P 7;
+S "top/anemone/samples/Benchmark.java":43,0-43,0;
+B "<param> 1":-2;
+Z 0;
+CF 124;
+DD 217;
+}
+ACTO 127 {
+O act-out;
+V "ret 0";
+T "Z";
+P 7;
+S "top/anemone/samples/Benchmark.java":43,0-43,0;
+B "<exit>":-2;
+Z 0;
+CF 128;
+DD 129;
+}
+ACTO 128 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 7;
+S "top/anemone/samples/Benchmark.java":43,0-43,0;
+B "<exception>":-2;
+Z 0;
+CF 129;
+}
+PRED 129 {
+O IF;
+V "if (v6 == #(0)) goto 11";
+T "Z";
+P 7;
+S "top/anemone/samples/Benchmark.java":43,0-43,0;
+B "top.anemone.samples.Benchmark.unsafe(Ljava/lang/String;)Ljava/lang/String;":6;
+Z 0;
+HE 130;
+HE 131;
+CF 130;
+CF 131;
+CD 130;
+CD 131;
+}
+NORM 130 {
+O compound;
+V "return #(clean)";
+T "Ljava/lang/String";
+P 7;
+S "top/anemone/samples/Benchmark.java":44,0-44,0;
+B "top.anemone.samples.Benchmark.unsafe(Ljava/lang/String;)Ljava/lang/String;":11;
+Z 0;
+CF 120;
+DD 120;
+}
+NORM 131 {
+O compound;
+V "return p1 $s ";
+T "Ljava/lang/String";
+P 7;
+S "top/anemone/samples/Benchmark.java":46,0-46,0;
+B "top.anemone.samples.Benchmark.unsafe(Ljava/lang/String;)Ljava/lang/String;":13;
+Z 0;
+LU ["s"];
+CF 120;
+DD 120;
+}
+ENTR 137 {
+O entry;
+V "top.anemone.samples.Benchmark.sink(javax.servlet.http.HttpServletResponse,java.lang.String)";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V":-1;
+Z 0;
+C "Application";
+HE 138;
+HE 139;
+HE 140;
+HE 141;
+HE 142;
+HE 146;
+HE 150;
+PS 139;
+PS 140;
+PS 141;
+CF 140;
+CD 142;
+CD 146;
+CD 150;
+CE 138;
+CE 139;
+CE 140;
+CE 141;
+}
+EXIT 138 {
+O exit;
+V "top.anemone.samples.Benchmark.sink(javax.servlet.http.HttpServletResponse,java.lang.String)";
+T "V";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exit>":-2;
+Z 0;
+RF 228;
+}
+FRMO 139 {
+O form-out;
+V "_exception_";
+T "Ljava/lang/Exception";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exception>":-2;
+CF 138: "exc";
+PO 33;
+}
+FRMI 140 {
+O form-in;
+V "param 1 $response ";
+T "Ljavax/servlet/http/HttpServletResponse";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 1":-2;
+Z 0;
+LD ["response"];
+CF 141;
+DD 143;
+}
+FRMI 141 {
+O form-in;
+V "param 2 $s ";
+T "Ljava/lang/String";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 2":-2;
+Z 0;
+LD ["s"];
+CF 143;
+DD 148;
+}
+CALL 142 {
+O call;
+V "v5 = p1 $response .getWriter()";
+T "Ljava/io/PrintWriter";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "top.anemone.samples.Benchmark.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V":1;
+Z 0;
+U "javax.servlet.http.HttpServletResponse.getWriter()Ljava/io/PrintWriter;";
+HE 143;
+HE 144;
+HE 145;
+HE 218;
+PS 143;
+PS 144;
+PS 145;
+CF 218;
+CE 143;
+CE 144;
+CE 145;
+CE 218;
+}
+ACTI 143 {
+O act-in;
+V "this [p1 $response ]";
+T "Ljavax/servlet/http/HttpServletResponse";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "<param> 0":-2;
+Z 0;
+LU ["response"];
+CF 142;
+DD 218;
+}
+ACTO 144 {
+O act-out;
+V "ret 0";
+T "Ljava/io/PrintWriter";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "<exit>":-2;
+Z 0;
+CF 145;
+DD 147;
+}
+ACTO 145 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "<exception>":-2;
+Z 0;
+CF 147;
+}
+CALL 146 {
+O call;
+V "v5.write(p2 $s )";
+T "V";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "top.anemone.samples.Benchmark.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V":7;
+Z 0;
+U "java.io.PrintWriter.write(Ljava/lang/String;)V";
+HE 147;
+HE 148;
+HE 149;
+HE 219;
+PS 147;
+PS 148;
+PS 149;
+CF 219;
+CE 147;
+CE 148;
+CE 149;
+CE 219;
+}
+ACTI 147 {
+O act-in;
+V "this [v5]";
+T "Ljava/io/PrintWriter";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "<param> 0":-2;
+Z 0;
+CF 148;
+DD 219;
+}
+ACTI 148 {
+O act-in;
+V "param 1 [p2 $s ]";
+T "Ljava/lang/String";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "<param> 1":-2;
+Z 0;
+LU ["s"];
+CF 146;
+DD 219;
+}
+ACTO 149 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 8;
+S "top/anemone/samples/Benchmark.java":50,0-50,0;
+B "<exception>":-2;
+Z 0;
+CF 150;
+}
+NORM 150 {
+O compound;
+V "return";
+T "V";
+P 8;
+S "top/anemone/samples/Benchmark.java":51,0-51,0;
+B "top.anemone.samples.Benchmark.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V":10;
+Z 0;
+CF 138;
+}
+ENTR 153 {
+O entry;
+V "top.anemone.samples.Benchmark.safe(java.lang.String)";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+C "Application";
+HE 154;
+HE 155;
+HE 156;
+HE 157;
+HE 158;
+HE 164;
+HE 170;
+HE 176;
+HE 182;
+HE 188;
+HE 194;
+PS 154;
+PS 155;
+PS 156;
+PS 157;
+CF 156;
+CD 158;
+CD 164;
+CD 170;
+CD 176;
+CD 182;
+CD 188;
+CD 194;
+CE 154;
+CE 155;
+CE 156;
+CE 157;
+}
+EXIT 154 {
+O exit;
+V "top.anemone.samples.Benchmark.safe(java.lang.String)";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exit>":-2;
+Z 0;
+RF 230;
+PO 80;
+}
+FRMO 155 {
+O form-out;
+V "_exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<exception>":-2;
+CF 154: "exc";
+PO 81;
+}
+FRMI 156 {
+O form-in;
+V "this";
+T "Ltop/anemone/samples/Benchmark";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 0":-2;
+Z 0;
+LD ["this"];
+CF 157;
+}
+FRMI 157 {
+O form-in;
+V "param 1 $s ";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "<param> 1":-2;
+Z 0;
+LD ["s"];
+CF 159;
+DD 159;
+}
+CALL 158 {
+O call;
+V "v7 = p1 $s .replace(#(&), #(&amp;))";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":5;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 159;
+HE 160;
+HE 161;
+HE 162;
+HE 163;
+HE 220;
+PS 159;
+PS 160;
+PS 161;
+PS 162;
+PS 163;
+CF 220;
+CE 159;
+CE 160;
+CE 161;
+CE 162;
+CE 163;
+CE 220;
+}
+ACTI 159 {
+O act-in;
+V "this [p1 $s ]";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<param> 0":-2;
+Z 0;
+LU ["s"];
+CF 160;
+DD 220;
+}
+ACTI 160 {
+O act-in;
+V "param 1 [#(&)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<param> 1":-2;
+Z 0;
+CF 161;
+DD 220;
+}
+ACTI 161 {
+O act-in;
+V "param 2 [#(&amp;)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<param> 2":-2;
+Z 0;
+CF 158;
+DD 220;
+}
+ACTO 162 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<exit>":-2;
+Z 0;
+CF 163;
+DD 165;
+}
+ACTO 163 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<exception>":-2;
+Z 0;
+CF 165;
+}
+CALL 164 {
+O call;
+V "v11 = v7.replace(#(<), #(&lt;))";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":12;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 165;
+HE 166;
+HE 167;
+HE 168;
+HE 169;
+HE 221;
+PS 165;
+PS 166;
+PS 167;
+PS 168;
+PS 169;
+CF 221;
+CE 165;
+CE 166;
+CE 167;
+CE 168;
+CE 169;
+CE 221;
+}
+ACTI 165 {
+O act-in;
+V "this [v7]";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<param> 0":-2;
+Z 0;
+CF 166;
+DD 221;
+}
+ACTI 166 {
+O act-in;
+V "param 1 [#(<)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<param> 1":-2;
+Z 0;
+CF 167;
+DD 221;
+}
+ACTI 167 {
+O act-in;
+V "param 2 [#(&lt;)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<param> 2":-2;
+Z 0;
+CF 164;
+DD 221;
+}
+ACTO 168 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<exit>":-2;
+Z 0;
+CF 169;
+DD 171;
+}
+ACTO 169 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":37,0-37,0;
+B "<exception>":-2;
+Z 0;
+CF 171;
+}
+CALL 170 {
+O call;
+V "v15 = v11.replace(#(>), #(&gt;))";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":19;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 171;
+HE 172;
+HE 173;
+HE 174;
+HE 175;
+HE 222;
+PS 171;
+PS 172;
+PS 173;
+PS 174;
+PS 175;
+CF 222;
+CE 171;
+CE 172;
+CE 173;
+CE 174;
+CE 175;
+CE 222;
+}
+ACTI 171 {
+O act-in;
+V "this [v11]";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<param> 0":-2;
+Z 0;
+CF 172;
+DD 222;
+}
+ACTI 172 {
+O act-in;
+V "param 1 [#(>)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<param> 1":-2;
+Z 0;
+CF 173;
+DD 222;
+}
+ACTI 173 {
+O act-in;
+V "param 2 [#(&gt;)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<param> 2":-2;
+Z 0;
+CF 170;
+DD 222;
+}
+ACTO 174 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<exit>":-2;
+Z 0;
+CF 175;
+DD 177;
+}
+ACTO 175 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<exception>":-2;
+Z 0;
+CF 177;
+}
+CALL 176 {
+O call;
+V "v19 = v15.replace(#( ), #(&nbsp;))";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":26;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 177;
+HE 178;
+HE 179;
+HE 180;
+HE 181;
+HE 223;
+PS 177;
+PS 178;
+PS 179;
+PS 180;
+PS 181;
+CF 223;
+CE 177;
+CE 178;
+CE 179;
+CE 180;
+CE 181;
+CE 223;
+}
+ACTI 177 {
+O act-in;
+V "this [v15]";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<param> 0":-2;
+Z 0;
+CF 178;
+DD 223;
+}
+ACTI 178 {
+O act-in;
+V "param 1 [#( )]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<param> 1":-2;
+Z 0;
+CF 179;
+DD 223;
+}
+ACTI 179 {
+O act-in;
+V "param 2 [#(&nbsp;)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<param> 2":-2;
+Z 0;
+CF 176;
+DD 223;
+}
+ACTO 180 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<exit>":-2;
+Z 0;
+CF 181;
+DD 183;
+}
+ACTO 181 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":38,0-38,0;
+B "<exception>":-2;
+Z 0;
+CF 183;
+}
+CALL 182 {
+O call;
+V "v23 = v19.replace(#('), #(&#34;))";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":33;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 183;
+HE 184;
+HE 185;
+HE 186;
+HE 187;
+HE 224;
+PS 183;
+PS 184;
+PS 185;
+PS 186;
+PS 187;
+CF 224;
+CE 183;
+CE 184;
+CE 185;
+CE 186;
+CE 187;
+CE 224;
+}
+ACTI 183 {
+O act-in;
+V "this [v19]";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<param> 0":-2;
+Z 0;
+CF 184;
+DD 224;
+}
+ACTI 184 {
+O act-in;
+V "param 1 [#(')]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<param> 1":-2;
+Z 0;
+CF 185;
+DD 224;
+}
+ACTI 185 {
+O act-in;
+V "param 2 [#(&#34;)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<param> 2":-2;
+Z 0;
+CF 182;
+DD 224;
+}
+ACTO 186 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<exit>":-2;
+Z 0;
+CF 187;
+DD 189;
+}
+ACTO 187 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<exception>":-2;
+Z 0;
+CF 189;
+}
+CALL 188 {
+O call;
+V "v27 = v23.replace(#('), #(&#39;))";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":40;
+Z 0;
+U "java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;";
+HE 189;
+HE 190;
+HE 191;
+HE 192;
+HE 193;
+HE 225;
+PS 189;
+PS 190;
+PS 191;
+PS 192;
+PS 193;
+CF 225;
+CE 189;
+CE 190;
+CE 191;
+CE 192;
+CE 193;
+CE 225;
+}
+ACTI 189 {
+O act-in;
+V "this [v23]";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<param> 0":-2;
+Z 0;
+CF 190;
+DD 225;
+}
+ACTI 190 {
+O act-in;
+V "param 1 [#(')]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<param> 1":-2;
+Z 0;
+CF 191;
+DD 225;
+}
+ACTI 191 {
+O act-in;
+V "param 2 [#(&#39;)]";
+T "Ljava/lang/CharSequence";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<param> 2":-2;
+Z 0;
+CF 188;
+DD 225;
+}
+ACTO 192 {
+O act-out;
+V "ret 0";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<exit>":-2;
+Z 0;
+LD ["r"];
+CF 193;
+DD 194;
+}
+ACTO 193 {
+O act-out;
+V "ret _exception_";
+T "Ljava/lang/Exception";
+P 9;
+S "top/anemone/samples/Benchmark.java":39,0-39,0;
+B "<exception>":-2;
+Z 0;
+CF 194;
+}
+NORM 194 {
+O compound;
+V "return v27";
+T "Ljava/lang/String";
+P 9;
+S "top/anemone/samples/Benchmark.java":40,0-40,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":45;
+Z 0;
+LU ["r"];
+CF 154;
+DD 154;
+}
+NORM 210 {
+O compound;
+V "many2many";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":-1;
+Z 0;
+CF 10;
+DD 10;
+DD 11;
+}
+NORM 211 {
+O compound;
+V "many2many";
+P 4;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":-1;
+Z 0;
+CF 15;
+DD 15;
+DD 16;
+}
+NORM 212 {
+O compound;
+V "many2many";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+CF 52;
+DD 52;
+}
+NORM 213 {
+O compound;
+V "many2many";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-1;
+Z 0;
+CF 56;
+DD 56;
+}
+NORM 214 {
+O compound;
+V "many2many";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 74;
+DD 74;
+DD 75;
+}
+NORM 215 {
+O compound;
+V "many2many";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 86;
+DD 86;
+DD 87;
+}
+NORM 216 {
+O compound;
+V "many2many";
+P 6;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 99;
+DD 99;
+DD 100;
+}
+NORM 217 {
+O compound;
+V "many2many";
+P 7;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.unsafe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 127;
+DD 127;
+DD 128;
+}
+NORM 218 {
+O compound;
+V "many2many";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V":-1;
+Z 0;
+CF 144;
+DD 144;
+DD 145;
+}
+NORM 219 {
+O compound;
+V "many2many";
+P 8;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.sink(Ljavax/servlet/http/HttpServletResponse;Ljava/lang/String;)V":-1;
+Z 0;
+CF 149;
+DD 149;
+}
+NORM 220 {
+O compound;
+V "many2many";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 162;
+DD 162;
+DD 163;
+}
+NORM 221 {
+O compound;
+V "many2many";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 168;
+DD 168;
+DD 169;
+}
+NORM 222 {
+O compound;
+V "many2many";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 174;
+DD 174;
+DD 175;
+}
+NORM 223 {
+O compound;
+V "many2many";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 180;
+DD 180;
+DD 181;
+}
+NORM 224 {
+O compound;
+V "many2many";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 186;
+DD 186;
+DD 187;
+}
+NORM 225 {
+O compound;
+V "many2many";
+P 9;
+S "top/anemone/samples/Benchmark.java":0,0-0,0;
+B "top.anemone.samples.Benchmark.safe(Ljava/lang/String;)Ljava/lang/String;":-1;
+Z 0;
+CF 192;
+DD 192;
+DD 193;
+}
+NORM 226 {
+O compound;
+V "CALL_RET";
+P 4;
+S "top/anemone/samples/Benchmark.java":19,0-19,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":-9;
+Z 0;
+CF 21;
+}
+NORM 227 {
+O compound;
+V "CALL_RET";
+P 4;
+S "top/anemone/samples/Benchmark.java":21,0-21,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":-9;
+Z 0;
+CF 27;
+}
+NORM 228 {
+O compound;
+V "CALL_RET";
+P 4;
+S "top/anemone/samples/Benchmark.java":23,0-23,0;
+B "top.anemone.samples.Benchmark.doGet(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V":-9;
+Z 0;
+CF 33;
+}
+NORM 229 {
+O compound;
+V "CALL_RET";
+P 5;
+S "com/ibm/wala/FakeRootClass.java":0,0-0,0;
+B "com.ibm.wala.FakeRootClass.fakeRootMethod()V":-9;
+Z 0;
+CF 65;
+}
+NORM 230 {
+O compound;
+V "CALL_RET";
+P 6;
+S "top/anemone/samples/Benchmark.java":28,0-28,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":-9;
+Z 0;
+CF 80;
+}
+NORM 231 {
+O compound;
+V "CALL_RET";
+P 6;
+S "top/anemone/samples/Benchmark.java":30,0-30,0;
+B "top.anemone.samples.Benchmark.ifBranch(Ljava/lang/String;)Ljava/lang/String;":-9;
+Z 0;
+CF 92;
+}
+Thread 0 {
+Entry 48;
+Exit 49;
+Fork 0;
+Join 0;
+Context null;
+Dynamic false;
+}
+}

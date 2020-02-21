@@ -14,7 +14,7 @@ public class LSTMRemotePredictorTest {
     @Ignore
     @Test
     public void predict() throws PredictorException {
-        Predictor lstmPredictor=new LSTMRemotePredictor("http://localhost:8000/");
+        Predictor lstmPredictor=new BLSTMRemotePredictor("http://localhost:8000/");
         boolean isTrue=lstmPredictor.predictIsSafe(new Slice(new TaintEdge(new Func("A","B","C"),new Location("A",0,0))
                 ,"asd efg","test"));
         System.out.println(isTrue);
@@ -23,7 +23,7 @@ public class LSTMRemotePredictorTest {
     @Ignore
     @Test
     public void isAlive() {
-        LSTMRemotePredictor lstmServer = new LSTMRemotePredictor("http://localhost:8000/");
+        BLSTMRemotePredictor lstmServer = new BLSTMRemotePredictor("http://localhost:8000/");
         System.out.println(lstmServer.isAlive());
     }
 }

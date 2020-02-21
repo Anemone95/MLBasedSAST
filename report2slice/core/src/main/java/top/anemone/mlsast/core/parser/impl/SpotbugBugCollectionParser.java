@@ -28,7 +28,6 @@ public class SpotbugBugCollectionParser implements ReportParser<BugInstance> {
     }
     @Override
     public TaintProject<BugInstance> report2taintProject(Monitor monitor) throws ParserException, NotFoundException {
-        List<BugInstance> bugInstances = SpotbugXMLReportParser.secBugFilter(bugCollection);
         return getBugInstanceTaintProject(monitor, null,  bugCollection);
     }
 }

@@ -6,16 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import top.anemone.mlsast.core.Monitor;
-import top.anemone.mlsast.core.data.TaintFlow;
 import top.anemone.mlsast.core.data.VO.Slice;
 import top.anemone.mlsast.core.data.taintTree.TaintEdge;
-import top.anemone.mlsast.core.data.taintTree.TaintTreeNode;
 import top.anemone.mlsast.core.exception.*;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.core.predict.PredictProject;
 import top.anemone.mlsast.core.predict.PredictRunner;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
-import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
+import top.anemone.mlsast.core.predict.impl.BLSTMRemotePredictor;
 import top.anemone.mlsast.core.slice.SliceProject;
 import top.anemone.mlsast.core.slice.SliceRunner;
 import top.anemone.mlsast.core.slice.impl.JoanaSlicer;
@@ -96,16 +94,21 @@ public class AiConsole {
             if (!outputDir.exists()){
                 outputDir.mkdirs();
             }
+            Slice slice;
             for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
                 BugInstance bugInstance=sliceProject.getBugInstances().get(i);
                 for (TaintEdge edge: sliceProject.getTaintEdge2slice().keySet()) {
-                    Slice slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
+                    slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
                             sliceProject.getTaintProject().getProjectName());
                     JsonUtil.dumpToFile(slice, outputDir+"/slice-"+sliceProject.getSliceHash(edge)+".json");
+                    sliceProject.getTaintEdge2slice().put(edge, null);
+                }
+                if (i%100==0){
+                    LOGGER.info("Dumping slice: "+i+"/"+ sliceProject.getBugInstances().size());
                 }
             }
         } else if (ns.getString("command").equals("predictIsSafe")) {
-            LSTMRemotePredictor remotePredictor=new LSTMRemotePredictor(ns.getString("server"));
+            BLSTMRemotePredictor remotePredictor=new BLSTMRemotePredictor(ns.getString("server"));
             if(!remotePredictor.isAlive()){
                 LOGGER.error("Remote predictor not alive");
                 System.exit(1);

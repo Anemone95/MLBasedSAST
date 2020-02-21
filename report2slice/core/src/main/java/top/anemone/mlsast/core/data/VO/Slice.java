@@ -17,10 +17,16 @@ public class Slice {
     @NonNull
     private String project;
 
-    public Slice(TaintEdge flow, String slice, String project){
-        this.flow=flow;
-        this.slice=slice;
-        this.flowHash= SHA1.shaEncode(slice);
-        this.project=project;
+    public Slice(TaintEdge flow, String slice, String project) {
+        this.flow = flow;
+        this.slice = slice;
+        if (slice != null) {
+            this.flowHash = SHA1.shaEncode(slice);
+        } else if (flow != null) {
+            this.flowHash = SHA1.shaEncode(flow.toString());
+        } else {
+            this.flowHash = "nonce";
+        }
+        this.project = project;
     }
 }

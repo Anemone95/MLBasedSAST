@@ -30,7 +30,7 @@ public class DFSTaintTreeTest {
                 fileList);
         TaintProject<BugInstance> taintProject = spotbugXMLParser.report2taintProject(null);
         TaintTreeNode firstNode= taintProject.getTaintTreeMap().get(taintProject.getBugInstances().get(0)).get(0);
-        List<TaintFlow> taintFlows= new DFSTaintTree().getTaintFlows(firstNode);
+        TaintFlow taintFlows= new DFSTaintTree().getTaintFlows(firstNode);
         assertEquals(taintFlows.size(),2);
     }
 }

@@ -1,9 +1,7 @@
 package top.anemone.mlsast.gui2;
 
 
-import com.sun.deploy.panel.JSmartTextArea;
 import edu.umd.cs.findbugs.log.Logger;
-import org.apache.log4j.chainsaw.Main;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Label;
 import top.anemone.mlsast.core.data.taintTree.TaintEdge;

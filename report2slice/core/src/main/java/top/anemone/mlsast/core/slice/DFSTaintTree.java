@@ -18,18 +18,15 @@ public class DFSTaintTree {
      * @param source 一个source函数节点
      * @return 多个taintflow，TaintEdge的集合
      */
-    public List<TaintFlow> getTaintFlows(TaintTreeNode source){
+    public List<TaintEdge> getTaintFlows(TaintTreeNode source){
         taintFlows=new LinkedList<>();
         sinkCallerLocations=new LinkedList<>();
-        while (true){
-            TaintFlow taintFlow=new TaintFlow();
-            boolean hasNext=dfs(source, taintFlow);
-            if (!hasNext){
-                break;
-            }
-            taintFlows.add(taintFlow);
+        TaintFlow taintFlow=new TaintFlow();
+        boolean hasNext=dfs(source, taintFlow);
+        if (hasNext){
+            return taintFlow;
         }
-        return taintFlows;
+        return null;
     }
 
     /**

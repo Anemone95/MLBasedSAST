@@ -2,7 +2,7 @@ package top.anemone.mlsast.gui2;
 
 import edu.umd.cs.findbugs.BugInstance;
 import top.anemone.mlsast.core.predict.PredictProject;
-import top.anemone.mlsast.core.predict.impl.LSTMRemotePredictor;
+import top.anemone.mlsast.core.predict.impl.BLSTMRemotePredictor;
 import top.anemone.mlsast.core.slice.SliceProject;
 
 import java.util.HashSet;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class AiProject {
     private static AiProject instance = new AiProject();
-    private LSTMRemotePredictor remotePredictor = new LSTMRemotePredictor("http://127.0.0.1:8000/", "testtest");
+    private BLSTMRemotePredictor remotePredictor = new BLSTMRemotePredictor("http://127.0.0.1:8000/", "testtest");
     private SliceProject<BugInstance> sliceProject;
     private PredictProject<BugInstance> predictProject;
     private PredictProject<BugInstance> labelProject;
@@ -28,11 +28,11 @@ public class AiProject {
         return bugInstanceIsLabeled.contains(b);
     }
 
-    public LSTMRemotePredictor getRemotePredictor() {
+    public BLSTMRemotePredictor getRemotePredictor() {
         return remotePredictor;
     }
 
-    public void setRemotePredictor(LSTMRemotePredictor remotePredictor) {
+    public void setRemotePredictor(BLSTMRemotePredictor remotePredictor) {
         this.remotePredictor = remotePredictor;
     }
 

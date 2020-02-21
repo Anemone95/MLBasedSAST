@@ -51,7 +51,11 @@ public class SliceProject<T> {
         return taintEdge2slice.get(edge);
     }
     public String getSliceHash(TaintEdge edge){
-        return SHA1.shaEncode(getSlice(edge));
+        if (getSlice(edge)!=null){
+            return SHA1.shaEncode(getSlice(edge));
+        } else {
+            return SHA1.shaEncode(edge.toString());
+        }
     }
 
     public String getSlice(Func func, Location point) {

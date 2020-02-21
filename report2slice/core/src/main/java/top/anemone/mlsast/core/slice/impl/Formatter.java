@@ -7,14 +7,13 @@ import edu.kit.joana.ifc.sdg.graph.SDGNode;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Formater {
-    public static String prepareSliceForEncoding(final SDG sdg, Collection<SDGNode> slice, ArrayList<SDGNode> prune) {
+public class Formatter {
+    public static String prepareSliceForEncoding(Collection<SDGNode> slice) {
         List<SDGNode> sortedSlice = new ArrayList<>(slice);
-        Collections.sort(sortedSlice, Comparator.comparingInt(SDGNode::getId));
+        sortedSlice.sort(Comparator.comparingInt(SDGNode::getId));
         StringBuilder result = new StringBuilder();
         for (SDGNode node : sortedSlice) {
-            if (prune.contains(node)) continue;
-            result.append(node + " :: " + node.getKind() + " :: " + node.getOperation() + " :: " + node.getType() + " :: " + node.getLabel() + "\n");
+            result.append(node).append(" :: ").append(node.getKind()).append(" :: ").append(node.getOperation()).append(" :: ").append(node.getType()).append(" :: ").append(node.getLabel()).append("\n");
         }
         return result.toString();
     }

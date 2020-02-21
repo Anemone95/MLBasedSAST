@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 @Data
-public class LSTMRemotePredictor implements Predictor {
+public class BLSTMRemotePredictor implements Predictor {
     private String remoteServer;
     private String token = "testtest";
 
@@ -21,7 +21,7 @@ public class LSTMRemotePredictor implements Predictor {
         this.token = token;
     }
 
-    public LSTMRemotePredictor(String serverURL) {
+    public BLSTMRemotePredictor(String serverURL) {
         if (!serverURL.startsWith("http")) {
             serverURL = "http://" + serverURL;
         }
@@ -31,7 +31,7 @@ public class LSTMRemotePredictor implements Predictor {
         this.remoteServer = serverURL;
     }
 
-    public LSTMRemotePredictor(String serverURL, String token) {
+    public BLSTMRemotePredictor(String serverURL, String token) {
         if (!serverURL.startsWith("http")) {
             serverURL = "http://" + serverURL;
         }
@@ -54,11 +54,6 @@ public class LSTMRemotePredictor implements Predictor {
         } else {
             return false;
         }
-    }
-
-    public Response postLabel(Label label) throws IOException {
-        Response response = OkHttp.post(this.remoteServer + "/label/?token=" + token, label, Response.class);
-        return response;
     }
 
     @Override

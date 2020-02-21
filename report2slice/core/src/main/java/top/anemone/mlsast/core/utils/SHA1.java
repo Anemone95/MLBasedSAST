@@ -2,6 +2,7 @@ package top.anemone.mlsast.core.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class SHA1 {
 
@@ -9,9 +10,12 @@ public class SHA1 {
         MessageDigest sha;
         try {
             sha = MessageDigest.getInstance("SHA");
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return "";
+        }
+        if (inStr==null){
+            return "null";
         }
 
         byte[] byteArray = inStr.getBytes();

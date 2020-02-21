@@ -66,7 +66,7 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         Collection<BugInstance> c = bugCollection.getCollection();
 
         List<BugInstance> bugInstances = c.stream()
-                .filter(e -> caredVulns.contains(e.getType()) && !e.isDead() && e.getPriority() != 3) //过滤问题类型，优先级超低问题和未被修复的问题
+                .filter(e -> caredVulns.contains(e.getType()) && (!e.isDead()) && e.getPriority() != Priorities.LOW_PRIORITY ) //过滤问题类型，优先级超低问题和未被修复的问题
                 .filter(e -> {
                     // 过滤掉没有source点的问题
                     for (BugAnnotation annotation : e.getAnnotations()) {
@@ -136,13 +136,10 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
 
                 SpotbugsBugInstanceParser parser = new SpotbugsBugInstanceParser(bugInstance);
                 traces.put(bugInstance, parser.parse());
-//            } catch (BCELParserException | IOException | NotFoundException e) {
-//                err=e;
             } finally {
                 if (monitor != null) monitor.process(i, bugInstances.size(), bugInstance, traces.get(i), err);
             }
         }
-//        return new TaintProject<>(bugCollection.getProject().getProjectName(), appJars, bugInstances, traces);
         return new TaintProject<>(bugCollection.getProject().getProjectName(), appJars, bugInstances, traces);
     }
 

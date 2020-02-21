@@ -36,16 +36,15 @@ public class JoanaSlicerTest {
     public void computeSliceTest1() throws GraphIntegrity.UnsoundGraphException, CancelException, ClassHierarchyException, IOException, NotFoundException {
         List<File> jarFiles= Arrays.asList(new File("src/test/resources/joana-target-1.0-SNAPSHOT.jar"));
         List<URL> libJars = new LinkedList<>();
-        String exclusionsFile=null;
+        List<String> exclusions=null;
         String entryClass="Ltop/anemone/joana/target/Main";
         String entryMethod="main";
         String entryRef="([Ljava/lang/String;)V";
-        JoanaLineSlicer.Line sink = new JoanaLineSlicer.Line("top/anemone/joana/target/Main.java", 17);
         String pdgFile=null;
         JoanaSlicer slicer=new JoanaSlicer();
-        slicer.config(jarFiles, libJars, exclusionsFile);
+        slicer.config(jarFiles, libJars, exclusions);
 
-        SDG sdg=slicer.computeSlice(entryClass, entryMethod, entryRef,  pdgFile);
+        SDG sdg=slicer.buildSDG(entryClass, entryMethod, entryRef, null);
 //        System.out.println(result);
     }
     @Test

@@ -752,6 +752,7 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/top/anemone/joana/joana-core/1.0-SNAPSHOT/joana-core-1.0-SNAPSHOT-sources.jar!/" />
+        <root url="file://$PROJECT_DIR$/../../joana-mvn/joana-core/src/main/java" />
       </SOURCES>
     </library>
     <library name="Maven: top.anemone.joana:joana-flowless:1.0-SNAPSHOT">

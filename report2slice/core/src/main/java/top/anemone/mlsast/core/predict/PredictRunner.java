@@ -83,7 +83,6 @@ public class PredictRunner<T> {
             predictProject.putProofs(buginstance, safeEdges);
             for (TaintTreeNode source : taintTrees) {
                 List<TaintFlow> flows = sliceProject.getTaintFlows(source);
-                PredictEnum isTP = PredictEnum.ERROR;
                 if (flows == null) {
                     causedExceptions.add(new NotFoundException(source, sliceProject));
                     continue;

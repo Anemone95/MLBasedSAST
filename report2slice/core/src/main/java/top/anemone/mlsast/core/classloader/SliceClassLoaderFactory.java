@@ -13,12 +13,12 @@ import com.ibm.wala.util.warnings.Warnings;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 
-public class AppWalaClassLoaderFactory extends ClassLoaderFactoryImpl {
+public class SliceClassLoaderFactory extends ClassLoaderFactoryImpl {
     /**
      * @param exclusions A set of classes that class loaders should pretend don't exist.
      */
     private SetOfClasses exclusions;
-    public AppWalaClassLoaderFactory(SetOfClasses exclusions) {
+    public SliceClassLoaderFactory(SetOfClasses exclusions) {
         super(exclusions);
         this.exclusions=exclusions;
     }
@@ -33,7 +33,7 @@ public class AppWalaClassLoaderFactory extends ClassLoaderFactoryImpl {
         IClassLoader cl;
         if (implClass == null) {
             cl =
-                    new AppWalaClassLoader(
+                    new SliceWalaClassLoader(
                             classLoaderReference, scope.getArrayClassLoader(), parent, exclusions, cha);
         } else
             try {
@@ -73,7 +73,7 @@ public class AppWalaClassLoaderFactory extends ClassLoaderFactoryImpl {
                     e2.printStackTrace(System.err);
                     Warnings.add(InvalidClassLoaderImplementation.create(implClass));
                     cl =
-                            new AppWalaClassLoader(
+                            new SliceWalaClassLoader(
                                     classLoaderReference, scope.getArrayClassLoader(), parent, exclusions, cha);
                 }
             }
