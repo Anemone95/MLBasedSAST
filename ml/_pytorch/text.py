@@ -23,6 +23,7 @@ import preprocessing
 
 PADDING_VALUE = 0
 
+LABEL_WORD="isReal"
 
 class TextDataset(Dataset):
     def __init__(self, slice_dir, label_dir, text_preprocessing_func):
@@ -41,11 +42,11 @@ class TextDataset(Dataset):
                 labels_json = json.load(f)
                 if type(labels_json) is list:
                     for label in labels_json:
-                        is_real = 1 if label["isReal"] else 0
-                        self.data.append((label["flowHash"], is_real))
+                        is_safe = 1 if label[LABEL_WORD] else 0
+                        self.data.append((label["flowHash"], is_safe))
                 elif type(labels_json) is dict:
-                    is_real = 1 if labels_json["isReal"] else 0
-                    self.data.append((labels_json["flowHash"], is_real))
+                    is_safe = 1 if labels_json[LABEL_WORD] else 0
+                    self.data.append((labels_json["flowHash"], is_safe))
                 else:
                     raise AttributeError("Need dict or list type")
 
@@ -59,6 +60,7 @@ class TextDataset(Dataset):
 
     def __getitem__(self, item) -> (str, int):
         ID, LABEL = 0, 1
+        # with open(os.path.join(self.slice_dir, self.data[item][ID][:2], "slice-{}.json".format(self.data[item][ID])), 'r') as f:
         with open(os.path.join(self.slice_dir, "slice-{}.json".format(self.data[item][ID])), 'r') as f:
             slice = json.load(f)
         return self.text_preprocessing_func(slice["slice"]), self.data[item][LABEL]
@@ -167,11 +169,11 @@ if __name__ == '__main__':
                           preprocessing.preprocessing)
     tokenizer = Tokenizer(freq_gt=0)
     tokenizer.build_dict(dataset)
-    dataloader=DataLoader(dataset,
-               batch_size=1,
-               shuffle=True,
-               num_workers=4,
-               collate_fn=tokenizer.tokenize_labeled_batch)
+    dataloader = DataLoader(dataset,
+                            batch_size=1,
+                            shuffle=True,
+                            num_workers=4,
+                            collate_fn=tokenizer.tokenize_labeled_batch)
     # pass
     for i in dataset:
         print(i)

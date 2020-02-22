@@ -22,6 +22,7 @@ from _pytorch import blstm
 ## hyper parameter
 import torch.nn.functional as F
 from _pytorch.text import *
+from preprocessing2 import Preprocessor
 
 EPOCH = 20
 BATCH_SIZE = 16
@@ -30,7 +31,7 @@ BASE_LEARNING_RATE = 0.01
 EMBEDDING_DIM = 16  # embedding
 HIDDEN_DIM = 32  # hidden dim
 LABEL_NUM = 2  # number of labels
-WORD_FREQ = 5
+WORD_FREQ = 4
 EARLY_STOP = 3
 
 
@@ -50,11 +51,13 @@ def train(slice_dir: str,
           batch_size: int,
           total_epoch: int,
           word_freq: int,
+          workers: int = 0,
           train_precent: float = 1, saveto: str = None) -> (WordTokenDict, blstm.BLSTM, float, float, float, float):
     if not HAS_GPU:
         logging.warning("GPU not found!")
     ret_accuracy, ret_recall, ret_precision, ret_f1 = -1, -1, -1, -1
-    dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    # dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
     train_data, test_data = dataset.divide(train_precent)
     tokenizer = Tokenizer(freq_gt=word_freq)
     tokenizer.build_dict(train_data)
@@ -62,14 +65,14 @@ def train(slice_dir: str,
     train_loader = DataLoader(train_data,
                               batch_size=batch_size,
                               shuffle=True,
-                              num_workers=0,
+                              num_workers=workers,
                               collate_fn=tokenizer.tokenize_labeled_batch)
 
     if test_data:
         test_loader = DataLoader(test_data,
                                  batch_size=batch_size,
                                  shuffle=True,
-                                 num_workers=0,
+                                 num_workers=workers,
                                  collate_fn=tokenizer.tokenize_labeled_batch)
     ### create model
     model = blstm.BLSTM(embedding_dim=embedding_dim, hidden_dim=hidden_dim,
@@ -123,7 +126,7 @@ def train(slice_dir: str,
 
         train_loss_.append(total_loss / total)
 
-        accuracy, recall, precision = metric.compute(["accuracy", "tp_recall", "tp_precision"])
+        accuracy, recall, precision = metric.compute(["accuracy", "safe_recall", "safe_precision"])
         print("[Epoch: {cur_epoch}/{total_epoch}] Training Loss: {loss:.3}, "
               "Acc: {acc:.3}, Precision: {precision:.3}, Recall: {recall:.3}, F1: {f1:.3}"
               .format(cur_epoch=epoch, total_epoch=total_epoch, loss=train_loss_[epoch],
@@ -159,7 +162,7 @@ def train(slice_dir: str,
 
                 # calc testing acc
                 output = F.softmax(output)
-                output = output[:, 1] / (output[:, 0] + output[:, 1])  # 0:误报 1:正报
+                output = output[:, 1] / (output[:, 0] + output[:, 1])  # 1:误报 0:正报
                 predicted2 = output > 0.5  # 谨慎的判断误报，可以减小这个值
 
                 if HAS_GPU:
@@ -167,9 +170,11 @@ def train(slice_dir: str,
                 else:
                     metric.update(predicted2, test_labels)
 
-            accuracy, recall, precision, matrix = metric.compute(["accuracy", "tp_recall", "tp_precision", "matrix"])
+            accuracy, recall, precision, matrix = metric.compute(
+                ["accuracy", "safe_recall", "safe_precision", "matrix"])
 
-            ret_accuracy, ret_recall, ret_precision, ret_f1 = accuracy, recall, precision, (2 * precision * recall) / (precision + recall)
+            ret_accuracy, ret_recall, ret_precision, ret_f1 = accuracy, recall, precision, (2 * precision * recall) / (
+                        precision + recall)
             logging.info("[Epoch: {cur_epoch}/{total_epoch}] Test Acc: {acc:.3},"
                          " Precision: {precision:.3}, Recall: {recall:.3}, F1: {f1:.3}"
                          .format(cur_epoch=epoch, total_epoch=EPOCH, acc=accuracy, precision=precision, recall=recall,
@@ -250,11 +255,27 @@ def predict(_tokenizer: Tokenizer, model: blstm.BLSTM, slice: str) -> bool:
 
     # calc testing acc
     _, predicted = torch.max(output, 1)
-    output = output[:, 1] / (output[:, 0] + output[:, 1])  # 0:误报 1:正报
+    output = output[:, 1] / (output[:, 0] + output[:, 1])  # 1: 安全 0 不安全
     predicted2 = output > 0.5  # 谨慎的判断误报，可以减小这个值
     if HAS_GPU:
         predicted2 = predicted2.cpu()
     return predicted2.item()
+
+
+def get_label_summary(slice_dir, label_dir):
+    dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
+    train_data, test_data = dataset.divide(1)
+    tokenizer = Tokenizer(freq_gt=2)
+    tokenizer.build_dict(train_data)
+
+    train_loader = DataLoader(train_data,
+                              batch_size=BATCH_SIZE,
+                              shuffle=True,
+                              num_workers=0,
+                              collate_fn=tokenizer.tokenize_labeled_batch)
+
+    for iter, (train_inputs, lengths, train_labels) in enumerate(train_loader):
+        print(train_labels == 1)
 
 
 if __name__ == '__main__':
@@ -263,7 +284,8 @@ if __name__ == '__main__':
 
     current_time = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
     model_file = 'model/pytorch-lstm-{}'.format(current_time)
-    train("data/slice/benchmark1.2", "data/label/benchmark1.2",
+    train(r"H:\MLBasedSAST\ml\data\slice\benchmark1.1",
+          r"H:\MLBasedSAST\ml\data\label\benchmark1.1",
           embedding_dim=EMBEDDING_DIM,
           hidden_dim=HIDDEN_DIM,
           base_learning_rate=BASE_LEARNING_RATE,
@@ -271,7 +293,10 @@ if __name__ == '__main__':
           batch_size=BATCH_SIZE,
           total_epoch=20,
           word_freq=WORD_FREQ,
-          train_precent=1, saveto=model_file)
+          train_precent=0.9, saveto=model_file)
+
+    # get_label_summary("data/slice/benchmark1.1", "data/label/benchmark1.1")
+
     # tokenizer, nn = load("model/pytorch-lstm-2020-02-11-10-06.token", "model/pytorch-lstm-2020-02-11-10-06.pkl",
     #                      WORD_FREQ, EMBEDDING_DIM, HIDDEN_DIM)
     # print(predict(tokenizer, nn, "print hello world"))

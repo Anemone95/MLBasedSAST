@@ -9,10 +9,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Formatter {
     public static String prepareSliceForEncoding(Collection<SDGNode> slice) {
-        List<SDGNode> sortedSlice = new ArrayList<>(slice);
-        sortedSlice.sort(Comparator.comparingInt(SDGNode::getId));
         StringBuilder result = new StringBuilder();
-        for (SDGNode node : sortedSlice) {
+        for (SDGNode node : slice) {
             result.append(node).append(" :: ").append(node.getKind()).append(" :: ").append(node.getOperation()).append(" :: ").append(node.getType()).append(" :: ").append(node.getLabel()).append("\n");
         }
         return result.toString();

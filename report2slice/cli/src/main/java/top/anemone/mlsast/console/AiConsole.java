@@ -95,17 +95,15 @@ public class AiConsole {
                 outputDir.mkdirs();
             }
             Slice slice;
-            for (int i = 0; i < sliceProject.getBugInstances().size(); i++) {
-                BugInstance bugInstance=sliceProject.getBugInstances().get(i);
-                for (TaintFlow edge: sliceProject.getTaintEdge2slice().keySet()) {
-                    slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
-                            sliceProject.getTaintProject().getProjectName());
-                    JsonUtil.dumpToFile(slice, outputDir+"/slice-"+sliceProject.getSliceHash(edge)+".json");
-                    sliceProject.getTaintEdge2slice().put(edge, null);
+            for (TaintFlow edge: sliceProject.getTaintEdge2slice().keySet()) {
+                slice = new Slice(edge, sliceProject.getTaintEdge2slice().get(edge),
+                        sliceProject.getTaintProject().getProjectName());
+
+                File subOutputDir=new File(outputDir, sliceProject.getSliceHash(edge).substring(0,2));
+                if (!subOutputDir.exists()){
+                    subOutputDir.mkdirs();
                 }
-                if (i%100==0){
-                    LOGGER.info("Dumping slice: "+i+"/"+ sliceProject.getBugInstances().size());
-                }
+                JsonUtil.dumpToFile(slice, subOutputDir+"/slice-"+sliceProject.getSliceHash(edge)+".json");
             }
         } else if (ns.getString("command").equals("predictIsSafe")) {
             BLSTMRemotePredictor remotePredictor=new BLSTMRemotePredictor(ns.getString("server"));

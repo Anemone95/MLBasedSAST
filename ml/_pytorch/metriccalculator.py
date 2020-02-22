@@ -29,10 +29,10 @@ class MetricCalculator:
         predict_labels, target_labels = self.predict_labels.numpy(), self.target_labels.numpy()
         metrics = {"accuracy": accuracy_score,
                    "matrix": confusion_matrix,
-                   "fp_recall": lambda t, p: recall_score(t, p, pos_label=1),
-                   "fp_precision": lambda t, p: precision_score(t, p, pos_label=1),
-                   "tp_recall": lambda t, p: recall_score(t, p, pos_label=0),
-                   "tp_precision": lambda t, p: precision_score(t, p, pos_label=0)
+                   "fp_recall": lambda t, p: recall_score(t, p, pos_label=0),
+                   "fp_precision": lambda t, p: precision_score(t, p, pos_label=0),
+                   "safe_recall": lambda t, p: recall_score(t, p, pos_label=1),
+                   "safe_precision": lambda t, p: precision_score(t, p, pos_label=1)
                    }
         ret = []
         for metric in choosed_metrics:

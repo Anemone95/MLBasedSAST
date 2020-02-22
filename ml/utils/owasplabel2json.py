@@ -12,6 +12,7 @@ import pathlib
 
 
 def owasplabel2json(expected_csv, slice_dir, output_json):
+    clazz_set=set()
     res = []
     table = {}
     is_real_num = 0
@@ -22,7 +23,7 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
                 continue
             test_name, category, real, cwe = e.replace('\n', '').split(',')[:4]
             table[test_name] = True if real.lower() == 'true' else False
-    for each_file in pathlib.Path(slice_dir).glob('*.json'):
+    for each_file in pathlib.Path(slice_dir).glob('**/*.json'):
         label = {"flowHash": None, "isSafe": None, "flow": None}
         try:
             with open(each_file, 'r') as f:
@@ -30,6 +31,13 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
         except json.decoder.JSONDecodeError:
             logging.warning("Parse {} error".format(each_file))
             continue
+        if slice["flow"]["entry"]["method"] != "doPost":
+            continue
+        if not slice["flow"]["entry"]["clazz"] in clazz_set:
+            clazz_set.add(slice["flow"]["entry"]["clazz"])
+        else:
+            print("Already have "+slice["flow"]["entry"]["clazz"])
+
         label["flowHash"] = each_file.name.split("-")[-1].split(".")[0]
         label["flow"] = slice["flow"]
         test_name = slice["flow"]["entry"]["clazz"].split(".")[-1]
@@ -47,6 +55,6 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
 
 
 if __name__ == '__main__':
-    owasplabel2json('../data/expectedresults-1.1.csv',
-                    '../data/slice/benchmark1.1',
-                    '../data/label/benchmark1.1/label.json')
+    owasplabel2json('data/expectedresults-1.1.csv',
+                    'data/slice/benchmark1.1',
+                    'data/label/benchmark1.1/label.json')

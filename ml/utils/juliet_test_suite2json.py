@@ -30,7 +30,7 @@ def generate_json(slice_dir: str, label_dir: str):
     for slice_file, _ in FNs:
         filename = filenames[slice_file]
         for slice_f, _ in filter(lambda e: e[1] == filename, filenames.items()):
-            label_dict = {"flowHash": hash[slice_f], "isReal": label[slice_f]}
+            label_dict = {"flowHash": hash[slice_f], "isSafe": not label[slice_f]}
             label_file = os.path.join(label_dir, slice_f.replace("slice", "label"))
             if os.path.exists(label_file):
                 print("hash corruption: ", label_file)

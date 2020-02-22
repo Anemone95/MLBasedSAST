@@ -27,6 +27,7 @@ def blstm_train(config_name: str):
                                                   batch_size=config.batch_size,
                                                   total_epoch=config.epoch,
                                                   word_freq=config.word_freq_gt,
+                                                  workers=0,
                                                   train_precent=config.train_percent, saveto=model_file)
 
     token_file = model_file + ".token"

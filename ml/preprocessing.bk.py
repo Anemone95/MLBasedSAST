@@ -42,69 +42,82 @@ replaceMap = {'@': ' @ ', ' -0 ': ' 0 ', '= =': ' == ', '! =': ' != ', ' &': ' &
               '\d': ' \d ', '?': ' ? ', '\s': ' \s ', '`': ' ` '}
 
 
+def prerpossing2(text: str) -> str:
+    replace_this_to_space = ['#', ';', ',', '->', '&#\d+', '\d+:']
+    arbitary_things = ['BenchmarkTest\d+', 'testcode', 'moresafe', 'safe', 'Safe']  # 这里主要删除影响判断的词
+
+    rawStr2abstractStr = {}
+    abstract_slice = ''
+    for line in text.split('\n'):
+        line = line.lower()
+        # 对数字抽象化
+
+        nid, kind, operation, ntype, value = [s.strip() for s in line.strip().split('::')]
+        abstract_slice += parseSDGNodeValue(ntype + ' ' + value, ABSTRACT_LIST) + ' :: '  # .lower()
+
+    return abstract_slice
+
+
 def preprocessing(text: str) -> str:
-    text = re.sub(r'#\((\d*)\)', ' \g<1> ', text)
-    text = re.sub(r'#\((.)\)', ' \g<1> ', text)
-    text = re.sub(r'#\(null\)', ' null ', text)
-    text = re.sub(r'compile\(#\(.*\)\)', ' compile ( PATTERN ) ', text)
+    # text = re.sub(r'#\((\d*)\)', ' \g<1> ', text)  # 将数字常量脱括号
+    # text = re.sub(r'#\((.)\)', ' \g<1> ', text)  # 将字符常量脱括号(非字符串)
+    # text = re.sub(r'#\(null\)', ' null ', text)
+    # text = re.sub(r'compile\(#\(.*\)\)', ' compile ( PATTERN ) ', text)
 
     # string abstraction
-    all_matches = re.findall(STRING_PATTERN, text)  # replace each unique string with STRING #
-    counter = 0
-    for s in set(all_matches):
-        text = text.replace(s, 'STRING ' + str(counter) + ' ')
-        counter = counter + 1
+    # all_matches = re.findall(STRING_PATTERN, text)  # replace each unique string with STRING #
+    # counter = 0
+    # for s in set(all_matches):
+    #     text = text.replace(s, 'STRING ' + str(counter) + ' ')
+    #     counter = counter + 1
 
     lines = text.split('\n')
     sample = ''
-    for line in lines:
-        if line.strip() == '' or re.match(r'\[([0-9]+, )*[0-9]+\]', line):
-            continue
-        # try:
-        nid, kind, operation, ntype, value,_ = [s.strip() for s in line.strip().split('::')]
+    for line in lines[-1]:
+        nid, kind, operation, ntype, value = [s.strip() for s in line.strip().split('::')]
         sample += parseSDGNodeValue(ntype + ' ' + value, ABSTRACT_LIST) + ' :: '  # .lower()
-        # except Exception as e:
-        #     logging.warning('Exception: {} in {}'.format(e, line))
     return sample.replace('::', ' ')
 
 
 def parseSDGNodeValue(node_value, to_abstract_list):
-    abstractionPattern = '|'.join(to_abstract_list)
-
-    value = re.sub(r'(v[0-9]+).([a-zA-Z]+)', '\g<1> \g<2>', node_value)  # v17.getNextException
-    value = re.sub(r' \.([a-zA-Z]+)', ' \g<1> ', value)  # .getNextException
-    value = re.sub(r'L([a-zA-Z0-9]+(/[a-zA-Z0-9])+)', '\g<1>',
-                   value)  # Lorg/h2/message/DbException to org/h2/message/DbException
-    value = value.replace('/', '.')  # org/h2/message/DbException to org.h2.message.DbException
-    value = re.sub(r'<([a-zA-Z0-9]+)>?', ' \g<1> ', value)
-    value = re.sub(r'(' + arbitraryThingsPattern + ')', ' ', value)
-    value = re.sub(r'(' + tokenazablesPattern + ')', ' \g<1> ', value)
+    # value = re.sub(r'(v[0-9]+).([a-zA-Z]+)', '\g<1> \g<2>',
+    #                node_value)  # 将 v17.getNextException 变为 v17 getNextException()
+    # value = re.sub(r' \.([a-zA-Z]+)', ' \g<1> ', value)  # 将.getNextException 变为 getNextException()
+    # value = re.sub(r'L([a-zA-Z0-9]+(/[a-zA-Z0-9])+)', '\g<1>',
+    #                value)  # Lorg/h2/message/DbException to org/h2/message/DbException
+    # value = value.replace('/', '.')  # org/h2/message/DbException to org.h2.message.DbException
+    # value = re.sub(r'<([a-zA-Z0-9]+)>?', ' \g<1> ', value)
+    # value = re.sub(r'(' + arbitraryThingsPattern + ')', ' ', value)  # 将pattern中的符号换为空格(包括.)
+    # value = re.sub(r'(' + tokenazablesPattern + ')', ' \g<1> ', value)  # 括号前加上空格
 
     # abraction
-    value = re.sub(r'(' + abstractionPattern + ')', ' ARBITRARY ', value)  # abracted things
+    abstractionPattern = '|'.join(to_abstract_list)
+    value = re.sub(r'(' + abstractionPattern + ')', ' ARBITRARY ', value)  # 替换影响实验效果的变量
 
     # extraction
-    value = re.sub(r'v(\d+)', 'variable \g<1> ', value)  # v1 -> variable 1
-    value = re.sub(r'( |^)(' + prefixesPattern + ')', ' \g<2> ', value)
-    value = re.sub(r'([A-Z]+[a-z0-9]*)', ' \g<1> ', value)  # StringBuilder -> String Builder
-    value = re.sub(r'([A-Z]+)([A-Z]+[a-z0-9]+)', '\g<1> \g<2>', value)  # PDFConfigReader -> PDF Config Reader
-    value = re.sub(r'( [A-Za-z]+)(\d+)\s', ' \g<1> \g<2> ', value)  # file1 -> file 1 Binary180 -> Binary 180
-
+    # value = re.sub(r'v(\d+)', 'variable \g<1> ', value)  # v1 -> variable 1
+    value = re.sub(r'( |^)(' + prefixesPattern + ')', ' \g<2> ', value)  # 删除黑名单中的单词
+    value = re.sub(r'([A-Z]+[a-z0-9]*)', ' \g<1> ', value)  # StringBuilder -> String Builder # 处理驼峰命名法的类名
+    # value = re.sub(r'([A-Z]+)([A-Z]+[a-z0-9]+)', '\g<1> \g<2>',
+    #                value)  # PDFConfigReader -> PDF Config Reader # 处理驼峰命名法的类名
+    # value = re.sub(r'( [A-Za-z]+)(\d+)\s', ' \g<1> \g<2> ',
+    #                value)  # file1 -> file 1, Binary180 -> Binary 180 将以上变量换为字母加数字
     # number abstraction
-    value = re.sub(r'( |^)-?([0-9]+)[eE]-([0-9])($| )', ' NSMALL ',
-                   value)  # numbers in scientific notation e.g. 0.12e-43
-    value = re.sub(r'( |^)\d\d\d+($| )', ' N3P ', value)  # 3+ digit numbers
-    value = re.sub(r'( |^)-\d\d\d+($| )', ' NN3P ', value)  # 3+ digit negative numbers
+    # value = re.sub(r'( |^)-?([0-9]+)[eE]-([0-9])($| )', ' NSMALL ',
+    #                value)  # numbers in scientific notation e.g. 0.12e-43 # 科学计数法
+    # value = re.sub(r'( |^)\d\d\d+($| )', ' N3P ', value)  # 3+ digit numbers # 三位以上正整数
+    # value = re.sub(r'( |^)-\d\d\d+($| )', ' NN3P ', value)  # 3+ digit negative numbers # 三位以上负数
 
-    value = re.sub(r'key[a-zA-Z0-9\-]+', ' key ', value)  # remove key56988 Owasp specific pattern
+    value = re.sub(r'key[a-zA-Z0-9\-]+', ' key ',
+                   value)  # remove key56988 Owasp specific pattern, 针对owasp数据中的keyA-37703替换为key 37703
 
-    value = re.sub(r'([\w\']+)>', ' \g<1> ', value)
-    value = re.sub(r'(:@?|\w+)<', ' \g<1> ', value)
-    value = re.sub(r'(\w+):', ' \g<1> ', value)
-    value = re.sub(r'(\w+)-\s', ' \g<1> ', value)
-    value = re.sub(r'([a-zA-Z]+)-', ' \g<1> ', value)
+    # value = re.sub(r'([\w\']+)>', ' \g<1> ', value)  # 对于xxx>换成 "xxx "
+    # value = re.sub(r'(:@?|\w+)<', ' \g<1> ', value)  # 对于xxx>换成 "xxx "
+    # value = re.sub(r'(\w+):', ' \g<1> ', value)  # 对于xxx:换成 "xxx "
+    # value = re.sub(r'(\w+)-\s', ' \g<1> ', value)  # 对于"xxx- "换成 "xxx "
+    # value = re.sub(r'([a-zA-Z]+)-', ' \g<1> ', value)  # 对于xxx- 换成 xxx
 
-    for key, val in replaceMap.items():
+    for key, val in replaceMap.items():  # 字符串符号加空格
         value = value.replace(key, val)
         value = re.sub(r'\s\s+', ' ', value)
 
@@ -185,6 +198,6 @@ def get_magrove_generator(text_processing_func, data_dir: str, label_dict: dict)
 
 
 if __name__ == '__main__':
-    for x, y in get_magrove_generator(preprocessing, "", "")():
-        if y == 1:
-            print(x, y)
+    with open(r"G:\slice-00af0452a5ece47edb79e95498ac502d66385c91.json", "r") as f:
+        j = json.load(f)
+        print(preprocessing(j["slice"]))
