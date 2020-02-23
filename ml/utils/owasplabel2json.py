@@ -56,5 +56,5 @@ def owasplabel2json(expected_csv, slice_dir, output_json):
 
 if __name__ == '__main__':
     owasplabel2json('data/expectedresults-1.1.csv',
-                    'data/slice/benchmark1.1',
-                    'data/label/benchmark1.1/label.json')
+                    'G:/slice/benchmark1.1',
+                    'G:/label/benchmark1.1/label.json')

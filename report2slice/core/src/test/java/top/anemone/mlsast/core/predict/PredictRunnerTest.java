@@ -11,8 +11,6 @@ import top.anemone.mlsast.core.parser.ReportParser;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.core.predict.impl.BLSTMRemotePredictor;
-import top.anemone.mlsast.core.slice.SliceProject;
-import top.anemone.mlsast.core.slice.SliceRunner;
 import top.anemone.mlsast.core.slice.SliceRunnerTest;
 import top.anemone.mlsast.core.slice.impl.JoanaSlicer;
 
@@ -49,7 +47,7 @@ public class PredictRunnerTest {
                         assertNull(exception);
                     }
                 });
-        assertEquals(predictProject.edge2isSafe.size(),8);
+        assertEquals(predictProject.flowIsSafe.size(),8);
         assertEquals(predictProject.bugInstance2isSafe.size(),1);
     }
 }

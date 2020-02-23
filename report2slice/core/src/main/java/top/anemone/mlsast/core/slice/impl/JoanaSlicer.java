@@ -6,6 +6,7 @@ import com.ibm.wala.classLoader.*;
 import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.pruned.ApplicationLoaderPolicy;
+import com.ibm.wala.ipa.callgraph.pruned.PrunedCallGraph;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
 import com.ibm.wala.types.ClassLoaderReference;
@@ -24,6 +25,7 @@ import edu.kit.joana.ifc.sdg.mhpoptimization.CSDGPreprocessor;
 import edu.kit.joana.wala.core.ExternalCallCheck;
 import edu.kit.joana.wala.core.Main;
 import edu.kit.joana.wala.core.SDGBuilder;
+import edu.kit.joana.wala.core.prune.DefaultCGPruner;
 import edu.kit.joana.wala.core.prune.NodeLimitPruner;
 import lombok.Data;
 import top.anemone.mlsast.core.classloader.SliceJavaClassloader;
@@ -40,8 +42,6 @@ import top.anemone.mlsast.core.slice.Slicer;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static top.anemone.mlsast.core.joana.LoggingOutputStream.LogLevel.INFO;
@@ -80,6 +80,7 @@ public class JoanaSlicer implements Slicer {
             throw new SlicerException(e.getMessage(), e);
         }
         Collection<SDGNode> slice = jSlicer.slice(sinkNodes);
+//        List<SDGNode> sortedSlice=new DFSSort(slice, config.cgPruner).getSortedNodes(func.getClazz()+"."+func.getMethod()+func.getSig());
         String result = Formatter.prepareSliceForEncoding(slice);
         return result;
     }

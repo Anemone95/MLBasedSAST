@@ -23,7 +23,8 @@ import preprocessing
 
 PADDING_VALUE = 0
 
-LABEL_WORD="isReal"
+LABEL_WORD = "isSafe"
+
 
 class TextDataset(Dataset):
     def __init__(self, slice_dir, label_dir, text_preprocessing_func):
@@ -60,8 +61,8 @@ class TextDataset(Dataset):
 
     def __getitem__(self, item) -> (str, int):
         ID, LABEL = 0, 1
-        # with open(os.path.join(self.slice_dir, self.data[item][ID][:2], "slice-{}.json".format(self.data[item][ID])), 'r') as f:
-        with open(os.path.join(self.slice_dir, "slice-{}.json".format(self.data[item][ID])), 'r') as f:
+        with open(os.path.join(self.slice_dir, self.data[item][ID][:2], "slice-{}.json".format(self.data[item][ID])), 'r') as f:
+        # with open(os.path.join(self.slice_dir, "slice-{}.json".format(self.data[item][ID])), 'r') as f:
             slice = json.load(f)
         return self.text_preprocessing_func(slice["slice"]), self.data[item][LABEL]
 

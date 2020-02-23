@@ -296,8 +296,10 @@ if __name__ == '__main__':
               word_freq=WORD_FREQ,
               train_precent=0.9, saveto=model_file)
     else:
-        train(r"H:\MLBasedSAST\ml\data\slice\benchmark1.1",
-              r"H:\MLBasedSAST\ml\data\label\benchmark1.1",
+        slice=r"G:\slice\benchmark1.1"
+        label=r"G:\label\benchmark1.1"
+        train(slice,
+              label,
               embedding_dim=EMBEDDING_DIM,
               hidden_dim=HIDDEN_DIM,
               base_learning_rate=BASE_LEARNING_RATE,

@@ -34,8 +34,8 @@ class Preprocessor:
         abstract_slice = ""
         for line in self.prog_slice.split('\n'):
             if line:
-                # nid, kind, operation, ntype, value = [s.strip() for s in line.strip().split('::')]
-                nid, kind, operation, ntype, value,_ = [s.strip() for s in line.strip().split('::')]
+                nid, kind, operation, ntype, value = [s.strip() for s in line.strip().split('::')]
+                # nid, kind, operation, ntype, value,_ = [s.strip() for s in line.strip().split('::')]
                 # 处理返回类型
                 abstract_slice += operation + " "
 
@@ -102,7 +102,7 @@ class Preprocessor:
         text = value
         for s in set(all_matches):
 
-            if len(s) > 4 + 1 + 1 + 1:
+            if len(s) > 2 + 1 + 1 + 1:
                 if s.startswith("http"):
                     text = text.replace(s, "SHTTP_URL")
                 else:

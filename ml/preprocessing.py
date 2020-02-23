@@ -61,7 +61,7 @@ def preprocessing(text: str) -> str:
         if line.strip() == '' or re.match(r'\[([0-9]+, )*[0-9]+\]', line):
             continue
         # try:
-        nid, kind, operation, ntype, value,_ = [s.strip() for s in line.strip().split('::')]
+        nid, kind, operation, ntype, value = [s.strip() for s in line.strip().split('::')]
         sample += parseSDGNodeValue(ntype + ' ' + value, ABSTRACT_LIST) + ' :: '  # .lower()
         # except Exception as e:
         #     logging.warning('Exception: {} in {}'.format(e, line))

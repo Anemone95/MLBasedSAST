@@ -92,13 +92,13 @@ public class PredictRunner<T> {
                 } else {
                     // 对于每一个污染流， 需要每一条边都不是清洁函数
                     for (TaintFlow subFlow : flow) {
-                        boolean edgeIsSafe = false;
+                        boolean bBlowIsSafe = false;
                         try {
-                            edgeIsSafe = edgeIsSafe(subFlow);
+                            bBlowIsSafe = flowIsSafe(subFlow);
                         } catch (PredictorException e) {
                             causedExceptions.add(e);
                         }
-                        if (edgeIsSafe){
+                        if (bBlowIsSafe){
                             treeIsSafe=true;
                             safeEdges.add(subFlow);
                             break;
@@ -118,22 +118,22 @@ public class PredictRunner<T> {
         return predictProject;
     }
 
-    public boolean edgeIsSafe(TaintFlow edge) throws PredictorException {
+    public boolean flowIsSafe(TaintFlow flow) throws PredictorException {
         // 曾经计算过则直接返回
-        Boolean result = predictProject.bugIsSafe(edge);
+        Boolean result = predictProject.bugIsSafe(flow);
         if (result != null) {
             return result;
         }
-        String sliceStr = sliceProject.getSlice(edge.entry, edge.point);
+        String sliceStr = sliceProject.getSlice(flow.entry, flow.point);
         if (sliceStr == null) {
-            LOGGER.warn("BugInstance's slice not found, edge=" + edge.toString());
+            LOGGER.warn("BugInstance's slice not found, edge=" + flow.toString());
             return false;
         }
-        Slice slice = new Slice(edge, sliceStr, sliceProject.getTaintProject().getProjectName());
+        Slice slice = new Slice(flow, sliceStr, sliceProject.getTaintProject().getProjectName());
         boolean edgeIsClean;
         // 预测漏洞存在则该路径是不安全的
         edgeIsClean = predictor.predictIsSafe(slice);
-        predictProject.putPrediction(edge, edgeIsClean);
+        predictProject.putPrediction(flow, edgeIsClean);
         return edgeIsClean;
     }
 }

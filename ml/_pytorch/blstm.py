@@ -14,7 +14,8 @@ from torch import Tensor
 
 class BLSTM(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, use_gpu, batch_first=True):
+    def __init__(self, embedding_dim: int, hidden_dim: int, vocab_size: int, label_size: int, use_gpu: bool,
+                 batch_first: bool = True):
         super(BLSTM, self).__init__()
         self.hidden_dim = hidden_dim
         self.use_gpu = use_gpu

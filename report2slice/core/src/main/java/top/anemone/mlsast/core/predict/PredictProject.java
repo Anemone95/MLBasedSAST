@@ -11,12 +11,12 @@ import java.util.Set;
 public class PredictProject<T> {
     protected Map<T, Boolean> bugInstance2isSafe;
     protected Map<T, Set<TaintFlow>> bug2proof; //证明bug是误报，需要列举清洁的边
-    protected Map<TaintFlow, Boolean> edge2isSafe;
+    protected Map<TaintFlow, Boolean> flowIsSafe;
     protected SliceProject<T> sliceProject;
     private Map<T, List<Exception>> errorBugsExceptions;
     public PredictProject(){
         this.bugInstance2isSafe =new HashMap<>();
-        this.edge2isSafe =new HashMap<>();
+        this.flowIsSafe =new HashMap<>();
         this.errorBugsExceptions=new HashMap<>();
         this.bug2proof=new HashMap<>();
     }
@@ -34,14 +34,14 @@ public class PredictProject<T> {
         bugInstance2isSafe.put(bugInstance, result);
     }
     public void putPrediction(TaintFlow edge, Boolean result){
-        edge2isSafe.put(edge, result);
+        flowIsSafe.put(edge, result);
     }
 
     public Boolean bugIsSafe(T bugInstance){
         return bugInstance2isSafe.get(bugInstance);
     }
     public Boolean bugIsSafe(TaintFlow edge){
-        return edge2isSafe.get(edge);
+        return flowIsSafe.get(edge);
     }
     public Map<T, Boolean> getPredictions(){
         return bugInstance2isSafe;

@@ -31,12 +31,14 @@ public class SliceCGPruner implements CGPruner {
         CGNode head = cg.getFakeRootNode();
         keep.add(head);
         marked.add(head);
+        CGNode rootNode=head;
 
         marked.addAll(cg.getEntrypointNodes());
         keep.addAll(cg.getEntrypointNodes());
         queue.addAll(cg.getEntrypointNodes());
 
         int limit = nodeLimit + keep.size();
+        boolean rootNodeAdded=false;
         while (!queue.isEmpty()) {
             if (keep.size() >= limit)
                 break;
@@ -51,6 +53,10 @@ public class SliceCGPruner implements CGPruner {
                         queue.add(childNode);
                     }
                 }
+            }
+            if (!rootNodeAdded){
+                rootNodeAdded=true;
+                queue.add(rootNode);
             }
         }
 
