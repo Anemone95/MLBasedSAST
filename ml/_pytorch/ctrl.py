@@ -7,6 +7,7 @@
 :license: Apache 2.0, see LICENSE for more details.
 """
 import logging
+import sys
 import time
 
 import torch
@@ -284,16 +285,27 @@ if __name__ == '__main__':
 
     current_time = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
     model_file = 'model/pytorch-lstm-{}'.format(current_time)
-    train(r"H:\MLBasedSAST\ml\data\slice\benchmark1.1",
-          r"H:\MLBasedSAST\ml\data\label\benchmark1.1",
-          embedding_dim=EMBEDDING_DIM,
-          hidden_dim=HIDDEN_DIM,
-          base_learning_rate=BASE_LEARNING_RATE,
-          early_stop_patience=EARLY_STOP,
-          batch_size=BATCH_SIZE,
-          total_epoch=20,
-          word_freq=WORD_FREQ,
-          train_precent=0.9, saveto=model_file)
+    if len(sys.argv)>1:
+        train(sys.argv[1],sys.argv[2],
+              embedding_dim=EMBEDDING_DIM,
+              hidden_dim=HIDDEN_DIM,
+              base_learning_rate=BASE_LEARNING_RATE,
+              early_stop_patience=EARLY_STOP,
+              batch_size=BATCH_SIZE,
+              total_epoch=20,
+              word_freq=WORD_FREQ,
+              train_precent=0.9, saveto=model_file)
+    else:
+        train(r"H:\MLBasedSAST\ml\data\slice\benchmark1.1",
+              r"H:\MLBasedSAST\ml\data\label\benchmark1.1",
+              embedding_dim=EMBEDDING_DIM,
+              hidden_dim=HIDDEN_DIM,
+              base_learning_rate=BASE_LEARNING_RATE,
+              early_stop_patience=EARLY_STOP,
+              batch_size=BATCH_SIZE,
+              total_epoch=20,
+              word_freq=WORD_FREQ,
+              train_precent=0.9, saveto=model_file)
 
     # get_label_summary("data/slice/benchmark1.1", "data/label/benchmark1.1")
 
