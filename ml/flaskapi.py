@@ -23,6 +23,10 @@ MODEL = None
 def alive():
     return jsonify({"msg": "alive"}), 200
 
+@app.route('/alive/')
+def alive2():
+    return jsonify({"msg": "alive"}), 200
+
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
@@ -34,18 +38,14 @@ def predict():
         logging.warning("Model not specify, can't predict")
         return jsonify({"msg": "Model not specify, can't predict"}), 500
     slice_json = request.get_json()
-    # TODO test code, please clean
-    if "checkSSRF" in slice_json["flow"]["entry"]["method"]:
-        isTP=False
-        return jsonify({"msg": str(isTP)}), 200
     data_dir = _settings.relative_path_from_root('data/slice/' + slice_json['project'])
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-    with open(data_dir + '/slice-' + slice_json["flowHash"] + ".json", 'w') as f:
-        json.dump(slice_json, f)
-    isTP = lstm.predict(MODEL, slice_json["slice"])
-    logging.info("Predict {0} as {1}".format(slice_json["flowHash"], isTP))
-    return jsonify({"msg": str(isTP)}), 200
+    # if not os.path.exists(data_dir):
+    #     os.makedirs(data_dir)
+    # with open(data_dir + '/slice-' + slice_json["flowHash"] + ".json", 'w') as f:
+    #     json.dump(slice_json, f)
+    # isTP = lstm.predict(MODEL, slice_json["slice"])
+    # logging.info("Predict {0} as {1}".format(slice_json["flowHash"], isTP))
+    return jsonify({"msg": str(False)}), 200
 
 
 @app.route('/label', methods=['GET', 'POST'])
@@ -65,7 +65,7 @@ def label():
     return jsonify({"msg": "true"}), 200
 
 
-def server(model_npz=None, host='127.0.0.1', port=8888, debug=False):
+def server(model_npz=None, host='127.0.0.1', port=8000, debug=False):
     global MODEL
     if model_npz:
         MODEL = lstm.load_model(_settings.relative_path_from_root(model_npz))

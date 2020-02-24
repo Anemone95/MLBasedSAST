@@ -57,8 +57,8 @@ def train(slice_dir: str,
     if not HAS_GPU:
         logging.warning("GPU not found!")
     ret_accuracy, ret_recall, ret_precision, ret_f1 = -1, -1, -1, -1
-    # dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
-    dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
+    dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    # dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
     train_data, test_data = dataset.divide(train_precent)
     tokenizer = Tokenizer(freq_gt=word_freq)
     tokenizer.build_dict(train_data)

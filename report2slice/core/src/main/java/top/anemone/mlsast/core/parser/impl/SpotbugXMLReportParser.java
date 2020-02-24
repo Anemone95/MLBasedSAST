@@ -109,8 +109,11 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         SortedBugCollection sortedBugCollection;
         try {
             sortedBugCollection = this.loadBugs(this.xmlReport);
-        } catch (IOException | DocumentException e) {
+        } catch (IOException  e) {
             throw new NotFoundException(this.xmlReport, System.getProperty("user.dir"));
+        } catch (DocumentException e){
+            e.printStackTrace();
+            throw new ParserException(e.toString(), e);
         } catch (PluginException e) {
             e.printStackTrace();
             throw new ParserException(e.toString(), e);
