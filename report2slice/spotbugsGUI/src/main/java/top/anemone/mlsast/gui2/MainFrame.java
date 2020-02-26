@@ -23,10 +23,12 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -45,6 +47,7 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
 import com.h3xstream.findsecbugs.injection.taintdata.Edge;
+import com.h3xstream.findsecbugs.injection.taintdata.LocationNodeAnnotation;
 import com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.filter.Filter;
@@ -715,44 +718,23 @@ public class MainFrame extends FBFrame implements LogSync {
 
             summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
 
-            boolean flowIsClean = false;
-            boolean flowCleaned = false;
-            for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
-                PredictProject<BugInstance> predictProject;
+            int remoteCleanAtLevel = -1;
+            int labelCleanAtLevel = -1;
+            for (BugAnnotation bugAnnotation : bug.getAnnotationsForMessage(true)) {
+                PredictProject<BugInstance> labelPredictProject=null;
+                PredictProject<BugInstance> remotePredictProject=null;
                 if (AiProject.getInstance().isLabeled(bug)){
-                    predictProject = AiProject.getInstance().getLabelProject();
-                } else {
-                    predictProject = AiProject.getInstance().getPredictProject();
+                    labelPredictProject = AiProject.getInstance().getLabelProject();
                 }
-                if (predictProject != null && predictProject.getProofs(bug) != null && b instanceof BugAnnotationWithSourceLines) {
-                    // @Anemone, 打印有清洁函数的污点传播树
-                    for (TaintFlow edge : predictProject.getProofs(bug)) {
-                        if (b instanceof MethodNodeAnnotation) {
-                            MethodNodeAnnotation annotation = (MethodNodeAnnotation) b;
-                            if (edge.entry.getClazz().equals(annotation.getClassName()) &&
-                                    edge.entry.getMethod().equals(annotation.getMethodName()) &&
-                                    edge.entry.getSig().equals(annotation.getMethodSignature())) {
-                                flowIsClean = true;
-                            }
-                            if(!annotation.type.equals(Edge.SINK_EDGE)){
-                                continue;
-                            }
-                        }
-                        BugAnnotationWithSourceLines annotation = (BugAnnotationWithSourceLines) b;
-                        if (annotation.getSourceLines() != null &&
-                                annotation.getSourceLines().getSourcePath().equals(edge.point.sourceFile) &&
-                                annotation.getSourceLines().getStartLine() == edge.point.startLine &&
-                                annotation.getSourceLines().getEndLine() == edge.point.endLine) {
-                            flowCleaned = true;
-                        }
-                    }
-                }
+                // @Anemone, 打印有清洁函数的污点传播树
+                // 处理标记
+                labelCleanAtLevel = getLabelCleanAtLevel(bug, labelCleanAtLevel, bugAnnotation, labelPredictProject);
 
-                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug, flowIsClean));
-                if (flowCleaned) {
-                    flowIsClean = false;
-                    flowCleaned = false;
-                }
+                // 处理预测
+                remotePredictProject = AiProject.getInstance().getPredictProject();
+                remoteCleanAtLevel = getLabelCleanAtLevel(bug, remoteCleanAtLevel, bugAnnotation, remotePredictProject);
+
+                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bugAnnotation, bug, remoteCleanAtLevel, labelCleanAtLevel));
             }
 
 
@@ -770,6 +752,36 @@ public class MainFrame extends FBFrame implements LogSync {
             SwingUtilities.invokeLater(() -> summaryHtmlScrollPane.getVerticalScrollBar().setValue(
                     summaryHtmlScrollPane.getVerticalScrollBar().getMinimum()));
         });
+    }
+
+    private int getLabelCleanAtLevel(BugInstance bug, int labelCleanAtLevel, BugAnnotation bugAnnotation, PredictProject<BugInstance> labelPredictProject) {
+        if (labelPredictProject != null && labelPredictProject.getProofs(bug) != null && bugAnnotation instanceof BugAnnotationWithSourceLines) {
+            if (bugAnnotation instanceof MethodNodeAnnotation) {
+                MethodNodeAnnotation methodNodeAnnotation = (MethodNodeAnnotation) bugAnnotation;
+                if (labelCleanAtLevel==-1){
+                    List<TaintFlow> taintFlows=labelPredictProject.getProofs(bug).stream().filter(e->
+                            e.entry.getClazz().equals(methodNodeAnnotation.getClassName()) &&
+                                    e.entry.getMethod().equals(methodNodeAnnotation.getMethodName()) &&
+                                    e.entry.getSig().equals(methodNodeAnnotation.getMethodSignature())).collect(Collectors.toList());
+                    if(!taintFlows.isEmpty()){
+                        labelCleanAtLevel=methodNodeAnnotation.depth;
+                    }
+                } else {
+                    // 上一级函数不被污染
+                    if (labelCleanAtLevel>=0 && methodNodeAnnotation.depth<=labelCleanAtLevel){
+                        labelCleanAtLevel=-1;
+                    }
+                }
+            }
+            // 上一级return不被污染
+            if(bugAnnotation instanceof LocationNodeAnnotation){
+                LocationNodeAnnotation locationNodeAnnotation = (LocationNodeAnnotation) bugAnnotation;
+                if (labelCleanAtLevel>=0 && locationNodeAnnotation.depth<=labelCleanAtLevel){
+                    labelCleanAtLevel=-1;
+                }
+            }
+        }
+        return labelCleanAtLevel;
     }
 
     public void clearSummaryTab() {

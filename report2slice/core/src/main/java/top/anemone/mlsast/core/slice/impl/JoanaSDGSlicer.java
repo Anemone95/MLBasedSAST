@@ -9,6 +9,7 @@ import edu.kit.joana.ifc.sdg.graph.slicer.SummarySlicerBackward;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.anemone.mlsast.core.data.Func;
 import top.anemone.mlsast.core.data.taintTree.Location;
 import top.anemone.mlsast.core.exception.NotFoundException;
 
@@ -25,7 +26,7 @@ public class JoanaSDGSlicer {
         this.slicer = new SummarySlicerBackward(sdg);
     }
 
-    public HashSet<SDGNode> getNodesAtLocation(Location location) throws NotFoundException {
+    public HashSet<SDGNode> getNodesAtLocation(Location location, Func func) throws NotFoundException {
         HashSet<SDGNode> nodes = new HashSet<>();
         HashSet<SDGNode> successorNodes = new HashSet<>();
         int dist = 987654321;
@@ -53,7 +54,7 @@ public class JoanaSDGSlicer {
             if (!successorNodes.isEmpty()) {
                 nodes = successorNodes;
             } else {
-                throw new NotFoundException(location, "sdg");
+                throw new NotFoundException(location, func);
             }
         }
         return nodes;

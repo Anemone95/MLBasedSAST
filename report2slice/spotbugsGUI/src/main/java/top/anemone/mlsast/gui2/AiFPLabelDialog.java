@@ -21,7 +21,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.util.Set;
 
-public class AiLabelDialog extends JDialog {
+public class AiFPLabelDialog extends JDialog {
     private void closeDialog(WindowEvent event) {
         closeDialog();
     }
@@ -31,7 +31,8 @@ public class AiLabelDialog extends JDialog {
         dispose();
     }
 
-    public AiLabelDialog(JFrame parent, Logger l, boolean modal, Set<TaintFlow> flowEdges) {
+
+    public AiFPLabelDialog(JFrame parent, Logger l, boolean modal, Set<TaintFlow> flowEdges) {
         super(parent, modal);
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.label_dialog", "Labeling"));
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -45,7 +46,7 @@ public class AiLabelDialog extends JDialog {
         labelPanel.add(label);
 
         JComboBox<TaintFlow> jcombo = new JComboBox<TaintFlow>(flowEdges.toArray(new TaintFlow[]{}));
-        jcombo.setSize(700, 40);
+        jcombo.setSize(700, 20);
         jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(jcombo);
 
@@ -128,7 +129,7 @@ public class AiLabelDialog extends JDialog {
         contentPanel.add(labelPanel);
         contentPanel.add(bottomPanel, BorderLayout.SOUTH);
         getContentPane().add(contentPanel);
-        this.setSize(500, 450);
+        this.setSize(500, 350);
     }
 
     private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {

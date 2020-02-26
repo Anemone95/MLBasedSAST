@@ -44,7 +44,8 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
             "SQL_INJECTION_TURBINE",
             "UNVALIDATED_REDIRECT",
             "LDAP_INJECTION",
-            "XPATH_INJECTION"
+            "XPATH_INJECTION",
+            "HTTP_PARAMETER_POLLUTION"
 //            "PATH_TRAVERSAL_IN",
 //            "PATH_TRAVERSAL_OUT"
     );
@@ -136,7 +137,6 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
             BugInstance bugInstance = bugInstances.get(i);
             Exception err = null;
             try {
-
                 SpotbugsBugInstanceParser parser = new SpotbugsBugInstanceParser(bugInstance);
                 traces.put(bugInstance, parser.parse());
             } finally {

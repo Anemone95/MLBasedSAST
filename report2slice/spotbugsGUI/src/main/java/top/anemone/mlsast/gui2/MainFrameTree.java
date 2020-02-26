@@ -212,13 +212,13 @@ public class MainFrameTree implements LogSync {
         AiProject project = AiProject.getInstance();
         if (currentSelectedBugLeaf!=null && project.getPredictProject() != null && project.getPredictProject().getSliceProject() != null
                 && SpotbugXMLReportParser.caredVulns.contains(currentSelectedBugLeaf.getBug().getType())){
-            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labeledAsTruePositive", "Labeled As True Positive");
+            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelVulnFlow", "Label Vulnerable Taint Tree");
             labeledAsTP.addActionListener(evt -> {
                 setTrueLabel();
             });
             popupMenu.add(labeledAsTP);
 
-            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labeledSafeFlow", "Label Safe Flow");
+            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labelSafeFlow", "Label Safe Taint Flow");
             labeledAsFP.addActionListener(evt -> {
                 setFalseLabel();
             });
@@ -227,7 +227,7 @@ public class MainFrameTree implements LogSync {
         return popupMenu;
     }
 
-    private void setTrueLabel() {
+    private void setTrueLabelBK() {
         AiProject project = AiProject.getInstance();
         if (project.getPredictProject() == null || project.getPredictProject().getSliceProject() == null) {
             JOptionPane.showMessageDialog(
@@ -237,7 +237,7 @@ public class MainFrameTree implements LogSync {
             return;
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        for (TaintFlow edge : AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug())) {
+        for (TaintFlow edge : AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug())) {
             Label label = new Label(MainFrame.getInstance().getProject().toString(), AiProject.getInstance().getSliceProject().getSliceHash(edge), false);
             label.setTaintFlow(edge);
             try {
@@ -271,6 +271,22 @@ public class MainFrameTree implements LogSync {
         }
     }
 
+    private void setTrueLabel() {
+        AiProject project = AiProject.getInstance();
+        if (project.getPredictProject() == null || project.getPredictProject().getSliceProject() == null) {
+            JOptionPane.showMessageDialog(
+                    mainFrame,
+                    "Need slice before label",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
+        AiTPLabelDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), logger, true, currentSelectedBugLeaf.getBug(), AiProject.getInstance().getSliceProject().getTaintTrees(currentSelectedBugLeaf.getBug()),1);
+        dialog.setLocationRelativeTo(MainFrame.getInstance());
+        dialog.setVisible(true);
+        MainFrame.getInstance().syncBugInformation();
+    }
+
     private void setFalseLabel() {
         AiProject project = AiProject.getInstance();
         if (project.getPredictProject() == null || project.getPredictProject().getSliceProject() == null) {
@@ -281,7 +297,7 @@ public class MainFrameTree implements LogSync {
             return;
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        AiLabelDialog dialog = new AiLabelDialog(MainFrame.getInstance(), logger, true, AiProject.getInstance().getSliceProject().getTaintEdges(currentSelectedBugLeaf.getBug()));
+        AiFPLabelDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), logger, true, AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug()));
         dialog.setLocationRelativeTo(MainFrame.getInstance());
         dialog.setVisible(true);
         MainFrame.getInstance().syncBugInformation();

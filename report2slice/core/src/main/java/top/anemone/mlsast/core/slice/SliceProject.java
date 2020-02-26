@@ -32,7 +32,7 @@ public class SliceProject<T> {
         return source2taintFlow.get(source);
     }
 
-    public Set<TaintFlow> getTaintEdges(T buginstance) {
+    public Set<TaintFlow> getTaintFlows(T buginstance) {
         Set<TaintFlow> edges = new HashSet<>();
         for (TaintTreeNode taintTreeNode : getTaintTrees(buginstance)) {
             for (TaintFlow taintFlow : getTaintFlows(taintTreeNode)) {

@@ -75,7 +75,7 @@ public class JoanaSlicer implements Slicer {
         // 根据sink点查找sinknodes
         HashSet<SDGNode> sinkNodes;
         try {
-            sinkNodes = jSlicer.getNodesAtLocation(line);
+            sinkNodes = jSlicer.getNodesAtLocation(line, func);
         } catch (NotFoundException e) {
             throw new SlicerException(e.getMessage(), e);
         }

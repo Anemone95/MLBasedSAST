@@ -15,27 +15,21 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.MethodDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JToolTip;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.plaf.FontUIResource;
@@ -44,7 +38,11 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+import com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation;
+import com.h3xstream.findsecbugs.injection.taintdata.MethodVertex;
 import edu.umd.cs.findbugs.*;
+import top.anemone.mlsast.core.data.Func;
+import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 
 public class MainFrameComponentFactory implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(MainFrameComponentFactory.class.getName());
@@ -209,7 +207,7 @@ public class MainFrameComponentFactory implements Serializable {
         SwingUtilities.invokeLater(new InitializeGUI(mainFrame));
     }
 
-    Component bugSummaryComponent(BugAnnotation value, BugInstance bug, boolean isClean) {
+    Component bugSummaryComponent(BugAnnotation value, BugInstance bug, int predictIsClean, int labelIsClean) {
         JLabel label = new JLabel();
         label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
         label.setFont(label.getFont().deriveFont(Font.PLAIN));
@@ -266,8 +264,11 @@ public class MainFrameComponentFactory implements Serializable {
             } else {
                 noteText = note.toString(primaryClass);
             }
-            if (isClean){
-                noteText=addCleanTag(noteText, AiProject.getInstance().isLabeled(bug));
+            if (labelIsClean>=0){
+                noteText=addCleanTag(noteText, true);
+            }
+            if (predictIsClean>=0){
+                noteText=addCleanTag(noteText, false);
             }
             if (!srcStr.equals(sourceCodeLabel)) {
                 label.setText(noteText + srcStr);
@@ -278,6 +279,17 @@ public class MainFrameComponentFactory implements Serializable {
             label.setText(value.toString(primaryClass));
         }
 
+        AiProject project = AiProject.getInstance();
+        if (project.getPredictProject() != null && project.getPredictProject().getSliceProject() != null) {
+            if (value instanceof StringAnnotation && value.getDescription().equals("Taintflow tree")){
+                label.addMouseListener(new LabelVulnTreeListener(bug, label, Integer.parseInt(((StringAnnotation) value).getValue())));
+            } else if (value instanceof MethodNodeAnnotation && ((MethodNodeAnnotation) value).firstId!=null){
+                MethodNodeAnnotation methodNodeAnnotation=(MethodNodeAnnotation) value;
+                Func func=new Func(methodNodeAnnotation.getClassName(), methodNodeAnnotation.getMethodName(), methodNodeAnnotation.getMethodSignature());
+                label.addMouseListener(new LabelSafeFlowListener(bug, label, func));
+            }
+
+        }
         return label;
     }
 
@@ -489,4 +501,102 @@ public class MainFrameComponentFactory implements Serializable {
         }
     }
 
+    private class LabelVulnTreeListener extends MouseAdapter {
+        private final BugInstance bugInstance;
+
+        private final JLabel label;
+        private final int id;
+
+
+        LabelVulnTreeListener(@Nonnull BugInstance bugInstance, @Nonnull JLabel label, int id) {
+            this.bugInstance = bugInstance;
+            this.label = label;
+            this.id = id;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton()== MouseEvent.BUTTON3){
+                createLabelMenu(true, bugInstance, id, null).show(label,e.getX(), e.getY());
+            }
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            label.setForeground(Color.blue);
+            mainFrame.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            label.setForeground(Color.black);
+            mainFrame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
+    }
+
+    private class LabelSafeFlowListener extends MouseAdapter {
+        private final BugInstance bugInstance;
+
+        private final JLabel label;
+        private final Func method;
+
+
+        LabelSafeFlowListener(@Nonnull BugInstance bugInstance, @Nonnull JLabel label, Func methodDescriptor) {
+            this.bugInstance = bugInstance;
+            this.label = label;
+            this.method=methodDescriptor;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton()== MouseEvent.BUTTON3){
+                createLabelMenu(false, bugInstance,-1, method).show(label,e.getX(), e.getY());
+                System.out.println(e.getButton());
+            }
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            label.setForeground(Color.blue);
+            mainFrame.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            label.setForeground(Color.black);
+            mainFrame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
+    }
+
+    JPopupMenu createLabelMenu(boolean isVulnTree, BugInstance bug, int treeId, Func methodDescriptor) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        // @Anemone, if caredVulns, pop label function
+        AiProject project = AiProject.getInstance();
+        if (isVulnTree){
+            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelVulnFlow", "Label Vulnerable Taint Tree");
+            labeledAsTP.addActionListener(evt -> {
+                AiProject.getInstance().bugInstanceIsLabeled.add(bug);
+                AiTPLabelDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), null, true, bug, AiProject.getInstance().getSliceProject().getTaintTrees(bug),treeId);
+                dialog.setLocationRelativeTo(MainFrame.getInstance());
+                dialog.setVisible(true);
+                MainFrame.getInstance().syncBugInformation();
+            });
+            popupMenu.add(labeledAsTP);
+
+        } else {
+            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labelSafeFlow", "Label Safe Taint Flow");
+            labeledAsFP.addActionListener(evt -> {
+                AiProject.getInstance().bugInstanceIsLabeled.add(bug);
+                List<TaintFlow> flows= AiProject.getInstance().getSliceProject().getTaintFlows(bug).stream().filter(e->e.getEntry().equals(methodDescriptor)).collect(Collectors.toList());
+                AiFPLabelDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), null, true, new HashSet<>(flows));
+                dialog.setLocationRelativeTo(MainFrame.getInstance());
+                dialog.setVisible(true);
+                MainFrame.getInstance().syncBugInformation();
+            });
+            popupMenu.add(labeledAsFP);
+
+        }
+
+        return popupMenu;
+    }
 }

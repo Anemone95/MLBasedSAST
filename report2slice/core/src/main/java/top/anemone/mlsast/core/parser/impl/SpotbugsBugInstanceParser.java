@@ -16,7 +16,8 @@ import java.util.Map;
 public class SpotbugsBugInstanceParser {
     private Map<Integer, TaintTreeNode> id2TaintNode; // id到treenode的映射，用于重建tree
     private BugInstance bugInstance;
-    class TinyTreeNode{
+
+    class TinyTreeNode {
         int id;
         int childId;
         int nextId;
@@ -27,12 +28,13 @@ public class SpotbugsBugInstanceParser {
             this.nextId = nextId;
         }
     }
+
     private List<TinyTreeNode> tinyTreeNodes;// 用于重建tree，只记录索引
 
     public SpotbugsBugInstanceParser(BugInstance bugInstance) {
         this.bugInstance = bugInstance;
         id2TaintNode = new HashMap<>();
-        tinyTreeNodes=new LinkedList<>();
+        tinyTreeNodes = new LinkedList<>();
     }
 
     public List<TaintTreeNode> parse() {
@@ -40,16 +42,29 @@ public class SpotbugsBugInstanceParser {
         List<TaintTreeNode> entries = new LinkedList<>();
         boolean isEntry = false;
         for (BugAnnotation annotation : annotations) {
+            if (annotation instanceof StringAnnotation && annotation.getDescription().equals("Taint entry")){
+                // 上一入口, 根据id重建tree
+                for (TinyTreeNode node : tinyTreeNodes) {
+                    if (node.childId > 0) {
+                        id2TaintNode.get(node.id).firstChildNode = id2TaintNode.get(node.childId);
+                    }
+                    if (node.nextId > 0) {
+                        id2TaintNode.get(node.id).nextSibling = id2TaintNode.get(node.nextId);
+                    }
+                }
+                id2TaintNode = new HashMap<>();
+                tinyTreeNodes = new LinkedList<>();
+            }
             if (annotation instanceof StringAnnotation && annotation.getDescription().equals("Taintflow tree")) {
                 isEntry = true;
                 continue;
             }
             Location location = null;
-            int id=-1;
+            int id = -1;
             if (annotation instanceof MethodNodeAnnotation) {
                 MethodNodeAnnotation methodNodeAnnotation = (MethodNodeAnnotation) annotation;
                 if (methodNodeAnnotation.getSourceLines() != null) {
-                    if (methodNodeAnnotation.type.equals("SINK")){
+                    if (methodNodeAnnotation.type.equals("SINK")) {
                         location = new SinkLocation(
                                 methodNodeAnnotation.getSourceLines().getSourcePath(),
                                 methodNodeAnnotation.getSourceLines().getStartLine(),
@@ -76,24 +91,24 @@ public class SpotbugsBugInstanceParser {
                     );
                 }
                 id = methodNodeAnnotation.id;
-                TaintTreeNode node=new TaintTreeNode(location);
-                int childId=-1;
-                int nextId=-1;
-                if (methodNodeAnnotation.firstId!=null){
-                    childId=methodNodeAnnotation.firstId;
+                TaintTreeNode node = new TaintTreeNode(location);
+                int childId = -1;
+                int nextId = -1;
+                if (methodNodeAnnotation.firstId != null) {
+                    childId = methodNodeAnnotation.firstId;
                 }
-                if(methodNodeAnnotation.nextId!=null){
-                    nextId=methodNodeAnnotation.nextId;
+                if (methodNodeAnnotation.nextId != null) {
+                    nextId = methodNodeAnnotation.nextId;
                 }
                 tinyTreeNodes.add(new TinyTreeNode(id, childId, nextId));
                 id2TaintNode.put(id, node);
-                if (isEntry){
+                if (isEntry) {
                     entries.add(node);
-                    isEntry=false;
+                    isEntry = false;
                 }
             } else if (annotation instanceof LocationNodeAnnotation) {
                 LocationNodeAnnotation nodeAnnotation = (LocationNodeAnnotation) annotation;
-                if (nodeAnnotation.type.equals("RETURN")){
+                if (nodeAnnotation.type.equals("RETURN")) {
                     location = new ReturnLocation(nodeAnnotation.getSourceLines().getSourcePath(),
                             nodeAnnotation.getSourceLines().getStartLine(),
                             nodeAnnotation.getSourceLines().getEndLine());
@@ -103,27 +118,27 @@ public class SpotbugsBugInstanceParser {
                             nodeAnnotation.getSourceLines().getEndLine());
                 }
                 id = nodeAnnotation.id;
-                TaintTreeNode node=new TaintTreeNode(location);
-                if(nodeAnnotation.nextId!=null){
-                    node.nextSibling=id2TaintNode.get(nodeAnnotation.nextId);
+                TaintTreeNode node = new TaintTreeNode(location);
+                if (nodeAnnotation.nextId != null) {
+                    node.nextSibling = id2TaintNode.get(nodeAnnotation.nextId);
                 }
                 id2TaintNode.put(id, node);
 
-                int childId=-1;
-                int nextId=-1;
-                if(nodeAnnotation.nextId!=null){
-                    nextId=nodeAnnotation.nextId;
+                int childId = -1;
+                int nextId = -1;
+                if (nodeAnnotation.nextId != null) {
+                    nextId = nodeAnnotation.nextId;
                 }
                 tinyTreeNodes.add(new TinyTreeNode(id, childId, nextId));
             }
         }
-        // 根据id重建tree
-        for (TinyTreeNode node: tinyTreeNodes) {
-            if (node.childId>0){
-                id2TaintNode.get(node.id).firstChildNode= id2TaintNode.get(node.childId);
+        // 最后入口, 根据id重建tree
+        for (TinyTreeNode node : tinyTreeNodes) {
+            if (node.childId > 0) {
+                id2TaintNode.get(node.id).firstChildNode = id2TaintNode.get(node.childId);
             }
-            if(node.nextId>0){
-                id2TaintNode.get(node.id).nextSibling= id2TaintNode.get(node.nextId);
+            if (node.nextId > 0) {
+                id2TaintNode.get(node.id).nextSibling = id2TaintNode.get(node.nextId);
             }
         }
         return entries;
