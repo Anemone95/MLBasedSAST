@@ -82,7 +82,7 @@ class Label(models.Model):
         app_label = 'ml_app'
 
     def __str__(self):
-        return "{0}: {1}".format(self.taint_edge, self.is_safe)
+        return "{0}: {1}".format(self.taint_flow, self.is_safe)
 
     taint_flow = models.OneToOneField(TaintFlow, on_delete=models.CASCADE)
     is_safe = models.BooleanField(default=False)

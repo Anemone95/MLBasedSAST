@@ -26,7 +26,7 @@ from _pytorch.text import *
 from preprocessing2 import Preprocessor
 
 EPOCH = 20
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 HAS_GPU = torch.cuda.is_available()
 BASE_LEARNING_RATE = 0.01
 EMBEDDING_DIM = 16  # embedding
@@ -57,8 +57,8 @@ def train(slice_dir: str,
     if not HAS_GPU:
         logging.warning("GPU not found!")
     ret_accuracy, ret_recall, ret_precision, ret_f1 = -1, -1, -1, -1
-    dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
-    # dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
+    # dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
     train_data, test_data = dataset.divide(train_precent)
     tokenizer = Tokenizer(freq_gt=word_freq)
     tokenizer.build_dict(train_data)
@@ -240,7 +240,7 @@ def test(tokenizer: Tokenizer, model: blstm.BLSTM, slice_dir: str, label_dir: st
         else:
             metric.update(predicted2, test_labels)
 
-    m = metric.compute(["matrix"])
+    m = metric.compute(["accuracy", "safe_recall", "safe_precision", "matrix"])
     print(m)
 
 
@@ -296,8 +296,8 @@ if __name__ == '__main__':
               word_freq=WORD_FREQ,
               train_precent=0.9, saveto=model_file)
     else:
-        slice=r"G:\slice\benchmark1.1"
-        label=r"G:\label\benchmark1.1"
+        slice=r"G:\slice\mix"
+        label=r"G:\label\mix"
         train(slice,
               label,
               embedding_dim=EMBEDDING_DIM,
@@ -311,8 +311,7 @@ if __name__ == '__main__':
 
     # get_label_summary("data/slice/benchmark1.1", "data/label/benchmark1.1")
 
-    # tokenizer, nn = load("model/pytorch-lstm-2020-02-11-10-06.token", "model/pytorch-lstm-2020-02-11-10-06.pkl",
+    # tokenizer, nn = load("model/pytorch-lstm-2020-02-23-21-32.token", "model/pytorch-lstm-2020-02-23-21-32.pkl",
     #                      WORD_FREQ, EMBEDDING_DIM, HIDDEN_DIM)
     # print(predict(tokenizer, nn, "print hello world"))
-    # test(tokenizer, nn, "data/slice/juliet_test_suite_v1.3", "data/label/juliet_test_suite_v1.3")
-    # pass
+    # test(tokenizer, nn, r"G:\slice\juliet1.3", r"G:\label\juliet1.3")

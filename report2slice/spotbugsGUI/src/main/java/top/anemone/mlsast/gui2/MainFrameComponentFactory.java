@@ -573,7 +573,7 @@ public class MainFrameComponentFactory implements Serializable {
         // @Anemone, if caredVulns, pop label function
         AiProject project = AiProject.getInstance();
         if (isVulnTree){
-            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelVulnFlow", "Label Vulnerable Taint Tree");
+            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelExploitFlow", "Label Exploitable Taint Tree");
             labeledAsTP.addActionListener(evt -> {
                 AiProject.getInstance().bugInstanceIsLabeled.add(bug);
                 AiTPLabelDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), null, true, bug, AiProject.getInstance().getSliceProject().getTaintTrees(bug),treeId);

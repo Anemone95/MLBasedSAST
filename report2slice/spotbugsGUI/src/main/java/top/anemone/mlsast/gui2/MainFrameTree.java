@@ -212,63 +212,19 @@ public class MainFrameTree implements LogSync {
         AiProject project = AiProject.getInstance();
         if (currentSelectedBugLeaf!=null && project.getPredictProject() != null && project.getPredictProject().getSliceProject() != null
                 && SpotbugXMLReportParser.caredVulns.contains(currentSelectedBugLeaf.getBug().getType())){
-            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelVulnFlow", "Label Vulnerable Taint Tree");
+            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelTP", "Label as True Positive");
             labeledAsTP.addActionListener(evt -> {
                 setTrueLabel();
             });
             popupMenu.add(labeledAsTP);
 
-            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labelSafeFlow", "Label Safe Taint Flow");
+            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labelFP", "Label as False Positive");
             labeledAsFP.addActionListener(evt -> {
                 setFalseLabel();
             });
             popupMenu.add(labeledAsFP);
         }
         return popupMenu;
-    }
-
-    private void setTrueLabelBK() {
-        AiProject project = AiProject.getInstance();
-        if (project.getPredictProject() == null || project.getPredictProject().getSliceProject() == null) {
-            JOptionPane.showMessageDialog(
-                    mainFrame,
-                    "Need slice before label",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        for (TaintFlow edge : AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug())) {
-            Label label = new Label(MainFrame.getInstance().getProject().toString(), AiProject.getInstance().getSliceProject().getSliceHash(edge), false);
-            label.setTaintFlow(edge);
-            try {
-                AiProject.getInstance().labelPredictor.label(label);
-            } catch (PredictorException e) {
-                e.printStackTrace();
-            }
-            try {
-                AiProject.getInstance().getRemotePredictor().label(label);
-            } catch (PredictorException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            AiProject.getInstance().setLabelProject(
-                    new PredictRunner<>(AiProject.getInstance().getSliceProject())
-                            .setPredictor(AiProject.getInstance().labelPredictor)
-                            .run(new Monitor() {
-                                @Override
-                                public void init(String stageName, int totalWork) {
-                                    ;
-                                }
-
-                                @Override
-                                public void process(int idx, int totalWork, Object input, Object output, Exception exception) {
-                                }
-                            })
-            );
-        } catch (ParserException | PredictorRunnerException | NotFoundException | SliceRunnerException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setTrueLabel() {

@@ -18,7 +18,7 @@ BRANCH_PATTERN = '|'.join(tokenazables)
 arbitraryThings = ['\.\.\.', '_', '#', ';', ',', '->', '&#\d+', '\d+:']
 SPACE_THINGS = '|'.join(arbitraryThings)
 
-REMOVE_THINGS = ['BenchmarkTest\d+', 'testcode', 'moresafe', 'safe', 'Safe', 'good', 'bad']
+REMOVE_THINGS = ['BenchmarkTest\d+', 'testcode', 'moresafe', 'safe', 'Safe', 'good', 'bad','goodG2BSink']
 
 VAR_PATTERN = re.compile(r'v\d+')
 
@@ -101,15 +101,13 @@ class Preprocessor:
         all_matches = STRING_PATTERN.findall(value)  # replace each unique string with STRING #
         text = value
         for s in set(all_matches):
-
-            if len(s) > 2 + 1 + 1 + 1:
-                if s.startswith("http"):
-                    text = text.replace(s, "SHTTP_URL")
-                else:
-                    if not s in self.str_list:
-                        self.str_list.append(s)
-                    id = self.str_list.index(s)
-                    text = text.replace(s, 'STRING ' + "S" + str(id) + ' ')
+            if s.startswith("http") and len(s)>7:
+                text = text.replace(s, "SHTTPURL")
+            elif len(s) > 2 + 1 + 1 + 1:
+                if not s in self.str_list:
+                    self.str_list.append(s)
+                id = self.str_list.index(s)
+                text = text.replace(s, 'STRING ' + "S" + str(id) + ' ')
             else:
                 text = text.replace(s, " " + s[2:-1].lower() + " ")
 
