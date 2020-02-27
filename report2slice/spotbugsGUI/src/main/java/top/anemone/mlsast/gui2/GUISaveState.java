@@ -103,7 +103,7 @@ public class GUISaveState {
 
     private int splitMain;
     private int splitTreeComments;
-    private int splitTop;
+    private int splitRight;
     private int splitSummary;
 
     private File starterDirectoryForLoadBugs;
@@ -245,7 +245,7 @@ public class GUISaveState {
 
         newInstance.splitMain = p.getInt(SPLIT_MAIN, 400);
         newInstance.splitSummary = p.getInt(SPLIT_SUMMARY_NEW, 400);
-        newInstance.splitTop = p.getInt(SPLIT_TOP, -1);
+        newInstance.splitRight = p.getInt(SPLIT_TOP, -1);
         newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
         newInstance.packagePrefixSegments = p.getInt(PACKAGE_PREFIX_SEGEMENTS, 3);
 
@@ -421,7 +421,7 @@ public class GUISaveState {
 
         p.putInt(SPLIT_MAIN, splitMain);
         p.putDouble(SPLIT_SUMMARY_NEW, splitSummary);
-        p.putInt(SPLIT_TOP, splitTop);
+        p.putInt(SPLIT_TOP, splitRight);
         p.putInt(SPLIT_TREE_COMMENTS, splitTreeComments);
         p.putInt(PACKAGE_PREFIX_SEGEMENTS, packagePrefixSegments);
 
@@ -516,16 +516,16 @@ public class GUISaveState {
     /**
      * @return Returns the location of the top divider.
      */
-    public int getSplitTop() {
-        return splitTop;
+    public int getSplitRight() {
+        return splitRight;
     }
 
     /**
-     * @param splitTop
+     * @param splitRight
      *            The location of the top divider to set.
      */
-    public void setSplitTop(int splitTop) {
-        this.splitTop = splitTop;
+    public void setSplitRight(int splitRight) {
+        this.splitRight = splitRight;
     }
 
     public void setPluginsEnabled(List<String> enabledPlugins, List<String> disabledPlugins) {

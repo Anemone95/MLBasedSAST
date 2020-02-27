@@ -19,8 +19,7 @@
 
 package top.anemone.mlsast.gui2;
 
-import java.awt.Component;
-import java.awt.Cursor;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import com.h3xstream.findsecbugs.injection.taintdata.Edge;
 import com.h3xstream.findsecbugs.injection.taintdata.LocationNodeAnnotation;
@@ -593,7 +580,7 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameComponentFactory.statusBar();
     }
 
-    JSplitPane summaryTab() {
+    JScrollPane[] summaryTab() {
         return mainFrameComponentFactory.summaryTab();
     }
 
@@ -735,6 +722,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 remoteCleanAtLevel = getLabelCleanAtLevel(bug, remoteCleanAtLevel, bugAnnotation, remotePredictProject);
 
                 summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bugAnnotation, bug, remoteCleanAtLevel, labelCleanAtLevel));
+
             }
 
 

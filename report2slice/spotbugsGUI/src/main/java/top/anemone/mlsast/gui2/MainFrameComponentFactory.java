@@ -74,13 +74,17 @@ public class MainFrameComponentFactory implements Serializable {
         return statusBar;
     }
 
-    JSplitPane summaryTab() {
-        mainFrame.setSummaryTopPanel(new JPanel());
+    JScrollPane[] summaryTab() {
+        JPanel pan=new JPanel();
+        pan.setOpaque(false);
+        mainFrame.setSummaryTopPanel(pan);
         mainFrame.getSummaryTopPanel().setLayout(new GridLayout(0, 1));
         mainFrame.getSummaryTopPanel().setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
         //        mainFrame.getSummaryTopPanel().setMinimumSize(new Dimension(fontSize * 50, fontSize * 5));
 
         JPanel summaryTopOuter = new JPanel(new BorderLayout());
+        summaryTopOuter.setOpaque(true);
+        summaryTopOuter.setBackground(Color.WHITE);
         summaryTopOuter.add(mainFrame.getSummaryTopPanel(), BorderLayout.NORTH);
 
         mainFrame.getSummaryHtmlArea().setContentType("text/html");
@@ -92,23 +96,26 @@ public class MainFrameComponentFactory implements Serializable {
         JScrollPane summaryScrollPane = new JScrollPane(summaryTopOuter);
         summaryScrollPane.getVerticalScrollBar().setUnitIncrement((int) Driver.getFontSize());
 
-        JSplitPane splitP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, summaryScrollPane,
-                mainFrame.getSummaryHtmlScrollPane());
-        splitP.setContinuousLayout(true);
-        splitP.setDividerLocation(GUISaveState.getInstance().getSplitSummary());
-        splitP.setOneTouchExpandable(true);
-        splitP.setUI(new BasicSplitPaneUI() {
-            @Override
-            public BasicSplitPaneDivider createDefaultDivider() {
-                return new BasicSplitPaneDivider(this) {
-                    @Override
-                    public void setBorder(Border b) {
-                    }
-                };
-            }
-        });
-        splitP.setBorder(null);
-        return splitP;
+        JScrollPane[] components=new JScrollPane[2];
+        components[0]=summaryScrollPane;
+        components[1]=mainFrame.getSummaryHtmlScrollPane();
+//        JSplitPane splitP = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, summaryScrollPane,
+//                mainFrame.getSummaryHtmlScrollPane());
+//        splitP.setContinuousLayout(true);
+//        splitP.setDividerLocation(GUISaveState.getInstance().getSplitSummary());
+//        splitP.setOneTouchExpandable(true);
+//        splitP.setUI(new BasicSplitPaneUI() {
+//            @Override
+//            public BasicSplitPaneDivider createDefaultDivider() {
+//                return new BasicSplitPaneDivider(this) {
+//                    @Override
+//                    public void setBorder(Border b) {
+//                    }
+//                };
+//            }
+//        });
+//        splitP.setBorder(null);
+        return components;
     }
 
     private void setStyleSheets() {

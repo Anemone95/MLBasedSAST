@@ -24,12 +24,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -49,9 +44,9 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     JPanel topLeftSPane;
 
-    JSplitPane topSPane;
+    JSplitPane rightPane;
 
-    JSplitPane summarySPane;
+    JSplitPane subRightPane;
 
     JSplitPane mainSPane;
 
@@ -108,18 +103,30 @@ public class SplitLayout implements FindBugsLayoutManager {
         sourcePanel.add(sourceTitlePanel, BorderLayout.NORTH);
         sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
         sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
-        topSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeftSPane, sourcePanel);
-        topSPane.setOneTouchExpandable(true);
-        topSPane.setContinuousLayout(true);
-        topSPane.setDividerLocation(GUISaveState.getInstance().getSplitTop());
-        removeSplitPaneBorders(topSPane);
 
-        summarySPane = frame.summaryTab();
-        mainSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSPane, summarySPane);
+        JScrollPane[] summaryTabs = frame.summaryTab();
+
+        JScrollPane vulnDetailPane= summaryTabs[0];
+        JScrollPane vulnTypeDescPane= summaryTabs[1];
+
+        subRightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sourcePanel, vulnTypeDescPane);
+        subRightPane.setOneTouchExpandable(true);
+        subRightPane.setContinuousLayout(true);
+        subRightPane.setDividerLocation(GUISaveState.getInstance().getSplitRight());
+        removeSplitPaneBorders(subRightPane,0);
+
+        rightPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, vulnDetailPane, subRightPane);
+        rightPane.setOneTouchExpandable(true);
+        rightPane.setContinuousLayout(true);
+        rightPane.setDividerLocation(GUISaveState.getInstance().getSplitRight());
+        removeSplitPaneBorders(rightPane,0);
+
+
+        mainSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeftSPane, rightPane);
         mainSPane.setOneTouchExpandable(true);
         mainSPane.setContinuousLayout(true);
         mainSPane.setDividerLocation(GUISaveState.getInstance().getSplitMain());
-        removeSplitPaneBorders(mainSPane);
+        removeSplitPaneBorders(mainSPane,0);
 
         frame.setLayout(new BorderLayout());
         frame.add(mainSPane, BorderLayout.CENTER);
@@ -127,7 +134,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     }
 
-    private void removeSplitPaneBorders(JSplitPane pane) {
+    private void removeSplitPaneBorders(JSplitPane pane, int rm) {
         pane.setUI(new BasicSplitPaneUI() {
             @Override
             public BasicSplitPaneDivider createDefaultDivider() {
@@ -138,7 +145,7 @@ public class SplitLayout implements FindBugsLayoutManager {
                 };
             }
         });
-        pane.setBorder(new EmptyBorder(3, 3, 3, 3));
+        pane.setBorder(new EmptyBorder(rm, rm, rm, rm));
     }
 
     /*
@@ -158,8 +165,8 @@ public class SplitLayout implements FindBugsLayoutManager {
      */
     @Override
     public void saveState() {
-        GUISaveState.getInstance().setSplitTop(topSPane.getDividerLocation());
-        GUISaveState.getInstance().setSplitSummary(summarySPane.getDividerLocation());
+        GUISaveState.getInstance().setSplitRight(rightPane.getDividerLocation());
+        GUISaveState.getInstance().setSplitSummary(subRightPane.getDividerLocation());
         GUISaveState.getInstance().setSplitMain(mainSPane.getDividerLocation());
     }
 
