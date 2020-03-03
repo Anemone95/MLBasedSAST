@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -158,15 +159,17 @@ public class MainFrameComponentFactory implements Serializable {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         JPanel thePanel = new JPanel();
+
+        thePanel.setBorder(new EmptyBorder(0, 0, 4, 0));
         thePanel.setLayout(gridbag);
         mainFrame.getFindButton().setToolTipText("Find first occurrence");
         mainFrame.getFindNextButton().setToolTipText("Find next occurrence");
         mainFrame.getFindPreviousButton().setToolTipText("Find previous occurrence");
         c.gridx = 0;
         c.gridy = 0;
-        c.weightx = 1.0;
+        c.weightx = 1;
         c.insets = new Insets(0, 5, 0, 5);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.BOTH;
         gridbag.setConstraints(mainFrame.getSourceSearchTextField(), c);
         thePanel.add(mainFrame.getSourceSearchTextField());
         // add the buttons

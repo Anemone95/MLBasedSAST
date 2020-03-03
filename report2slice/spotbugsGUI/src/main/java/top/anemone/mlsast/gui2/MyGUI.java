@@ -80,9 +80,7 @@ public class MyGUI extends LaunchGUI {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);
             if (value instanceof FontUIResource) {
-                System.out.println("Before: " + key + "->" + value);
                 UIManager.put(key, fontRes);
-                System.out.println("After: " + key + "->" + UIManager.get(key));
             }
         }
     }

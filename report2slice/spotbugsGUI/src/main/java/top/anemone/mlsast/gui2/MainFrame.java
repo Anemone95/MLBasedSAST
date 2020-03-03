@@ -64,7 +64,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private static final int SEARCH_TEXT_FIELD_SIZE = 32;
 
-    public static final String TITLE_START_TXT = "SpotBugs";
+    public static final String TITLE_START_TXT = "MSCA";
 
     private final static String WINDOW_MODIFIED = "windowModified";
 
@@ -319,7 +319,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
         mainFrameTree.setWaitStatusLabelText(msg); // should not be the URL
         if (msg.length() == 0) {
-            msg = "https://github.com/spotbugs";
+            msg = "https://github.com/Anemone95/MLBasedSAST/";
         }
         statusBarLabel.setText(msg);
     }

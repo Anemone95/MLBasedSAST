@@ -48,6 +48,8 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
+import org.jb2011.lnf.beautyeye.widget.border.BEDashedBorder;
+import org.jb2011.lnf.beautyeye.widget.border.BEDashedRoundRecBorder;
 import org.slf4j.LoggerFactory;
 import top.anemone.mlsast.core.Monitor;
 import top.anemone.mlsast.core.data.VO.Label;
@@ -498,6 +500,8 @@ public class MainFrameTree implements LogSync {
 
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor=GridBagConstraints.EAST;
+        gbc.insets = new Insets(0, 5, 0, 0);
         filterPanel.add(filterButton, gbc);
 
         filterPanel.setToolTipText("Only show classes containing the word(s) you specify");
@@ -514,7 +518,7 @@ public class MainFrameTree implements LogSync {
         gbc.weightx = 1;
         sortablePanel.add(getTableheader(), gbc);
 
-        getTableheader().setBorder(new LineBorder(Color.BLACK));
+        getTableheader().setBorder(new BEDashedRoundRecBorder(Color.BLACK));
 
         JPanel topPanel = makeNavigationPanel("Class name filter:", filterPanel, sortablePanel, treePanel);
         cardPanel = new JPanel(new CardLayout());

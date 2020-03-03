@@ -32,6 +32,7 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import edu.umd.cs.findbugs.L10N;
+import org.jb2011.lnf.beautyeye.widget.border.BERoundBorder;
 
 /**
  * @author pugh
@@ -87,6 +88,9 @@ public class SplitLayout implements FindBugsLayoutManager {
         JPanel sourceTitlePanel = new JPanel();
         sourceTitlePanel.setLayout(new BorderLayout());
 
+        JPanel outerSourcePanel = new JPanel();
+        outerSourcePanel.setLayout(new BorderLayout());
+        outerSourcePanel.setBorder(new EmptyBorder(3, 3, 1, 3));
         JPanel sourcePanel = new JPanel();
         BorderLayout sourcePanelLayout = new BorderLayout();
         sourcePanelLayout.setHgap(3);
@@ -99,10 +103,11 @@ public class SplitLayout implements FindBugsLayoutManager {
         sourceTitlePanel.add(viewSource, BorderLayout.EAST);
         sourceTitlePanel.add(sourceTitle, BorderLayout.CENTER);
 
-        sourcePanel.setBorder(new LineBorder(Color.GRAY));
+        sourcePanel.setBorder(new SourceBorder(Color.GRAY,10));
         sourcePanel.add(sourceTitlePanel, BorderLayout.NORTH);
         sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
         sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
+        outerSourcePanel.add(sourcePanel);
 
         JScrollPane[] summaryTabs = frame.summaryTab();
 
@@ -115,7 +120,7 @@ public class SplitLayout implements FindBugsLayoutManager {
         subPane1.setDividerLocation(GUISaveState.getInstance().getSplitRight());
         removeSplitPaneBorders(subPane1,0);
 
-        subPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sourcePanel, vulnTypeDescPane);
+        subPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, outerSourcePanel, vulnTypeDescPane);
         subPane2.setOneTouchExpandable(true);
         subPane2.setContinuousLayout(true);
         subPane2.setDividerLocation(GUISaveState.getInstance().getSplitRight());
