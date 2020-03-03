@@ -17,18 +17,22 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>joana</groupId>-->
-<!--            <artifactId>joana.wala.core</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>joana</groupId>-->
+        <!--            <artifactId>joana.wala.core</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.weblookandfeel</groupId>
-            <artifactId>weblaf-ui</artifactId>
+            <groupId>org.jb2011.lnf</groupId>
+            <artifactId>beautyeye</artifactId>
+            <version>0.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/beautyeye_lnf.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>

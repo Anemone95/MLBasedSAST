@@ -215,17 +215,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/com/bea/xml/jsr173-ri/1.0/jsr173-ri-1.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.fifesoft:rsyntaxtextarea:2.6.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/fifesoft/rsyntaxtextarea/2.6.1/rsyntaxtextarea-2.6.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/fifesoft/rsyntaxtextarea/2.6.1/rsyntaxtextarea-2.6.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/fifesoft/rsyntaxtextarea/2.6.1/rsyntaxtextarea-2.6.1-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: com.github.javaparser:javaparser-core:3.0.0-RC.1">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.0.0-RC.1/javaparser-core-3.0.0-RC.1.jar!/" />
@@ -369,28 +358,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/com/ibm/wala/com.ibm.wala.util/1.5.4/com.ibm.wala.util-1.5.4-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: com.jhlabs:filters:2.0.235">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/jhlabs/filters/2.0.235/filters-2.0.235.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/jhlabs/filters/2.0.235/filters-2.0.235-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/jhlabs/filters/2.0.235/filters-2.0.235-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.mortennobel:java-image-scaling:0.8.6">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/mortennobel/java-image-scaling/0.8.6/java-image-scaling-0.8.6.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/mortennobel/java-image-scaling/0.8.6/java-image-scaling-0.8.6-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/mortennobel/java-image-scaling/0.8.6/java-image-scaling-0.8.6-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: com.squareup.okhttp3:okhttp:4.2.2">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/4.2.2/okhttp-4.2.2.jar!/" />
@@ -411,50 +378,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okio/okio/2.2.2/okio-2.2.2-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.thoughtworks.xstream:xstream:1.4.9">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/thoughtworks/xstream/xstream/1.4.9/xstream-1.4.9.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/thoughtworks/xstream/xstream/1.4.9/xstream-1.4.9-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/thoughtworks/xstream/xstream/1.4.9/xstream-1.4.9-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.weblookandfeel:svg-salamander:1.1.2.2">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/svg-salamander/1.1.2.2/svg-salamander-1.1.2.2.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/svg-salamander/1.1.2.2/svg-salamander-1.1.2.2-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/svg-salamander/1.1.2.2/svg-salamander-1.1.2.2-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.weblookandfeel:weblaf-core:1.2.12">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/weblaf-core/1.2.12/weblaf-core-1.2.12.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/weblaf-core/1.2.12/weblaf-core-1.2.12-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/weblaf-core/1.2.12/weblaf-core-1.2.12-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.weblookandfeel:weblaf-ui:1.2.12">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/weblaf-ui/1.2.12/weblaf-ui-1.2.12.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/weblaf-ui/1.2.12/weblaf-ui-1.2.12-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/weblookandfeel/weblaf-ui/1.2.12/weblaf-ui-1.2.12-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: commons-codec:commons-codec:1.13">
@@ -532,17 +455,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.17/log4j-1.2.17-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: net.htmlparser.jericho:jericho-html:3.3">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/htmlparser/jericho/jericho-html/3.3/jericho-html-3.3.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/net/htmlparser/jericho/jericho-html/3.3/jericho-html-3.3-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/htmlparser/jericho/jericho-html/3.3/jericho-html-3.3-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: net.java.dev.stax-utils:stax-utils:20070216">
