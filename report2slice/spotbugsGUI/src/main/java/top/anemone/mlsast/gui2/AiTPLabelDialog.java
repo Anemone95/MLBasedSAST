@@ -78,11 +78,15 @@ public class AiTPLabelDialog extends JDialog {
             choices[i]="Taint tree "+(i+1);
         }
 
+        JPanel choosePannel=new JPanel();
+        choosePannel.setSize(700, 20);
         JComboBox<String> jcombo = new JComboBox<>(choices);
-        jcombo.setSize(700, 20);
+        jcombo.setPreferredSize(new Dimension(480,20));
+        jcombo.setMaximumSize(new Dimension(480,20));
+        jcombo.setMinimumSize(new Dimension(480,20));
         jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelPanel.add(jcombo);
-
+        choosePannel.add(jcombo);
+        labelPanel.add(choosePannel);
 
         JLabel nonce = new JLabel("<html><br/></html>");
         nonce.setSize(700, 5);

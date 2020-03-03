@@ -114,7 +114,7 @@ java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.
 ### 切片后预测
 
 ```bash
-java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml --server http://127.0.0.1:8888/ # 指定预测用服务器，默认预测结果保存到./predict，可用--output指定输出目录
+java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar predict -f java-sec-code-1.0.0-spotbugs.xml --server http://127.0.0.1:8888/ # 指定预测用服务器，默认预测结果保存到./predict，可用--output指定输出目录
 ```
 
 ## console.py——学习控制台
@@ -126,3 +126,34 @@ cd ml
 python console.py train --slice-dir=data/slice/benchmark1.2 --label-dir=data/label/benchmark1.2 --epochs=20 # 切片数据文件夹，标记数据文件夹，最大迭代次数
 ```
 
+
+
+# 实验
+
+## 与Spotbugs的对比实验步骤
+
+1. 使用 GUI 生成OWASP benchmark v1.1的扫描报告（假设保存为benchmark1.1）
+
+2. 使用 cli 进行切片，这里将切片结果保存到slice文件夹下
+
+   ```bash
+   java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f benchmark1.1.xml -o  ./slice
+   ```
+
+3. 使用ml中的工具脚本进行数据拆分，产生标记数据，对于90%数据作为训练数据，训练集，测试集保存为ml/data/train.txt，ml/data/test.txt，ml/data/train.txt
+
+   ```bash
+   python ml/utils/owasp_experiment.py
+   ```
+
+4. ctrl.py 训练
+
+5. 修改控制台训练模型
+
+6. 用 cli 对测试集合进行预测
+
+   ```
+   java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar experiment -f benchmark1.1.xml -t ml/data/test.txt -o ml/data/redict.json
+   ```
+
+7. 

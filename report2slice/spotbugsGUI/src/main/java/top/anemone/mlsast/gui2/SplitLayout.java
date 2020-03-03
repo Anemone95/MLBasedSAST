@@ -44,11 +44,11 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     JPanel topLeftSPane;
 
-    JSplitPane rightPane;
+    JSplitPane subPane1;
 
-    JSplitPane subRightPane;
+    JSplitPane subPane2;
 
-    JSplitPane mainSPane;
+    JSplitPane outerPane;
 
     JButton viewSource = new JButton("View in browser");
 
@@ -109,27 +109,26 @@ public class SplitLayout implements FindBugsLayoutManager {
         JScrollPane vulnDetailPane= summaryTabs[0];
         JScrollPane vulnTypeDescPane= summaryTabs[1];
 
-        subRightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sourcePanel, vulnTypeDescPane);
-        subRightPane.setOneTouchExpandable(true);
-        subRightPane.setContinuousLayout(true);
-        subRightPane.setDividerLocation(GUISaveState.getInstance().getSplitRight());
-        removeSplitPaneBorders(subRightPane,0);
+        subPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topLeftSPane, vulnDetailPane);
+        subPane1.setOneTouchExpandable(true);
+        subPane1.setContinuousLayout(true);
+        subPane1.setDividerLocation(GUISaveState.getInstance().getSplitRight());
+        removeSplitPaneBorders(subPane1,0);
 
-        rightPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, vulnDetailPane, subRightPane);
-        rightPane.setOneTouchExpandable(true);
-        rightPane.setContinuousLayout(true);
-        rightPane.setDividerLocation(GUISaveState.getInstance().getSplitRight());
-        removeSplitPaneBorders(rightPane,0);
+        subPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sourcePanel, vulnTypeDescPane);
+        subPane2.setOneTouchExpandable(true);
+        subPane2.setContinuousLayout(true);
+        subPane2.setDividerLocation(GUISaveState.getInstance().getSplitRight());
+        removeSplitPaneBorders(subPane2,0);
 
-
-        mainSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeftSPane, rightPane);
-        mainSPane.setOneTouchExpandable(true);
-        mainSPane.setContinuousLayout(true);
-        mainSPane.setDividerLocation(GUISaveState.getInstance().getSplitMain());
-        removeSplitPaneBorders(mainSPane,0);
+        outerPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, subPane1, subPane2);
+        outerPane.setOneTouchExpandable(true);
+        outerPane.setContinuousLayout(true);
+        outerPane.setDividerLocation(GUISaveState.getInstance().getSplitMain());
+        removeSplitPaneBorders(outerPane,0);
 
         frame.setLayout(new BorderLayout());
-        frame.add(mainSPane, BorderLayout.CENTER);
+        frame.add(outerPane, BorderLayout.CENTER);
         frame.add(frame.statusBar(), BorderLayout.SOUTH);
 
     }
@@ -165,9 +164,9 @@ public class SplitLayout implements FindBugsLayoutManager {
      */
     @Override
     public void saveState() {
-        GUISaveState.getInstance().setSplitRight(rightPane.getDividerLocation());
-        GUISaveState.getInstance().setSplitSummary(subRightPane.getDividerLocation());
-        GUISaveState.getInstance().setSplitMain(mainSPane.getDividerLocation());
+        GUISaveState.getInstance().setSplitRight(subPane1.getDividerLocation());
+        GUISaveState.getInstance().setSplitSummary(subPane2.getDividerLocation());
+        GUISaveState.getInstance().setSplitMain(outerPane.getDividerLocation());
     }
 
     /*

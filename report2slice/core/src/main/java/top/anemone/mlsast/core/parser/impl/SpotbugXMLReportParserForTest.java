@@ -17,16 +17,14 @@ import top.anemone.mlsast.core.parser.ReportParser;
 import top.anemone.mlsast.core.utils.BCELParser;
 import top.anemone.mlsast.core.utils.JarUtil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
+public class SpotbugXMLReportParserForTest implements ReportParser<BugInstance> {
     private static File findsecbugsPluginFile = new File(JarUtil.getPath() + "/contrib/findsecbugs-plugin.jar");
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugXMLReportParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpotbugXMLReportParserForTest.class);
     // TODO 目前只考虑cmdi，URLRedirect，SSRF，XSS和SQLi (实验需要，增加LDAPi和XPATHi)
     public static List<String> caredVulns = Arrays.asList(
             // 命令注入
@@ -57,13 +55,15 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
 //            "PATH_TRAVERSAL_IN",
 //            "PATH_TRAVERSAL_OUT"
     );
+    private final File testFile;
 
     private File xmlReport;
     private List<File> appJars;
 
-    public SpotbugXMLReportParser(File report, List<File> appJars) {
+    public SpotbugXMLReportParserForTest(File report, List<File> appJars, File testFile) {
         this.xmlReport = report;
         this.appJars = appJars;
+        this.testFile = testFile;
     }
 
 
@@ -71,11 +71,22 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
      * @param bugCollection 过滤使用污点传播模型，并且未被修复，并且有source点的问题，
      * @return
      */
-    public static List<BugInstance> secBugFilter(BugCollection bugCollection) {
-        Collection<BugInstance> c = bugCollection.getCollection();
+    public List<BugInstance> secBugFilter(BugCollection bugCollection) throws IOException {
+        InputStreamReader read = new InputStreamReader(
+                new FileInputStream(this.testFile));// 考虑到编码格式
+        BufferedReader bufferedReader = new BufferedReader(read);
+        Set<String> testcase=new HashSet<>();
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            String[] classAndLabel=lineTxt.split(",");
+            testcase.add(classAndLabel[0]);
+        }
+        bufferedReader.close();
+        read.close();
 
+        Collection<BugInstance> c = bugCollection.getCollection();
         List<BugInstance> bugInstances = c.stream()
-                .filter(e -> caredVulns.contains(e.getType()) && (!e.isDead()) && e.getPriority() != Priorities.LOW_PRIORITY ) //过滤问题类型，优先级超低问题和未被修复的问题
+                .filter(e -> caredVulns.contains(e.getType()) && (!e.isDead()) && e.getPriority() != Priorities.LOW_PRIORITY) //过滤问题类型，优先级超低问题和未被修复的问题
                 .filter(e -> {
                     // 过滤掉没有source点的问题
                     for (BugAnnotation annotation : e.getAnnotations()) {
@@ -84,6 +95,11 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
                         }
                     }
                     return true;
+                })
+                .filter(e->{
+                    String[] classNames=((ClassAnnotation)e.getAnnotations().get(0)).getClassName().split("\\.");
+                    String className=classNames[classNames.length-1];
+                    return testcase.contains(className);
                 })
                 .collect(Collectors.toList());
         return bugInstances;
@@ -118,9 +134,9 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
         SortedBugCollection sortedBugCollection;
         try {
             sortedBugCollection = this.loadBugs(this.xmlReport);
-        } catch (IOException  e) {
+        } catch (IOException e) {
             throw new NotFoundException(this.xmlReport, System.getProperty("user.dir"));
-        } catch (DocumentException e){
+        } catch (DocumentException e) {
             e.printStackTrace();
             throw new ParserException(e.toString(), e);
         } catch (PluginException e) {
@@ -128,11 +144,15 @@ public class SpotbugXMLReportParser implements ReportParser<BugInstance> {
             throw new ParserException(e.toString(), e);
         }
 //        List<File> libJarsinReport = sortedBugCollection.getProject().getAuxClasspathEntryList().stream().map(File::new).filter(File::exists).collect(Collectors.toList());
-        return getBugInstanceTaintProject(monitor, appJars, sortedBugCollection);
+        try {
+            return getBugInstanceTaintProject(monitor, appJars, sortedBugCollection);
+        } catch (IOException e) {
+            throw new ParserException(e.toString(), e);
+        }
     }
 
-    public static TaintProject<BugInstance> getBugInstanceTaintProject(Monitor monitor, List<File> appJars, BugCollection bugCollection) throws NotFoundException {
-        List<BugInstance> bugInstances = secBugFilter(bugCollection);
+    public TaintProject<BugInstance> getBugInstanceTaintProject(Monitor monitor, List<File> appJars, BugCollection bugCollection) throws NotFoundException, IOException {
+        List<BugInstance> bugInstances = this.secBugFilter(bugCollection);
         List<String> analysisTargets = bugCollection.getProject().getFileList();
         List<File> appJarsinReport = analysisTargets.stream().map(File::new).filter(File::exists).collect(Collectors.toList());
         // 获取报告中的jar包地址，但是如果分析过程与报告产生过程不在一起，地址会很找不到，这时只能从appJars中获取

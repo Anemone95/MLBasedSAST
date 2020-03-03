@@ -27,11 +27,16 @@
                 <artifactId>findsecbugs-plugin</artifactId>
                 <version>1.11.0-prettytaint-SNAPSHOT</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>joana</groupId>-->
-<!--                <artifactId>joana.wala.core</artifactId>-->
-<!--                <version>1.0</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>joana</groupId>-->
+            <!--                <artifactId>joana.wala.core</artifactId>-->
+            <!--                <version>1.0</version>-->
+            <!--            </dependency>-->
+            <dependency>
+                <groupId>com.weblookandfeel</groupId>
+                <artifactId>weblaf-ui</artifactId>
+                <version>1.2.12</version>
+            </dependency>
 
             <dependency>
                 <groupId>commons-io</groupId>

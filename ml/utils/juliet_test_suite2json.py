@@ -49,6 +49,7 @@ def generate_json(slice_dir: str, label_dir: str):
         data_num += 1
 
     unsafes = list(filter(lambda e: e[1] is False, isSafe.items()))
+    print(len(unsafes))
     for slice_file, _ in random.sample(unsafes, len(safes)):
         label_dict = {"flowHash": hash[slice_file], "isSafe": isSafe[slice_file]}
         label_file_dir = label_dir + "/" + hash[slice_file][:2]

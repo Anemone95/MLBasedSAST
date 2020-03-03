@@ -10,6 +10,7 @@ import top.anemone.mlsast.core.data.VO.Slice;
 import top.anemone.mlsast.core.data.taintTree.TaintFlow;
 import top.anemone.mlsast.core.exception.*;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
+import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParserForTest;
 import top.anemone.mlsast.core.predict.PredictProject;
 import top.anemone.mlsast.core.predict.PredictRunner;
 import top.anemone.mlsast.core.predict.exception.PredictorException;
@@ -45,6 +46,17 @@ public class AiConsole {
         predictParser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8000")
                 .help("Specify prediction remote server");
         predictParser.addArgument("-o", "--output").setDefault("predictIsSafe.json")
+                .help("Specify prediction output file");
+
+        Subparser experimentParser = subparsers.addParser("experiment").defaultHelp(true)
+                .help("Slice and then predictIsSafe whether the bug is true positive");
+        experimentParser.addArgument("-f", "--report-file").required(true)
+                .help("Specify SpotBugs analysis results(.xml)");
+        experimentParser.addArgument("-t", "--test-file")
+                .help("Specify test file to predict");
+        experimentParser.addArgument("-s", "--server").setDefault("http://127.0.0.1:8000")
+                .help("Specify prediction remote server");
+        experimentParser.addArgument("-o", "--output").setDefault("predictIsSafe.json")
                 .help("Specify prediction output file");
 
         Namespace ns = null;
@@ -113,6 +125,18 @@ public class AiConsole {
             }
             PredictProject<BugInstance> predictProject = new PredictRunner<BugInstance>()
                     .setReportParser(new SpotbugXMLReportParser(new File(ns.getString("report_file")), null))
+                    .setSlicer(new JoanaSlicer())
+                    .setPredictor(remotePredictor)
+                    .run(monitor);
+            JsonUtil.dumpToFile(predictProject.getPredictions(), ns.getString("output"));
+        } else if (ns.getString("command").equals("experiment")){
+            BLSTMRemotePredictor remotePredictor=new BLSTMRemotePredictor(ns.getString("server"));
+            if(!remotePredictor.isAlive()){
+                LOGGER.error("Remote predictor not alive");
+                System.exit(1);
+            }
+            PredictProject<BugInstance> predictProject = new PredictRunner<BugInstance>()
+                    .setReportParser(new SpotbugXMLReportParserForTest(new File(ns.getString("report_file")), null, new File(ns.getString("test_file"))))
                     .setSlicer(new JoanaSlicer())
                     .setPredictor(remotePredictor)
                     .run(monitor);

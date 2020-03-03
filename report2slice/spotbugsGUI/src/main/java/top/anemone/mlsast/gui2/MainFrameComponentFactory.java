@@ -83,8 +83,8 @@ public class MainFrameComponentFactory implements Serializable {
         //        mainFrame.getSummaryTopPanel().setMinimumSize(new Dimension(fontSize * 50, fontSize * 5));
 
         JPanel summaryTopOuter = new JPanel(new BorderLayout());
-        summaryTopOuter.setOpaque(true);
-        summaryTopOuter.setBackground(Color.WHITE);
+//        summaryTopOuter.setOpaque(true);
+//        summaryTopOuter.setBackground(Color.WHITE);
         summaryTopOuter.add(mainFrame.getSummaryTopPanel(), BorderLayout.NORTH);
 
         mainFrame.getSummaryHtmlArea().setContentType("text/html");
@@ -362,7 +362,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         @Override
         public void run() {
-            mainFrame.setTitle("SpotBugs");
+            mainFrame.setTitle("MSCA");
             // noinspection ConstantConditions
             if (MainFrame.USE_WINDOWS_LAF && System.getProperty("os.name").toLowerCase().contains("windows")) {
                 try {

@@ -75,6 +75,7 @@ def predict(request):
     if len(find_flow) != 0:
         label = Label.objects.filter(taint_flow=find_flow[0])
         if len(label) != 0:
+            print({"msg": str(label[0].is_safe)})
             return JsonResponse({"msg": str(label[0].is_safe)})
 
     # 无label先上传slice，再根据slice做预测

@@ -45,10 +45,16 @@ public class AiFPLabelDialog extends JDialog {
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelPanel.add(label);
 
+        JPanel choosePannel=new JPanel();
+        choosePannel.setSize(700, 20);
         JComboBox<TaintFlow> jcombo = new JComboBox<TaintFlow>(flowEdges.toArray(new TaintFlow[]{}));
-        jcombo.setSize(700, 20);
+//        jcombo.setSize(1700, 20);
+        jcombo.setPreferredSize(new Dimension(480,20));
+        jcombo.setMaximumSize(new Dimension(480,20));
+        jcombo.setMinimumSize(new Dimension(480,20));
         jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelPanel.add(jcombo);
+        choosePannel.add(jcombo);
+        labelPanel.add(choosePannel);
 
 
         JLabel nonce = new JLabel("<html><br/></html>");
@@ -58,7 +64,7 @@ public class AiFPLabelDialog extends JDialog {
 
         JTextArea sliceText = new JTextArea();
         sliceText.setEditable(false);
-        sliceText.setSize(700,400);
+        sliceText.setSize(700,800);
         JScrollPane sliceScroll=new JScrollPane(sliceText);
         labelPanel.add(sliceScroll);
         TaintFlow edge = (TaintFlow) jcombo.getSelectedItem();

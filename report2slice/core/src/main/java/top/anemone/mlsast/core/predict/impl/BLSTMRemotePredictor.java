@@ -68,7 +68,7 @@ public class BLSTMRemotePredictor implements Predictor {
             throw new PredictorException("Remote return null", null);
         }
         // FIXME 更新模型端将取反取消
-        return !response.getMsg().equals("True");
+        return response.getMsg().equals("True");
     }
 
     @Override

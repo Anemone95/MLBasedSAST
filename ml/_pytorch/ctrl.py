@@ -175,7 +175,7 @@ def train(slice_dir: str,
                 ["accuracy", "safe_recall", "safe_precision", "matrix"])
 
             ret_accuracy, ret_recall, ret_precision, ret_f1 = accuracy, recall, precision, (2 * precision * recall) / (
-                        precision + recall)
+                    precision + recall)
             logging.info("[Epoch: {cur_epoch}/{total_epoch}] Test Acc: {acc:.3},"
                          " Precision: {precision:.3}, Recall: {recall:.3}, F1: {f1:.3}"
                          .format(cur_epoch=epoch, total_epoch=EPOCH, acc=accuracy, precision=precision, recall=recall,
@@ -206,7 +206,8 @@ def load(token_dict: str, saved_model: str, freq_gt: int, embedding_dim: int, hi
 
 
 def test(tokenizer: Tokenizer, model: blstm.BLSTM, slice_dir: str, label_dir: str):
-    dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    # dataset = TextDataset(slice_dir, label_dir, preprocessing.preprocessing)
+    dataset = TextDataset(slice_dir, label_dir, lambda e: Preprocessor(e).preprocess())
 
     loader = DataLoader(dataset,
                         batch_size=100,
@@ -245,7 +246,7 @@ def test(tokenizer: Tokenizer, model: blstm.BLSTM, slice_dir: str, label_dir: st
 
 
 def predict(_tokenizer: Tokenizer, model: blstm.BLSTM, slice: str) -> bool:
-    test_inputs, lengths, _ = _tokenizer.tokenize_labeled_batch([(slice, 0)])
+    test_inputs, lengths, _ = _tokenizer.tokenize_labeled_batch([(Preprocessor(slice).preprocess(), 0)])
 
     if HAS_GPU:
         test_inputs, lengths = test_inputs.cuda(), lengths.cuda()
@@ -260,7 +261,7 @@ def predict(_tokenizer: Tokenizer, model: blstm.BLSTM, slice: str) -> bool:
     predicted2 = output > 0.5  # 谨慎的判断误报，可以减小这个值
     if HAS_GPU:
         predicted2 = predicted2.cpu()
-    return predicted2.item()
+    return predicted2.item()  # 0-False-unsafe, 1-True-safe
 
 
 def get_label_summary(slice_dir, label_dir):
@@ -285,8 +286,8 @@ if __name__ == '__main__':
 
     current_time = time.strftime("%Y-%m-%d-%H-%M", time.localtime())
     model_file = 'model/pytorch-lstm-{}'.format(current_time)
-    if len(sys.argv)>1:
-        train(sys.argv[1],sys.argv[2],
+    if len(sys.argv) > 1:
+        train(sys.argv[1], sys.argv[2],
               embedding_dim=EMBEDDING_DIM,
               hidden_dim=HIDDEN_DIM,
               base_learning_rate=BASE_LEARNING_RATE,
@@ -296,8 +297,8 @@ if __name__ == '__main__':
               word_freq=WORD_FREQ,
               train_precent=0.9, saveto=model_file)
     else:
-        slice=r"G:\slice\mix"
-        label=r"G:\label\mix"
+        slice = r"G:\slice\benchmark1.1"
+        label = r"G:\label\benchmark1.1"
         train(slice,
               label,
               embedding_dim=EMBEDDING_DIM,
@@ -307,7 +308,7 @@ if __name__ == '__main__':
               batch_size=BATCH_SIZE,
               total_epoch=20,
               word_freq=WORD_FREQ,
-              train_precent=0.9, saveto=model_file)
+              train_precent=1, saveto=model_file)
 
     # get_label_summary("data/slice/benchmark1.1", "data/label/benchmark1.1")
 

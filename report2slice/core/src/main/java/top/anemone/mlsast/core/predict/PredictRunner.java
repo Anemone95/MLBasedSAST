@@ -101,7 +101,6 @@ public class PredictRunner<T> {
                         if (bBlowIsSafe){
                             treeIsSafe=true;
                             safeEdges.add(subFlow);
-                            break;
                         }
                     }
                 }
