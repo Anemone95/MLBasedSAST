@@ -362,11 +362,6 @@ public class MainFrameComponentFactory implements Serializable {
 
         @Override
         public void run() {
-            try {
-                org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             mainFrame.setTitle("MSCA");
             // noinspection ConstantConditions
 //            if (MainFrame.USE_WINDOWS_LAF && System.getProperty("os.name").toLowerCase().contains("windows")) {

@@ -56,6 +56,8 @@ import top.anemone.mlsast.core.predict.PredictProject;
  * about everything happens.
  */
 public class MainFrame extends FBFrame implements LogSync {
+
+    public static final int DEFAULT_FONT_SIZE = 12;
     public static final boolean GUI2_DEBUG = SystemProperties.getBoolean("gui2.debug");
 
     public static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
@@ -708,9 +710,9 @@ public class MainFrame extends FBFrame implements LogSync {
             int remoteCleanAtLevel = -1;
             int labelCleanAtLevel = -1;
             for (BugAnnotation bugAnnotation : bug.getAnnotationsForMessage(true)) {
-                PredictProject<BugInstance> labelPredictProject=null;
-                PredictProject<BugInstance> remotePredictProject=null;
-                if (AiProject.getInstance().isLabeled(bug)){
+                PredictProject<BugInstance> labelPredictProject = null;
+                PredictProject<BugInstance> remotePredictProject = null;
+                if (AiProject.getInstance().isLabeled(bug)) {
                     labelPredictProject = AiProject.getInstance().getLabelProject();
                 }
                 // @Anemone, 打印有清洁函数的污点传播树
@@ -746,26 +748,26 @@ public class MainFrame extends FBFrame implements LogSync {
         if (labelPredictProject != null && labelPredictProject.getProofs(bug) != null && bugAnnotation instanceof BugAnnotationWithSourceLines) {
             if (bugAnnotation instanceof MethodNodeAnnotation) {
                 MethodNodeAnnotation methodNodeAnnotation = (MethodNodeAnnotation) bugAnnotation;
-                if (labelCleanAtLevel==-1){
-                    List<TaintFlow> taintFlows=labelPredictProject.getProofs(bug).stream().filter(e->
+                if (labelCleanAtLevel == -1) {
+                    List<TaintFlow> taintFlows = labelPredictProject.getProofs(bug).stream().filter(e ->
                             e.entry.getClazz().equals(methodNodeAnnotation.getClassName()) &&
                                     e.entry.getMethod().equals(methodNodeAnnotation.getMethodName()) &&
                                     e.entry.getSig().equals(methodNodeAnnotation.getMethodSignature())).collect(Collectors.toList());
-                    if(!taintFlows.isEmpty()){
-                        labelCleanAtLevel=methodNodeAnnotation.depth;
+                    if (!taintFlows.isEmpty()) {
+                        labelCleanAtLevel = methodNodeAnnotation.depth;
                     }
                 } else {
                     // 上一级函数不被污染
-                    if (labelCleanAtLevel>=0 && methodNodeAnnotation.depth<=labelCleanAtLevel){
-                        labelCleanAtLevel=-1;
+                    if (labelCleanAtLevel >= 0 && methodNodeAnnotation.depth <= labelCleanAtLevel) {
+                        labelCleanAtLevel = -1;
                     }
                 }
             }
             // 上一级return不被污染
-            if(bugAnnotation instanceof LocationNodeAnnotation){
+            if (bugAnnotation instanceof LocationNodeAnnotation) {
                 LocationNodeAnnotation locationNodeAnnotation = (LocationNodeAnnotation) bugAnnotation;
-                if (labelCleanAtLevel>=0 && locationNodeAnnotation.depth<=labelCleanAtLevel){
-                    labelCleanAtLevel=-1;
+                if (labelCleanAtLevel >= 0 && locationNodeAnnotation.depth <= labelCleanAtLevel) {
+                    labelCleanAtLevel = -1;
                 }
             }
         }

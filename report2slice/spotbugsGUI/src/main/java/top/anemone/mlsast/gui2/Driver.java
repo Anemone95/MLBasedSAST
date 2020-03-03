@@ -40,114 +40,84 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
 public class Driver {
     private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
 
-    private static GUI2CommandLine commandLine = new GUI2CommandLine();
+    public static GUI2CommandLine commandLine = new GUI2CommandLine();
 
     private static SplashFrame splash;
 
     public static void main(String[] args) throws Exception {
-        SwingUtilities.invokeLater (new Runnable ()
-        {
-            @Override
-            public void run ()
-            {
-                // Install WebLaF as application LaF
-//                WebLookAndFeel.install();
+        try {
 
-                // You can also specify preferred skin right-away
-                // WebLookAndFeel.install ( WebDarkSkin.class );
+            String name = "SpotBugs GUI";
+            if (JavaWebStart.isRunningViaJavaWebstart()) {
+                name = "SpotBugs webstart GUI";
+            }
+            Version.registerApplication(name, Version.VERSION_STRING);
 
-                // You can also do that in one of the old-fashioned ways
-                // UIManager.setLookAndFeel ( new WebLookAndFeel () );
-                // UIManager.setLookAndFeel ( "com.alee.laf.WebLookAndFeel" );
-                // UIManager.setLookAndFeel ( WebLookAndFeel.class.getCanonicalName () );
+            if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SpotBugs");
+                Debug.println("Mac OS detected");
+            }
+            splash = new SplashFrame();
+            splash.setVisible(true);
 
-                // You can also configure other WebLaF managers as you like now
-                // StyleManager
-                // SettingsManager
-                // LanguageManager
-                // ...
+            int numParsed = commandLine.parse(args, 0, 1, USAGE);
 
-                // Initialize your application once you're done setting everything up
-                // JFrame frame = ...
-
-                // You can also use Web* components to get access to some extended WebLaF features
-                // WebFrame frame = ...
-
-                try {
-
-                    String name = "SpotBugs GUI";
-                    if (JavaWebStart.isRunningViaJavaWebstart()) {
-                        name = "SpotBugs webstart GUI";
-                    }
-                    Version.registerApplication(name, Version.VERSION_STRING);
-
-                    if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
-                        System.setProperty("apple.laf.useScreenMenuBar", "true");
-                        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SpotBugs");
-                        Debug.println("Mac OS detected");
-                    }
-                    splash = new SplashFrame();
-                    splash.setVisible(true);
-
-                    int numParsed = commandLine.parse(args, 0, 1, USAGE);
-
-                    //
-                    // See if an argument filename was specified after the parsed
-                    // options/switches.
-                    //
-                    if (numParsed < args.length) {
-                        String arg = args[numParsed];
-                        String argLowerCase = arg.toLowerCase(Locale.ENGLISH);
-                        if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
-                            // Project file specified
-                            commandLine.loadProject(arg);
-                        } else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".xml.gz") || argLowerCase.endsWith(".fba")) {
-                            // Saved analysis results specified
-                            commandLine.setSaveFile(new File(arg));
-                        } else {
-                            System.out.println("Unknown argument: " + arg);
-                            commandLine.printUsage(System.out);
-                            System.exit(1);
-                        }
-                    }
-
-                    try {
-                        GUISaveState.loadInstance();
-                    } catch (RuntimeException e) {
-                        GUISaveState.clear();
-                        e.printStackTrace();
-                    }
-
-                    GUISaveState guiSavedPreferences = GUISaveState.getInstance();
-                    if (commandLine.isFontSizeSpecified()) {
-                        guiSavedPreferences.setFontSize(commandLine.getFontSize());
-                    }
-
-                    // System.setProperty("findbugs.home",".."+File.separator+"findbugs");
-
-                    enablePlugins(guiSavedPreferences.getEnabledPlugins(), true);
-                    enablePlugins(guiSavedPreferences.getDisabledPlugins(), false);
-
-                    // The bug with serializable idiom detection has been fixed on the
-                    // findbugs end.
-                    // DetectorFactory
-                    // serializableIdiomDetector=DetectorFactoryCollection.instance().getFactory("SerializableIdiom");
-                    // System.out.println(serializableIdiomDetector.getFullName());
-                    // UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
-
-                    FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
-                    MainFrame.makeInstance(factory);
-
-
-                    splash.setVisible(false);
-                    splash.dispose();
-                } catch (Throwable t) {
-                    JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during SpotBugs startup", JOptionPane.ERROR_MESSAGE);
-                    t.printStackTrace(System.err);
+            //
+            // See if an argument filename was specified after the parsed
+            // options/switches.
+            //
+            if (numParsed < args.length) {
+                String arg = args[numParsed];
+                String argLowerCase = arg.toLowerCase(Locale.ENGLISH);
+                if (argLowerCase.endsWith(".fbp") || argLowerCase.endsWith(".fb")) {
+                    // Project file specified
+                    commandLine.loadProject(arg);
+                } else if (argLowerCase.endsWith(".xml") || argLowerCase.endsWith(".xml.gz") || argLowerCase.endsWith(".fba")) {
+                    // Saved analysis results specified
+                    commandLine.setSaveFile(new File(arg));
+                } else {
+                    System.out.println("Unknown argument: " + arg);
+                    commandLine.printUsage(System.out);
                     System.exit(1);
                 }
             }
-        } );
+
+            try {
+                GUISaveState.loadInstance();
+            } catch (RuntimeException e) {
+                GUISaveState.clear();
+                e.printStackTrace();
+            }
+
+            GUISaveState guiSavedPreferences = GUISaveState.getInstance();
+            if (commandLine.isFontSizeSpecified()) {
+                guiSavedPreferences.setFontSize(commandLine.getFontSize());
+            }
+
+            // System.setProperty("findbugs.home",".."+File.separator+"findbugs");
+
+            enablePlugins(guiSavedPreferences.getEnabledPlugins(), true);
+            enablePlugins(guiSavedPreferences.getDisabledPlugins(), false);
+
+            // The bug with serializable idiom detection has been fixed on the
+            // findbugs end.
+            // DetectorFactory
+            // serializableIdiomDetector=DetectorFactoryCollection.instance().getFactory("SerializableIdiom");
+            // System.out.println(serializableIdiomDetector.getFullName());
+            // UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
+
+            FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+            MainFrame.makeInstance(factory);
+
+
+            splash.setVisible(false);
+            splash.dispose();
+        } catch (Throwable t) {
+            JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during SpotBugs startup", JOptionPane.ERROR_MESSAGE);
+            t.printStackTrace(System.err);
+            System.exit(1);
+        }
     }
 
     private static void enablePlugins(Iterable<String> plugins, boolean enabled) {

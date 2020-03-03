@@ -161,7 +161,15 @@ public class GUISaveState {
 
         newInstance.tabSize = p.getInt(TAB_SIZE, 4);
 
-        newInstance.fontSize = p.getFloat(FONT_SIZE, 12.0f);
+        newInstance.fontSize = p.getFloat(FONT_SIZE, MainFrame.DEFAULT_FONT_SIZE);
+        if (newInstance.fontSize==0){
+            newInstance.fontSize = MainFrame.DEFAULT_FONT_SIZE;
+        }
+        try {
+            Driver.commandLine.handleOptionWithArgument("-f", Float.toString(newInstance.fontSize));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         newInstance.starterDirectoryForLoadBugs = new File(p.get(GUISaveState.STARTERDIRECTORY,
                 SystemProperties.getProperty("user.dir")));
