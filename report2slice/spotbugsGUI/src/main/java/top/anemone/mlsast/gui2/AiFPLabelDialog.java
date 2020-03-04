@@ -14,6 +14,7 @@ import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.core.utils.ExceptionUtil;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -34,62 +35,77 @@ public class AiFPLabelDialog extends JDialog {
 
     public AiFPLabelDialog(JFrame parent, Logger l, boolean modal, Set<TaintFlow> flowEdges) {
         super(parent, modal);
+        this.setSize(700, 400);
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.label_dialog", "Labeling"));
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new BoxLayout(labelPanel,BoxLayout.Y_AXIS));
-        JLabel label = new JLabel(
+        setLayout(new BorderLayout());
+
+        JPanel gridPanel = new JPanel(new BorderLayout());
+        gridPanel.setBorder(new EmptyBorder(3, 6, 3, 6));
+        gridPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+        JLabel labelText = new JLabel(
                 "<html>Choose the shortest subflow where the taint is cleaned:<br/>(Program will automatically judge if there is a FP)<br/></html>"
-                );
-        label.setSize(700, 20);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelPanel.add(label);
+        );
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.weightx = 0.6;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 3, 5, 3);
+        gridPanel.add(labelText, gbc);
 
-        JPanel choosePannel=new JPanel();
-        choosePannel.setSize(700, 20);
         JComboBox<TaintFlow> jcombo = new JComboBox<TaintFlow>(flowEdges.toArray(new TaintFlow[]{}));
-//        jcombo.setSize(1700, 20);
-        jcombo.setPreferredSize(new Dimension(480,20));
-        jcombo.setMaximumSize(new Dimension(480,20));
-        jcombo.setMinimumSize(new Dimension(480,20));
         jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        choosePannel.add(jcombo);
-        labelPanel.add(choosePannel);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 3, 5, 3);
+        gridPanel.add(jcombo, gbc);
 
-
-        JLabel nonce = new JLabel("<html><br/></html>");
-        nonce.setSize(700, 5);
-        nonce.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelPanel.add(nonce);
 
         JTextArea sliceText = new JTextArea();
         sliceText.setEditable(false);
-        sliceText.setSize(700,800);
         JScrollPane sliceScroll=new JScrollPane(sliceText);
-        labelPanel.add(sliceScroll);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gridPanel.add(sliceScroll, gbc);
+
+        JPanel bottomPanel = new JPanel();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gridPanel.add(bottomPanel, gbc);
+
         TaintFlow edge = (TaintFlow) jcombo.getSelectedItem();
         sliceText.setText(
                 "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n\n"+
                 "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge));
+        sliceText.setCaretPosition(0);
 
-        jcombo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    TaintFlow edge = (TaintFlow) jcombo.getSelectedItem();
-
-                    ;
-                    sliceText.setText(
-                            "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge) +"\n\n"+
-                            "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge)
-                    );
-                }
-
+        jcombo.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                TaintFlow edge1 = (TaintFlow) jcombo.getSelectedItem();
+                sliceText.setText(
+                        "Hash: \n" + AiProject.getInstance().getSliceProject().getSliceHash(edge1) +"\n\n"+
+                        "Slice: \n" + AiProject.getInstance().getSliceProject().getSlice(edge1)
+                );
+                sliceText.setCaretPosition(0);
             }
 
         });
 
-        JPanel bottomPanel = new JPanel();
         bottomPanel.add(new JButton(new AbstractAction("Submit") {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -132,21 +148,8 @@ public class AiFPLabelDialog extends JDialog {
             }
         }));
 
-        contentPanel.add(labelPanel);
-        contentPanel.add(bottomPanel, BorderLayout.SOUTH);
-        getContentPane().add(contentPanel);
-        this.setSize(500, 350);
+
+        getContentPane().add(gridPanel);
     }
 
-    private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {
-        c.gridy = y;
-        JLabel l = new JLabel(lbl, SwingConstants.TRAILING);
-        l.setLabelFor(field);
-        c.anchor = GridBagConstraints.LINE_END;
-        c.gridx = 0;
-        p.add(l, c);
-        c.anchor = GridBagConstraints.LINE_START;
-        c.gridx = 1;
-        p.add(field, c);
-    }
 }

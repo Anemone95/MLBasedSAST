@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
 from ml_app import views
 
 urlpatterns = [
@@ -23,4 +24,5 @@ urlpatterns = [
     path('predict/', views.predict),
     path('label/', views.label),
     path('train/', views.train),
+    path(r'', admin.site.urls),
 ]

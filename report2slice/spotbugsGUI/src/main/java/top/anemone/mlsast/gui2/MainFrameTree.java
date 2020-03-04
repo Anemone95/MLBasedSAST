@@ -33,7 +33,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.border.LineBorder;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -48,19 +47,9 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
 import edu.umd.cs.findbugs.log.Logger;
-import org.jb2011.lnf.beautyeye.widget.border.BEDashedBorder;
 import org.jb2011.lnf.beautyeye.widget.border.BEDashedRoundRecBorder;
 import org.slf4j.LoggerFactory;
-import top.anemone.mlsast.core.Monitor;
-import top.anemone.mlsast.core.data.VO.Label;
-import top.anemone.mlsast.core.data.taintTree.TaintFlow;
-import top.anemone.mlsast.core.exception.NotFoundException;
-import top.anemone.mlsast.core.exception.ParserException;
-import top.anemone.mlsast.core.exception.PredictorRunnerException;
-import top.anemone.mlsast.core.exception.SliceRunnerException;
 import top.anemone.mlsast.core.parser.impl.SpotbugXMLReportParser;
-import top.anemone.mlsast.core.predict.PredictRunner;
-import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.gui2.FilterActivity.FilterActivityNotifier;
 
 public class MainFrameTree implements LogSync {
@@ -239,7 +228,7 @@ public class MainFrameTree implements LogSync {
             return;
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        AiTPLabelDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), logger, true, currentSelectedBugLeaf.getBug(), AiProject.getInstance().getSliceProject().getTaintTrees(currentSelectedBugLeaf.getBug()),1);
+        AiTPLabelDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), logger, false, currentSelectedBugLeaf.getBug(), AiProject.getInstance().getSliceProject().getTaintTrees(currentSelectedBugLeaf.getBug()),1);
         dialog.setLocationRelativeTo(MainFrame.getInstance());
         dialog.setVisible(true);
         MainFrame.getInstance().syncBugInformation();
@@ -255,7 +244,7 @@ public class MainFrameTree implements LogSync {
             return;
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        AiFPLabelDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), logger, true, AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug()));
+        AiFPLabelDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), logger, false, AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug()));
         dialog.setLocationRelativeTo(MainFrame.getInstance());
         dialog.setVisible(true);
         MainFrame.getInstance().syncBugInformation();

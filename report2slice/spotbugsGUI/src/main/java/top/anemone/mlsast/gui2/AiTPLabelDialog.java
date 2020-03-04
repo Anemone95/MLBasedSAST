@@ -20,12 +20,12 @@ import top.anemone.mlsast.core.predict.exception.PredictorException;
 import top.anemone.mlsast.core.utils.ExceptionUtil;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 
 public class AiTPLabelDialog extends JDialog {
     private void closeDialog(WindowEvent event) {
@@ -62,61 +62,75 @@ public class AiTPLabelDialog extends JDialog {
 
     public AiTPLabelDialog(JFrame parent, Logger l, boolean modal, BugInstance bug, java.util.List<TaintTreeNode> trees, int id) {
         super(parent, modal);
+        this.setSize(700, 400);
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.label_dialog", "Labeling"));
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new BoxLayout(labelPanel,BoxLayout.Y_AXIS));
-        JLabel label = new JLabel(
-                "<html>Choose one taint tree where the bug can be exploited.</html>"
-                );
-        label.setSize(700, 20);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelPanel.add(label);
+        setLayout(new BorderLayout());
+
+        JPanel gridPanel = new JPanel(new BorderLayout());
+        gridPanel.setBorder(new EmptyBorder(3, 6, 3, 6));
+        gridPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        JLabel labelText = new JLabel("<html>Choose one taint tree where the bug can be exploited.</html>");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.weightx = 0.6;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 3, 5, 3);
+        gridPanel.add(labelText, gbc);
 
         String[] choices=new String[trees.size()];
         for (int i = 0; i < trees.size(); i++) {
             choices[i]="Taint tree "+(i+1);
         }
-
-        JPanel choosePannel=new JPanel();
-        choosePannel.setSize(700, 20);
         JComboBox<String> jcombo = new JComboBox<>(choices);
-        jcombo.setPreferredSize(new Dimension(480,20));
-        jcombo.setMaximumSize(new Dimension(480,20));
-        jcombo.setMinimumSize(new Dimension(480,20));
         jcombo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        choosePannel.add(jcombo);
-        labelPanel.add(choosePannel);
-
-        JLabel nonce = new JLabel("<html><br/></html>");
-        nonce.setSize(700, 5);
-        nonce.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelPanel.add(nonce);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 3, 5, 3);
+        gridPanel.add(jcombo, gbc);
 
         JTextArea sliceText = new JTextArea();
         sliceText.setEditable(false);
-        sliceText.setSize(700,400);
         JScrollPane sliceScroll=new JScrollPane(sliceText);
-        labelPanel.add(sliceScroll);
         jcombo.setSelectedItem("Taint tree "+id);
         String tree=getTreeStringById(bug, jcombo.getSelectedIndex()+1);
         sliceText.setText(tree);
+        sliceText.setCaretPosition(0);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gridPanel.add(sliceScroll, gbc);
 
-        jcombo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    String selectedTree = (String) jcombo.getSelectedItem();
-                    int selectId=Integer.parseInt(selectedTree.split(" ")[2]);
-                    String tree=getTreeStringById(bug, selectId);
-                    sliceText.setText(tree);
-                }
+        JPanel bottomPanel = new JPanel();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gridPanel.add(bottomPanel, gbc);
 
+
+        jcombo.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String selectedTree = (String) jcombo.getSelectedItem();
+                int selectId=Integer.parseInt(selectedTree.split(" ")[2]);
+                String tree1 =getTreeStringById(bug, selectId);
+                sliceText.setText(tree1);
+                sliceText.setCaretPosition(0);
             }
 
         });
 
-        JPanel bottomPanel = new JPanel();
         bottomPanel.add(new JButton(new AbstractAction("Submit") {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -159,26 +173,10 @@ public class AiTPLabelDialog extends JDialog {
                 } catch (ParserException | PredictorRunnerException | NotFoundException | SliceRunnerException e) {
                     e.printStackTrace();
                 }
-
                 closeDialog();
             }
         }));
 
-        contentPanel.add(labelPanel);
-        contentPanel.add(bottomPanel, BorderLayout.SOUTH);
-        getContentPane().add(contentPanel);
-        this.setSize(500, 350);
-    }
-
-    private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {
-        c.gridy = y;
-        JLabel l = new JLabel(lbl, SwingConstants.TRAILING);
-        l.setLabelFor(field);
-        c.anchor = GridBagConstraints.LINE_END;
-        c.gridx = 0;
-        p.add(l, c);
-        c.anchor = GridBagConstraints.LINE_START;
-        c.gridx = 1;
-        p.add(field, c);
+        getContentPane().add(gridPanel);
     }
 }

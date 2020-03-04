@@ -15,7 +15,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.MethodDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -23,7 +22,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -31,16 +29,12 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
 import com.h3xstream.findsecbugs.injection.taintdata.MethodNodeAnnotation;
-import com.h3xstream.findsecbugs.injection.taintdata.MethodVertex;
 import edu.umd.cs.findbugs.*;
 import top.anemone.mlsast.core.data.Func;
 import top.anemone.mlsast.core.data.taintTree.TaintFlow;
@@ -586,7 +580,7 @@ public class MainFrameComponentFactory implements Serializable {
             JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelExploitFlow", "Label Exploitable Taint Tree");
             labeledAsTP.addActionListener(evt -> {
                 AiProject.getInstance().bugInstanceIsLabeled.add(bug);
-                AiTPLabelDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), null, true, bug, AiProject.getInstance().getSliceProject().getTaintTrees(bug),treeId);
+                JDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), null, false, bug, AiProject.getInstance().getSliceProject().getTaintTrees(bug),treeId);
                 dialog.setLocationRelativeTo(MainFrame.getInstance());
                 dialog.setVisible(true);
                 MainFrame.getInstance().syncBugInformation();

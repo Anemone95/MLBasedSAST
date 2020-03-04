@@ -1,5 +1,6 @@
 package top.anemone.mlsast.gui2;
 
+import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.log.Logger;
 import top.anemone.mlsast.core.predict.impl.BLSTMRemotePredictor;
 
@@ -21,22 +22,22 @@ public class AiSetServerDialog extends javax.swing.JDialog {
         super(parent, modal);
         // this.parent = parent;
 
-        setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.set_server_dialog", "Set Server"));
-        JPanel contentPanel = new JPanel(new BorderLayout());
+        setTitle(L10N.getLocalString("dlg.set_server_dialog", "Set Server"));
+        JPanel contentPanel = new JPanel(new FlowLayout());
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.ipadx = c.ipady = 5;
+        GridBagConstraints gridConstraints = new GridBagConstraints();
+//        gridConstraints.ipadx = gridConstraints.ipady = 5;
 
 
         float currFS = Driver.getFontSize();
 
         JTextField tabTextField = new JTextField(AiProject.getInstance().getRemotePredictor().getRemoteServer());
-        tabTextField.setPreferredSize(new Dimension((int) (currFS * 14), (int) (currFS * 2)));
-        addField(mainPanel, c, 0, "Input Server URL: ", tabTextField);
+        tabTextField.setPreferredSize(new Dimension((int) (currFS * 15), (int) (currFS * 2)));
+        addField(mainPanel, gridConstraints, 0, L10N.getLocalString("dlg.input_url", "Input Server URL: "), tabTextField);
 
         JTextField tokenTextField = new JTextField();
-        tokenTextField.setPreferredSize(new Dimension((int) (currFS * 14), (int) (currFS * 2)));
-        addField(mainPanel, c, (int) (currFS * 2.5), "Input token: ", tokenTextField);
+        tokenTextField.setPreferredSize(new Dimension((int) (currFS * 15), (int) (currFS * 2)));
+        addField(mainPanel, gridConstraints, 1, L10N.getLocalString("dlg.input_token","Input token: "), tokenTextField);
 
         contentPanel.add(mainPanel, BorderLayout.CENTER);
 
@@ -63,29 +64,21 @@ public class AiSetServerDialog extends javax.swing.JDialog {
 
         contentPanel.add(bottomPanel, BorderLayout.SOUTH);
         getContentPane().add(contentPanel);
-        this.setSize(400, 200);
-
-//        initComponents();
-
-//        try {
-//            aboutEditorPane.setPage(AboutDialog.class.getClassLoader().getResource("help/About.html"));
-//            licenseEditorPane.setPage(AboutDialog.class.getClassLoader().getResource("help/License.html"));
-//            acknowldgementsEditorPane.setPage(AboutDialog.class.getClassLoader().getResource("help/Acknowledgements.html"));
-//        } catch (IOException e) {
-//            l.logMessage(Logger.ERROR, e.toString());
-//        }
-
+        this.setSize(380, 160);
+        this.setResizable(false);
     }
 
-    private void addField(JPanel p, GridBagConstraints c, int y, String lbl, JComponent field) {
-        c.gridy = y;
+    private void addField(JPanel p, GridBagConstraints gridConstraints, int y, String lbl, JComponent textField) {
         JLabel l = new JLabel(lbl, SwingConstants.TRAILING);
-        l.setLabelFor(field);
-        c.anchor = GridBagConstraints.LINE_END;
-        c.gridx = 0;
-        p.add(l, c);
-        c.anchor = GridBagConstraints.LINE_START;
-        c.gridx = 1;
-        p.add(field, c);
+        l.setLabelFor(textField);
+        gridConstraints.anchor = GridBagConstraints.LINE_END;
+        gridConstraints.gridx = 0;
+        gridConstraints.gridy = y;
+        gridConstraints.insets = new Insets(3, 3, 3, 3);
+        p.add(l, gridConstraints);
+        gridConstraints.anchor = GridBagConstraints.LINE_START;
+        gridConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridConstraints.gridx = 1;
+        p.add(textField, gridConstraints);
     }
 }
