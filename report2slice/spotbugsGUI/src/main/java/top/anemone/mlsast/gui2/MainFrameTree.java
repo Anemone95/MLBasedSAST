@@ -18,21 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -244,7 +230,7 @@ public class MainFrameTree implements LogSync {
             return;
         }
         AiProject.getInstance().bugInstanceIsLabeled.add(currentSelectedBugLeaf.getBug());
-        AiFPLabelDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), logger, false, AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug()));
+        JDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), logger, false, AiProject.getInstance().getSliceProject().getTaintFlows(currentSelectedBugLeaf.getBug()));
         dialog.setLocationRelativeTo(MainFrame.getInstance());
         dialog.setVisible(true);
         MainFrame.getInstance().syncBugInformation();

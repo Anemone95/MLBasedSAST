@@ -577,10 +577,10 @@ public class MainFrameComponentFactory implements Serializable {
         // @Anemone, if caredVulns, pop label function
         AiProject project = AiProject.getInstance();
         if (isVulnTree){
-            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelExploitFlow", "Label Exploitable Taint Tree");
+            JMenuItem labeledAsTP = MainFrameHelper.newJMenuItem("menu.labelExploitTree", "Label Exploitable Taint Tree");
             labeledAsTP.addActionListener(evt -> {
-                AiProject.getInstance().bugInstanceIsLabeled.add(bug);
-                JDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), null, false, bug, AiProject.getInstance().getSliceProject().getTaintTrees(bug),treeId);
+                project.bugInstanceIsLabeled.add(bug);
+                JDialog dialog = new AiTPLabelDialog(MainFrame.getInstance(), null, false, bug, project.getSliceProject().getTaintTrees(bug),treeId);
                 dialog.setLocationRelativeTo(MainFrame.getInstance());
                 dialog.setVisible(true);
                 MainFrame.getInstance().syncBugInformation();
@@ -588,11 +588,11 @@ public class MainFrameComponentFactory implements Serializable {
             popupMenu.add(labeledAsTP);
 
         } else {
-            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labelSafeFlow", "Label Safe Taint Flow");
+            JMenuItem labeledAsFP = MainFrameHelper.newJMenuItem("menu.labelTaintFlow", "Label Taint Flow");
             labeledAsFP.addActionListener(evt -> {
-                AiProject.getInstance().bugInstanceIsLabeled.add(bug);
-                List<TaintFlow> flows= AiProject.getInstance().getSliceProject().getTaintFlows(bug).stream().filter(e->e.getEntry().equals(methodDescriptor)).collect(Collectors.toList());
-                AiFPLabelDialog dialog = new AiFPLabelDialog(MainFrame.getInstance(), null, true, new HashSet<>(flows));
+                project.bugInstanceIsLabeled.add(bug);
+                List<TaintFlow> flows= project.getSliceProject().getTaintFlows(bug).stream().filter(e->e.getEntry().equals(methodDescriptor)).collect(Collectors.toList());
+                JDialog dialog = new AiSliceLabelDialog(MainFrame.getInstance(), null, false, new HashSet<>(flows));
                 dialog.setLocationRelativeTo(MainFrame.getInstance());
                 dialog.setVisible(true);
                 MainFrame.getInstance().syncBugInformation();
