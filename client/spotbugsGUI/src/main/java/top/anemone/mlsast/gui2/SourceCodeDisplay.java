@@ -20,8 +20,11 @@
 package top.anemone.mlsast.gui2;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.SoftReference;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -104,7 +107,8 @@ public final class SourceCodeDisplay implements Runnable {
             }
             try {
                 InputStream in = sourceFile.getInputStream();
-                result = new JavaSourceDocument(source.getClassName(), SourceCharset.bufferedReader(in), sourceFile);
+                BufferedReader isr=new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                result = new JavaSourceDocument(source.getClassName(), isr, sourceFile);
             } catch (Exception e) {
                 result = JavaSourceDocument.UNKNOWNSOURCE;
                 Debug.println(e); // e.printStackTrace();

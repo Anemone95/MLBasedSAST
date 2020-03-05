@@ -517,7 +517,7 @@ public class GUISaveState {
      * @param splitSummary
      *            The location of the summar divider to set.
      */
-    public void setSplitSummary(int splitSummary) {
+    public void setSplitRight(int splitSummary) {
         this.splitSummary = splitSummary;
     }
 
@@ -532,7 +532,7 @@ public class GUISaveState {
      * @param splitRight
      *            The location of the top divider to set.
      */
-    public void setSplitRight(int splitRight) {
+    public void setSplitLeft(int splitRight) {
         this.splitRight = splitRight;
     }
 

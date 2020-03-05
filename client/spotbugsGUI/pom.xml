@@ -71,6 +71,7 @@
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
+                    <encoding>UTF-8</encoding>
                     <resourceBundles>
                         <resourceBundle>top.anemone.mlsast:contrib-resources:${project.version}</resourceBundle>
                     </resourceBundles>
@@ -82,20 +83,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- java编译插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>top.anemone.mlsast.gui2.MyGUI</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -112,6 +99,24 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- java编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>top.anemone.mlsast.gui2.MyGUI</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>lib/beautyeye-0.0.1.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
             <!-- 项目资源插件 -->
             <plugin>

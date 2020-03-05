@@ -455,7 +455,8 @@ public class NewProjectWizard extends FBDialog {
         addButton.addActionListener(evt -> {
             chooser.setFileSelectionMode(fileSelectionMode);
             chooser.setMultiSelectionEnabled(true);
-            chooser.setApproveButtonText("Choose");
+            chooser.setApproveButtonText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.choose",
+                        "Choose"));
             chooser.setDialogTitle(dialogTitle);
 
             // Removes all the file filters currently in the chooser.

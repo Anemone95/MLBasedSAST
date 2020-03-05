@@ -27,12 +27,10 @@ import java.awt.Font;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import edu.umd.cs.findbugs.L10N;
-import org.jb2011.lnf.beautyeye.widget.border.BERoundBorder;
 
 /**
  * @author pugh
@@ -169,8 +167,8 @@ public class SplitLayout implements FindBugsLayoutManager {
      */
     @Override
     public void saveState() {
-        GUISaveState.getInstance().setSplitRight(subPane1.getDividerLocation());
-        GUISaveState.getInstance().setSplitSummary(subPane2.getDividerLocation());
+        GUISaveState.getInstance().setSplitLeft(subPane1.getDividerLocation());
+        GUISaveState.getInstance().setSplitRight(subPane2.getDividerLocation());
         GUISaveState.getInstance().setSplitMain(outerPane.getDividerLocation());
     }
 

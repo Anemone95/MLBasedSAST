@@ -25,6 +25,7 @@ public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 
     public static final FindBugsAnalysisFileFilter INSTANCE = new FindBugsAnalysisFileFilter();
 
+
     @Override
     public boolean accept(File arg0) {
         return arg0.getName().endsWith(".xml") || arg0.getName().endsWith(".xml.gz") || arg0.isDirectory();

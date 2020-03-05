@@ -297,8 +297,8 @@ if __name__ == '__main__':
               word_freq=WORD_FREQ,
               train_precent=0.9, saveto=model_file)
     else:
-        slice = r"G:\slice\benchmark1.1"
-        label = r"G:\label\benchmark1.1"
+        slice = r"G:\slice\mix"
+        label = r"G:\label\mix"
         train(slice,
               label,
               embedding_dim=EMBEDDING_DIM,
@@ -308,7 +308,7 @@ if __name__ == '__main__':
               batch_size=BATCH_SIZE,
               total_epoch=20,
               word_freq=WORD_FREQ,
-              train_precent=1, saveto=model_file)
+              train_precent=0.9, saveto=model_file)
 
     # get_label_summary("data/slice/benchmark1.1", "data/label/benchmark1.1")
 

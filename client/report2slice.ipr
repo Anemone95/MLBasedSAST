@@ -171,6 +171,14 @@
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
   </component>
   <component name="libraryTable">
+    <library name="libs">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/spotbugsGUI/libs" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+      <jarDirectory url="file://$PROJECT_DIR$/spotbugsGUI/libs" recursive="false" />
+    </library>
     <library name="Maven: ant:ant:1.6.5">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/ant/ant/1.6.5/ant-1.6.5.jar!/" />
