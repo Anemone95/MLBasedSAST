@@ -32,7 +32,7 @@
 
     ```bash
     # Fetch sources
-    git clone https://github.com/anemone95/joana
+    git clone https://github.com/anemone95/joana-mvn
     cd joana
     mvn clean install -DskipTests
     ```
