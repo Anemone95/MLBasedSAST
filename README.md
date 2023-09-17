@@ -1,34 +1,34 @@
 # ML-based-SAST
 
-**ML-based-SAST** 是一个使用程序切片和BLSTM降低污点传播SAST误报率的工具demo。
+**ML-based-SAST** is a tool demo that utilizes program slicing and BLSTM to reduce the false positive rate of taint propagation in SAST.
 
 # Project Structure
 
 ```plain
 .
 ├── README.md
-├── ml # 机器学习模块
-│   ├── _theano # BLSTM theano实现版本
-│   ├── api.py # API Server
-│   ├── console.py # CLI
-│   ├── data # 学习用的知识库（包括slice和label）
-│   ├── model # BLSTM model
-│   ├── preprocessing.py # 数据预处理，包括tokenize
-│   ├── settings.py
-│   ├── tests # Test case
-│   ├── tf # BLSTM tensorflow实现版本
-│   └── utils # 用于转换格式
-└── report2slice # 切词模块
-    ├── slice # 生成切片文件
-    ├── core # 核心切片和预测模块
-    ├── cli # 切片/预测控制台入口
-    ├── spotbugsGUI # 改造版spotbugsGUI
+├── ml # Machine Learning Module
+│   ├── _theano # BLSTM implementation in theano
+│   ├── api.py # API Server
+│   ├── console.py # CLI
+│   ├── data # Knowledge base for learning (includes slice and label)
+│   ├── model # BLSTM model
+│   ├── preprocessing.py # Data preprocessing, including tokenization
+│   ├── settings.py
+│   ├── tests # Test cases
+│   ├── tf # BLSTM implementation in tensorflow
+│   └── utils # Used for format conversion
+└── report2slice # Slicing module
+    ├── slice # Generates slice files
+    ├── core # Core slicing and prediction module
+    ├── cli # CLI entry for slicing/prediction
+    ├── spotbugsGUI # Modified version of spotbugsGUI
     └── pom.xml
 ```
 
 # Build
 
-1. ML-based-SAST 依赖于改造后的Joana，因此第一步是使用如下命令构建joana：
+1. ML-based-SAST relies on the modified version of Joana. Therefore, the first step is to build joana using the following command:
 
     ```bash
     # Fetch sources
@@ -37,7 +37,7 @@
     mvn clean install -DskipTests
     ```
     
-2. 构建切片和预测模块
+2. Build the slicing and prediction module:
 
    ```bash
    # Fetch sources
@@ -46,7 +46,7 @@
    mvn clean package
    ```
 
-3. 安装学习模块环境，学习模块依赖如下库
+3. Install the learning module environment. The learning module depends on the following libraries:
 
     ```plain
     tensorflow==2.0.0
@@ -58,9 +58,9 @@
 
 # Usage
 
-## API.py——预测服务器
+## API.py - Prediction Server
 
-启动一个服务器用来预测，接受slice和label，以及启动一个训练
+Start a server for predictions, accepting slice and label, and initiate training:
 
 ```bash
 cd MLBasedSAST/ml
@@ -73,56 +73,55 @@ python api.py --model-npz=xxx.npz # run api server
 java -jar report2slice/spotbugsGUI/target/spotbugsGUI-1.0-SNAPSHOT.jar
 ```
 
-启动后可以看到一个修改版的Spotbugs GUI，首先新建/打开一个project，获取分析结果，该步骤与原版操作过程相同：
+After launching, you can see a modified version of the Spotbugs GUI. First, create/open a project and obtain analysis results. This step is similar to the original operation:
 
 ![image-20191121143710061](README/image-20191121143710061.png)
 
-### 设置服务器
+### Set Server
 
-点击"AI->Set Server"，设置用于预测的服务器:
+Click "AI->Set Server" to set the server for predictions:
 
 ![image-20191121143846462](README/image-20191121143846462.png)
 
-### 切片并获取预测结果
+### Slice and Get Prediction Results
 
-点击"AI->Slice and Predict"，程序会首先分析污点传播结果，对相关Bug进行切片：
+Click "AI->Slice and Predict". The program will first analyze the taint propagation results and slice the related bugs:
 
 ![image-20191121160401714](README/image-20191121160401714.png)
 
-切片完成后，程序发送给服务器获取预测结果，可以在左侧看到预测结果。
+After slicing, the program sends the results to the server for predictions, and you can see the prediction results on the left side.
 
-### 清空数据
+### Clear Data
 
-如果在分析过程中中断，再次slice时会从失败前的最有一步开始，若想重新开始则可以点击“AI->Clean”清除先前数据。
+If the analysis is interrupted, slicing again will start from the last successful step. If you want to start over, click "AI->Clean" to clear previous data.
 
-### 标记数据
+### Label Data
 
-不论是否进行预测，都可以对一个漏洞实例进行标记（但需要先切片），右键漏洞实例即可，标记结果会同时发送给服务器，作为将来学习使用
+Regardless of whether a prediction is made, you can label a vulnerability instance (but slicing is required first). Right-click on the vulnerability instance to do so. The labeling results will be sent to the server for future learning:
 
 ![image-20191121161750306](README/image-20191121161750306.png)
 
-## 命令行入口
+## CLI Entry
 
-命令行入口以Spotbugs的xml报告文件作为输入，以json格式输出切片/预测结果。
+The CLI entry takes the Spotbugs xml report file as input and outputs the slice/prediction results in json format.
 
-### 只做切片
-
-```bash
-java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml # 默认切片保存到./slice/{project}文件夹下，可用--output-dir指定输出目录
-```
-
-### 切片后预测
+### Slice Only
 
 ```bash
-java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml --server http://127.0.0.1:8888/ # 指定预测用服务器，默认预测结果保存到./predict，可用--output指定输出目录
+java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml # By default, slices are saved to ./slice/{project} folder. Use --output-dir to specify the output directory.
 ```
 
-## console.py——学习控制台
+### Slice and Predict
 
-### 启动一次学习
+```bash
+java -jar report2slice/cli/target/cli-1.0-SNAPSHOT.jar slice -f java-sec-code-1.0.0-spotbugs.xml --server http://127.0.0.1:8888/ # Specify the server for predictions. By default, prediction results are saved to ./predict. Use --output to specify the output directory.
+```
+
+## console.py - Learning Console
+
+### Start a Learning Session
 
 ```bash
 cd ml
-python console.py train --slice-dir=data/slice/benchmark1.2 --label-dir=data/label/benchmark1.2 --epochs=20 # 切片数据文件夹，标记数据文件夹，最大迭代次数
+python console.py train --slice-dir=data/slice/benchmark1.2 --label-dir=data/label/benchmark1.2 --epochs=20 # Slice data folder, label data folder, maximum number of iterations.
 ```
-
