@@ -2,7 +2,8 @@
 
 [中文文档](https://github.com/Anemone95/MLBasedSAST/blob/master/README-zh.md)
 
-**ML-based-SAST** is a tool demo that utilizes program slicing and BLSTM to reduce the false positive rate of taint propagation in SAST.
+**ML-based-SAST** is a tool that uses program slicing and BLSTM network to reduce the false positives during taint analysis.
+
 
 # Project Structure
 
